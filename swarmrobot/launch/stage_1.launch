@@ -1,0 +1,114 @@
+<?xml version = '1.0' ?>
+<launch>
+
+    <!-- Custom position to spawn the robots in desired location -->
+    <arg name="first_sb_x_pos" default="-0.685"/>
+    <arg name="first_sb_y_pos" default="-0.22"/>
+    <arg name="first_sb_z_pos" default="0.065"/>
+    <arg name="first_sb_yaw"   default="3.14"/>
+
+    <arg name="second_sb_x_pos" default="-0.685"/>
+    <arg name="second_sb_y_pos" default="-0.07"/>
+    <arg name="second_sb_z_pos" default="0.065"/>
+    <arg name="second_sb_yaw"   default=" 3.14"/>
+
+    <arg name="third_sb_x_pos" default="-0.685"/>
+    <arg name="third_sb_y_pos" default="0.083"/>
+    <arg name="third_sb_z_pos" default="0.065"/>
+    <arg name="third_sb_yaw"   default="3.14"/>
+
+    <arg name="fourth_sb_x_pos" default="-0.685"/>
+    <arg name="fourth_sb_y_pos" default="0.235"/>
+    <arg name="fourth_sb_z_pos" default="0.065"/>
+    <arg name="fourth_sb_yaw"   default="3.14"/>
+
+    <!-- Add Models PATH for Gazebo -->
+    <env name="GAZEBO_MODEL_PATH" value="$(find swarmrobot)/models"/>
+
+    <!-- Arguments -->
+    <arg name="paused" default="true"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="rviz" default = "false"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+    <arg name="extra_gazebo_args" default="--verbose"/>
+
+    <!-- Gazebo with World File -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find swarmrobot)/worlds/arena_s1.world"/>
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="headless" value="$(arg headless)"/>
+        <arg name="extra_gazebo_args" value="$(arg extra_gazebo_args)"/>
+    </include>
+
+    <?i
+    <!-- Spawn Boxes -->
+    <node name= "models" pkg= "swarmrobot" type="models.py"/>
+    ?>
+
+    <!-- Seperate Group for each bot to spawn robot at correct positition-->
+    <group ns="bot1">
+
+        <param command="$(find xacro)/xacro $(find grid_bot_1_description)/urdf/grid_bot_1.xacro" name="robot_description"/>
+
+        <!--param command="$(find xacro)/xacro $(find grid_bot_description)/urdf/grid_bot.xacro" name="robot_description"/-->
+
+        <node args="-param robot_description -x $(arg first_sb_x_pos) -y $(arg first_sb_y_pos) -z $(arg first_sb_z_pos) -Y $(arg first_sb_yaw) -urdf -model grid_bot_1 -J servo_joint 180.0" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"/>
+
+        <!-- Launch the Controller for the Robot in Gazebo -->
+        <rosparam file ="$(find swarmrobot)/config/controllers.yaml"/>
+
+        <node name= "controller_spawner" pkg= "controller_manager" type="spawner" args="controller"/>
+
+        <!-- Publishing the robot state using robot state publisher -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    </group>
+
+    <group ns="bot2">
+        <param command="$(find xacro)/xacro $(find grid_bot_2_description)/urdf/grid_bot_2.xacro" name="robot_description"/>
+
+        <node args="-param robot_description -x $(arg second_sb_x_pos) -y $(arg second_sb_y_pos) -z $(arg second_sb_z_pos) -Y $(arg second_sb_yaw) -urdf -model grid_bot_2 -J servo_joint 180.0" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"/>
+
+        <!-- Launch the Controller for the Robot in Gazebo -->
+        <rosparam file ="$(find swarmrobot)/config/controllers.yaml"/>
+
+        <node name= "controller_spawner" pkg= "controller_manager" type="spawner" args="controller"/>
+
+        <!-- Publishing the robot state using robot state publisher -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    </group>
+
+    <group ns="bot3">
+        <param command="$(find xacro)/xacro $(find grid_bot_3_description)/urdf/grid_bot_3.xacro" name="robot_description"/>
+
+        <node args="-param robot_description -x $(arg third_sb_x_pos) -y $(arg third_sb_y_pos) -z $(arg third_sb_z_pos) -Y $(arg third_sb_yaw) -urdf -model grid_bot_3 -J servo_joint 180.0" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"/>
+
+        <!-- Launch the Controller for the Robot in Gazebo -->
+        <rosparam file ="$(find swarmrobot)/config/controllers.yaml"/>
+
+        <node name= "controller_spawner" pkg= "controller_manager" type="spawner" args="controller"/>
+
+        <!-- Publishing the robot state using robot state publisher -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    </group>
+
+    <group ns="bot4">
+        <param command="$(find xacro)/xacro $(find grid_bot_4_description)/urdf/grid_bot_4.xacro" name="robot_description"/>
+
+        <node args="-param robot_description -x $(arg fourth_sb_x_pos) -y $(arg fourth_sb_y_pos) -z $(arg fourth_sb_z_pos) -Y $(arg fourth_sb_yaw) -urdf -model grid_bot_4 -J servo_joint 180.0" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"/>
+
+        <!-- Launch the Controller for the Robot in Gazebo -->
+        <rosparam file ="$(find swarmrobot)/config/controllers.yaml"/>
+
+        <node name= "controller_spawner" pkg= "controller_manager" type="spawner" args="controller"/>
+
+        <!-- Publishing the robot state using robot state publisher -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    </group>
+
+</launch>

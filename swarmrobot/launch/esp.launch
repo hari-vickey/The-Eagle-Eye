@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<launch>
+    <!-- Run the Esp Serial Python Server for bot 1 -->
+    <node pkg="rosserial_python" type="serial_node.py" name="bot1_esp_client" respawn="true" output="screen">
+        <param name="port" value="tcp"/>
+        <param name="tcp_port" value="11411"/>
+    </node>
+    <!-- Run the Esp Serial Python Server for bot 2 -->
+    <node pkg="rosserial_python" type="serial_node.py" name="bot2_esp_client" respawn="true" output="screen">
+        <param name="port" value="tcp"/>
+        <param name="tcp_port" value="11454"/>
+    </node>
+    <!-- Run the Esp Serial Python Server for bot 3 -->
+    <node pkg="rosserial_python" type="serial_node.py" name="bot3_esp_client" respawn="true" output="screen">
+        <param name="port" value="tcp"/>
+        <param name="tcp_port" value="45411"/>
+    </node>
+    <!-- Run the Esp Serial Python Server for bot 4 -->
+    <node pkg="rosserial_python" type="serial_node.py" name="bot4_esp_client" respawn="true" output="screen">
+        <param name="port" value="tcp"/>
+        <param name="tcp_port" value="44181"/>
+    </node>
+</launch>

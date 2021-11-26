@@ -1,0 +1,56 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='bottom'>
+    <link name='arena::link_0'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <self_collide>0</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
+      <gravity>1</gravity>
+      <inertial>
+        <mass>1</mass>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <inertia>
+          <ixx>1</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1</iyy>
+          <iyz>0</iyz>
+          <izz>1</izz>
+        </inertia>
+      </inertial>
+      <visual name='visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://bottom/meshes/bottom.dae</uri>
+            <scale>0.54 0.54 1</scale>
+          </mesh>
+        </geometry>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+        <material>
+          <!--<script>
+            <name>ModelPreview_1::arena::link_0::visual_MATERIAL_</name>
+          </script>-->
+          <ambient>0.933 0.933 0.925 1</ambient>
+          <shader type='vertex'>
+            <normal_map>__default__</normal_map>
+          </shader>
+          <diffuse>0.933 0.933 0.925 1</diffuse>
+          <specular>0.933 0.933 0.925 1</specular>
+          <emissive>0.933 0.933 0.925 1</emissive>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://bottom/meshes/bottom.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <static>1</static>
+    <allow_auto_disable>1</allow_auto_disable>
+  </model>
+</sdf>
