@@ -9,16 +9,13 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-
-class Camera1:
+class Aruco:
 
     def __init__(self):
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback, queue_size = 1)
 
-        #self.video_writer = None
-        #self.file_name = 'data.avi'
         self.location = ['Mumbai', 'Delhi', 'Kolkata', 
                          'Chennai', 'Bengaluru', 'Hyderabad', 
                          'Pune', 'Ahemdabad', 'Jaipur']
@@ -229,8 +226,8 @@ class Camera1:
 
 def main(args):
   
-    rospy.init_node('node_eg1_read_camera', anonymous=True)
-    ic = Camera1()
+    rospy.init_node('node_aruco_detect', anonymous=True)
+    ic = Aruco()
     try:
         rospy.spin()
     except KeyboardInterrupt:

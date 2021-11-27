@@ -92,7 +92,7 @@ class Server():
                 # Threaded the algorithm function to process real time images
                 # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
                 # thread.start()
-                self.aruco_detect_bot(cv_image)
+                # self.aruco_detect_bot(cv_image)
                 # self.algorithm(cv_image)
 
             # Execute the aruco_detection_destination untill it detects,

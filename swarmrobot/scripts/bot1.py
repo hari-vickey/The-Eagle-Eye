@@ -14,9 +14,10 @@ import rospy
 import actionlib
 import numpy as np
 from helper import function
+from std_msgs.msg import String
 from cv_bridge import CvBridge, CvBridgeError
-from rospy_message_converter import message_converter
 from std_msgs.msg import Int16MultiArray, Int32MultiArray
+from rospy_message_converter import json_message_converter
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
 class Bot1():
@@ -53,7 +54,10 @@ class Bot1():
         self.msg = Int16MultiArray()
 
         # Subscribing to the ROS String Topic
-        self.botpos_sub = rospy.Subscriber("/bot_position", Int32MultiArray, 
+        # self.botpos_sub = rospy.Subscriber("/bot_position", Int32MultiArray, 
+        #                                    self.pos_callback, 
+        #                                    queue_size=1)
+        self.botpos_sub = rospy.Subscriber("/bot_position", String, 
                                            self.pos_callback, 
                                            queue_size=1)
 
@@ -68,7 +72,9 @@ class Bot1():
         This Function gets all the published bot position as String and 
         convert the data to dictionary for processing.
         """
-        print(data.data)
+        json_str = json_message_converter.convert_ros_message_to_json(data)
+        msg = json.loads(json_str)
+        print(msg)
 
     # This function will be called when Action Server receives a Goal
     def on_goal(self, goal_handle):       

@@ -1,3 +1,12 @@
+"""
+This Is the Custom python module
+This module specifically developed for 
+Flipkart Grid 3.0 Application.
+This python file consists of all necessary functions
+which can be utilized by multiple Nodes
+"""
+
+# Importing Required Packages
 import sys
 import time
 import math
@@ -6,6 +15,7 @@ import numpy as np
 from heapq import heappush, heappop
 from multiprocessing.dummy import Pool
 
+# Declaring Global Graph
 graph = {}
 
 # Function to Init Image as Graph

@@ -24,11 +24,10 @@ import numpy as np
 import pandas as pd
 import cv2.aruco as aruco
 from helper import function
-from std_msgs.msg import Int32MultiArray
 from sensor_msgs.msg import Image
 from heapq import heappush, heappop
+from std_msgs.msg import Int32MultiArray
 from cv_bridge import CvBridge, CvBridgeError
-from rospy_message_converter import message_converter
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
 # Class Server
@@ -99,7 +98,7 @@ class Server():
                 start = self.inductzone[1]
                 goal = self.closest_point(self.destination['Hyderabad'], start)
                 # print(start, goal)
-                self._goal_handles[0] = self.send_goal_1(1, start[0], start[1], 
+                self._goal_handles[0] = self.send_goal_1(1, start[0]-60, start[1], 
                                                          goal[0], goal[1])
 
     # Function for ROS Camera Subscription Callback
@@ -118,7 +117,7 @@ class Server():
                 # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
                 # thread.start()
                 # self.algorithm(cv_image)
-                self.aruco_detect_bot(cv_image)
+                # self.aruco_detect_bot(cv_image)
                 self.good = 1
 
             # Execute the arena_config function only one time
@@ -318,9 +317,6 @@ class Server():
                 cpts.append(point)
 
             bot = dict(zip(bot_name, cpts))
-            # print(bot)
-            # print(cpts)
-            # print(pt)
             self.msg.data = pt
 
             self.publisher.publish(self.msg)
