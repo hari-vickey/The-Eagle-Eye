@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
+"""
+ROS Node - detect.py - V1 - Tested
+This Node will detect the aruco markers of the bot then publishes them 
+to other ROS Nodes using ROS publisher.
 
+This Node uses rospy_message_converter to convert dictionary to 
+ROS Messages.
+
+ROS Publisher  - /bot_position
+ROS Subscriber - /image_raw
+
+"""
+import sys
 import cv2
 import json
 import rospy
 import numpy as np
 import cv2.aruco as aruco
+from std_msgs.msg import String
 from sensor_msgs.msg import Image
-from std_msgs.msg import Int32MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 from rospy_message_converter import message_converter
 
-# Class Aruco
-class Aruco():
+# Class Detect
+class Detect():
     """
     This class will detect the aruco markers of the bot
     and publish them using ros publihsers to other nodes
@@ -25,16 +37,14 @@ class Aruco():
         self.bridge = CvBridge()
 
         # Subscribing to the ROS Image topic
-        self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback, queue_size = 1)
+        self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback, 
+                                          queue_size = 1)
 
         # Publishing Bot Positions
-        # self.publisher = rospy.Publisher("/bot_position", Int32MultiArray, 
-        #                                  queue_size=1)
         self.publisher = rospy.Publisher("/bot_position", String, 
                                          queue_size=1)
 
-        # Creating msg variable of Int32MultiArray() type
-        # self.msg = Int32MultiArray()
+        # Creating msg variable of String Datatype
         self.msg = String()
 
     def callback(self,data):
@@ -78,20 +88,17 @@ class Aruco():
             print(bot)
 
         except Exception as e:
-            # print(e)
-            cv2.imshow("img", frame)
-            cv2.waitKey(1)
             pass
 
 def main(args):
   
     rospy.init_node('node_bot_detect', anonymous=True)
-    ic = Aruco()
+    det = Detect()
     try:
         rospy.spin()
     except KeyboardInterrupt:
         rospy.loginfo("Shutting down")
-        rospy.on_shutdown(ic.clean_shutdown)
+        rospy.on_shutdown(det.clean_shutdown)
 
     cv2.destroyAllWindows()
 
