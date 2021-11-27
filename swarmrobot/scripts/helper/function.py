@@ -58,7 +58,7 @@ def return_graph():
     return graph
 
 # Function for Custom Path Planning
-def path_plan_custom(img, start, end):
+def path_plan_custom(start, end):
     """
     This function will generate the custom path using the
     start and end points
@@ -68,16 +68,16 @@ def path_plan_custom(img, start, end):
     # then there is no need of waypoint
     if start[0] == end[0] or start[1] == end[1]:
         way_point = (end[0],end[1])
-        cv2.line(img, start, end, (255, 0, 0), cv2.LINE_4, 1)
+        # cv2.line(img, start, end, (255, 0, 0), cv2.LINE_4, 1)
 
     # If the start or goal point is not in the same axis,
     # then resolving the path to horizontal and vertical paths
     elif start[0] != end[0] or start[1] != end[1]:
         way_point = (start[0], end[1])
-        cv2.line(img, start, way_point, (255, 0, 0), cv2.LINE_4, 1)
-        cv2.line(img, way_point, end, (255, 0, 0), cv2.LINE_4, 1)
+        # cv2.line(img, start, way_point, (255, 0, 0), cv2.LINE_4, 1)
+        # cv2.line(img, way_point, end, (255, 0, 0), cv2.LINE_4, 1)
 
-    return img, way_point
+    return way_point
 
 # Function to plan a Path
 def path_plan(start, goal):
@@ -244,20 +244,3 @@ def calculate_distance(goal, current):
     """
     d = math.sqrt(((goal[0]-current[0])*(goal[0]-current[0]))+((goal[1]-current[1])*(goal[1]-current[1])))
     return d
-
-# Function to Mark Points on the Image
-def mark_points(img, start, goal, ls):
-    """
-    Marking Points in the input image
-    Also draw the lines of the path estimated
-    """
-    # Marking the Start Point and Goal point
-    img = cv2.circle(img, start, 2, (255, 0, 0), 8)
-    img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
-    ls.insert(0, start)
-    ls.insert(len(ls), goal)
-    # Marking the Minimized set of goalpoints
-    for point1, point2 in zip(ls, ls[1:]):
-        cv2.line(img, point1, point2, [0, 255, 0], 2)
-
-    return img
