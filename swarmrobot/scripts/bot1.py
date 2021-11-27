@@ -9,15 +9,16 @@ Action Server - /action_bot1
 ROS Publisher - bot1/control_signal
 ROS Subscriber - /incoming_goal
 """
+import cv2
 import json
 import rospy
 import actionlib
 import numpy as np
 from helper import function
 from std_msgs.msg import String
+from std_msgs.msg import Int16MultiArray
 from cv_bridge import CvBridge, CvBridgeError
-from std_msgs.msg import Int16MultiArray, Int32MultiArray
-from rospy_message_converter import json_message_converter
+from rospy_message_converter import message_converter
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
 class Bot1():
@@ -54,9 +55,6 @@ class Bot1():
         self.msg = Int16MultiArray()
 
         # Subscribing to the ROS String Topic
-        # self.botpos_sub = rospy.Subscriber("/bot_position", Int32MultiArray, 
-        #                                    self.pos_callback, 
-        #                                    queue_size=1)
         self.botpos_sub = rospy.Subscriber("/bot_position", String, 
                                            self.pos_callback, 
                                            queue_size=1)
@@ -72,9 +70,17 @@ class Bot1():
         This Function gets all the published bot position as String and 
         convert the data to dictionary for processing.
         """
-        json_str = json_message_converter.convert_ros_message_to_json(data)
-        msg = json.loads(json_str)
-        print(msg)
+        if self.flag == 1:
+            msg = message_converter.convert_ros_message_to_dictionary(data)
+            temp = msg['data']
+            bot = json.loads(temp)
+            self.path_execute(bot['bot1'])
+            image = function.mark_points(self.img, bot['bot1'], 
+                                       self.dest, self.path)
+            cv2.imshow("bot1", image)
+            cv2.waitKey(1)
+        else:
+            pass
 
     # This function will be called when Action Server receives a Goal
     def on_goal(self, goal_handle):       
@@ -126,19 +132,18 @@ class Bot1():
             points.insert(len(points), goal)
             self.path = points
             self.flag = 1
-
+            self.img = cv2.imread("grid/src/grid3/The-Eagle-Eye/swarmrobot/scripts/img.png")
         except Exception as e:
             print(e)
 
     # Function to Monitor Bot
-    def path_execute(self, pos):
+    def path_execute(self, cur):
         """
         This function will excute the path planned and monitor its
         status of operation
         """
         try:
             # Get the position of the bot
-            cur = pos['bot1']
             if self.next == len(self.path)-1:
                 self.done = 2
             if self.next == len(self.angle):

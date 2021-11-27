@@ -14,6 +14,7 @@ This node will do the following :
 """
 ##################            Code V1 - Stage 1                #################
 # Importing Required Modules
+import os
 import cv2
 import math
 import json
@@ -26,7 +27,6 @@ import cv2.aruco as aruco
 from helper import function
 from sensor_msgs.msg import Image
 from heapq import heappush, heappop
-from std_msgs.msg import Int32MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
@@ -51,7 +51,6 @@ class Server():
         self.bridge = CvBridge()
 
         # Creating Variables to store necessary values
-        self.bot_name = ('bot1', 'bot2', 'bot3', 'bot4')
         self.location = ['Mumbai', 'Delhi', 'Kolkata', 
                          'Chennai', 'Bengaluru', 'Hyderabad', 
                          'Pune', 'Ahemdabad', 'Jaipur']
@@ -61,8 +60,6 @@ class Server():
         self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
         self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
 
-        # Global Variables for Graph Creation
-        # self.graph = {}
         self.bot_obs, self.points = [], []
 
         # Global Varibales for Execution
@@ -72,10 +69,6 @@ class Server():
         self.goal, self.goalr, self.pnt = (0, 0), (0, 0), (0, 0)
         self.exec, self.reverse, self.graphc, self.path = 0, 0, 0, 1
 
-        # Publishing Bot Positions
-        self.publisher = rospy.Publisher("/bot_position", Int32MultiArray, 
-                                         queue_size=1)
-        self.msg = Int32MultiArray()
         # Subscribing to the ROS Image topic
         self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback,
                                           queue_size = 1)
@@ -90,7 +83,7 @@ class Server():
         This Function will read the excel sheet and sort 
         induct stations
         """
-        ## Work Needed
+        ## Work Needed ##
         # Send Goal to Action Client
         while True:
             if self.good == 1 and self.Lock == 1:
@@ -117,8 +110,8 @@ class Server():
                 # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
                 # thread.start()
                 # self.algorithm(cv_image)
-                # self.aruco_detect_bot(cv_image)
                 self.good = 1
+                self.image_sub.unregister()
 
             # Execute the arena_config function only one time
             elif self.graphc == 0:
@@ -284,48 +277,6 @@ class Server():
         dest = dict(zip(self.location, pts_ls))
 
         return dest
-
-    # Function to Detect bots using aruco markers
-    def aruco_detect_bot(self, frame):
-        """
-        This Function is to detect the bots in order to guide them.
-        """
-        try:
-            parameters =  cv2.aruco.DetectorParameters_create()
-            # Detect the markers in the image
-            dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-            markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
-            frame = aruco.drawDetectedMarkers(frame, markerCorners)
-
-            converted = np.int_(markerCorners)
-            bot_name, points, cpts, pt = [], [], [], []
-
-            for i in markerIds:
-                name = 'bot' + str(int(i))
-                bot_name.append(name)
-                pts = [converted[0][0][2].tolist(), converted[0][0][0].tolist()]
-                points.append(pts)
-
-            bot = dict(zip(bot_name, points))
-
-            for i in bot:
-                x1 = int((bot[i][0][0]+bot[i][1][0])/2)
-                y1 = int((bot[i][0][1]+bot[i][1][1])/2)
-                pt.append(x1)
-                pt.append(y1)
-                point = (x1, y1)
-                cpts.append(point)
-
-            bot = dict(zip(bot_name, cpts))
-            self.msg.data = pt
-
-            self.publisher.publish(self.msg)
-
-            return frame, bot
-
-        except Exception as e:
-            # print(e)
-            pass
 
     # Function On_Transition
     def on_transition(self, goal_handle):

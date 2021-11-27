@@ -47,13 +47,21 @@ class Detect():
         # Creating msg variable of String Datatype
         self.msg = String()
 
+    # Function for ROS Camera Subscription Callback
     def callback(self,data):
+        """
+        This functions gets all the image published in the subscribed topic and
+        sends the image to the next function to process them
+        """
         try:
+            # Convert img msg to an data readable by cv2 library,
+            # to process them further
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             rospy.logerr(e)
         image = cv_image
 
+        # Detect Bots using Aruco Markers
         self.aruco_detect_bot(image)
 
     def aruco_detect_bot(self, frame):
@@ -64,7 +72,6 @@ class Detect():
             dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
             markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
             frame = aruco.drawDetectedMarkers(frame, markerCorners)
-            print(markerIds, len(markerCorners))
             converted = np.int_(markerCorners)
             bot_name, points, cpts = [], [], []
 
@@ -89,6 +96,23 @@ class Detect():
 
         except Exception as e:
             pass
+
+    # Function to Mark Points on the Image
+    def mark_points(img, start, goal, ls):
+        """
+        Marking Points in the input image
+        Also draw the lines of the path estimated
+        """
+        # Marking the Start Point and Goal point
+        img = cv2.circle(img, start, 2, (255, 0, 0), 8)
+        img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
+        ls.insert(0, start)
+        ls.insert(len(ls), goal)
+        # Marking the Minimized set of goalpoints
+        for point1, point2 in zip(ls, ls[1:]):
+            cv2.line(img, point1, point2, [0, 255, 0], 2)
+
+        return img
 
 def main(args):
   
