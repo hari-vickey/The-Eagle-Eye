@@ -36,14 +36,16 @@ class Detect():
         # Creating a object to CvBridge() class
         self.bridge = CvBridge()
 
-        # Subscribing to the ROS Image topic
-        self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback, 
-                                          queue_size = 1)
-
         # Publishing Bot Positions
         self.publisher = rospy.Publisher("/bot_position", String, 
                                          queue_size=1)
 
+        # Subscribing to the ROS Image topic
+        self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback, 
+                                          queue_size = 1)
+
+        # Subscribing to Data Visualizer
+        self.viz_sub = rospy.Subscriber("/data_visualize", String, self.viz_callback)
         # Creating msg variable of String Datatype
         self.msg = String()
 
@@ -59,10 +61,10 @@ class Detect():
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             rospy.logerr(e)
-        image = cv_image
+        self.image = cv_image
 
         # Detect Bots using Aruco Markers
-        self.aruco_detect_bot(image)
+        self.aruco_detect_bot(self.image)
 
     def aruco_detect_bot(self, frame):
         try:
@@ -97,8 +99,20 @@ class Detect():
         except Exception as e:
             pass
 
+    # Function for Data Visualization Callback
+    def viz_callback(self, data):
+        """
+        This Function gets all the published data visualization messages
+        and process them to show the path
+        """
+        msg = message_converter.convert_ros_message_to_dictionary(data)
+        temp = msg['data']
+        bot = json.loads(temp)
+        for i in bot:
+            self.mark_points(self.image, i[0], i[1], i[2])
+
     # Function to Mark Points on the Image
-    def mark_points(img, start, goal, ls):
+    def mark_points(self, img, start, goal, ls):
         """
         Marking Points in the input image
         Also draw the lines of the path estimated

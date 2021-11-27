@@ -49,9 +49,14 @@ class Bot1():
         self.bridge = CvBridge()
 
         # Defining ROS Publisher
+        # To Communicate with bots
         self.pub = rospy.Publisher("bot1/control_signal", Int16MultiArray, 
-                                   queue_size=1)
-        self.bot = {}
+                                   queue_size=1, tcp_nodelay=True)
+
+        # Defining ROS Publisher
+        # To Visualize Path
+        self.viz = rospy.Publisher("/data_visualize", String, queue_size=1)
+        self.str = String()
         self.msg = Int16MultiArray()
 
         # Subscribing to the ROS String Topic
@@ -74,11 +79,15 @@ class Bot1():
             msg = message_converter.convert_ros_message_to_dictionary(data)
             temp = msg['data']
             bot = json.loads(temp)
-            self.path_execute(bot['bot1'])
-            image = function.mark_points(self.img, bot['bot1'], 
-                                       self.dest, self.path)
-            cv2.imshow("bot1", image)
-            cv2.waitKey(1)
+            pos = bot['bot1']
+            self.path_execute(pos)
+            value = {'bot1': [pos, self.dest, self.path]}
+            self.str = json.dumps(value)
+            self.viz.publish(self.str)
+            # image = function.mark_points(self.img, bot['bot1'], 
+            #                            self.dest, self.path)
+            # cv2.imshow("bot1", image)
+            # cv2.waitKey(1)
         else:
             pass
 
@@ -132,7 +141,7 @@ class Bot1():
             points.insert(len(points), goal)
             self.path = points
             self.flag = 1
-            self.img = cv2.imread("grid/src/grid3/The-Eagle-Eye/swarmrobot/scripts/img.png")
+            # self.img = cv2.imread("grid/src/grid3/The-Eagle-Eye/swarmrobot/scripts/img.png")
         except Exception as e:
             print(e)
 
@@ -215,7 +224,7 @@ def main():
     This is the start of execution of this node
     """
     # Initializing the Node
-    rospy.init_node('node_server', anonymous=True)
+    rospy.init_node('node_bot_1', anonymous=True)
 
     # Creating Object for the Class Bot1
     bot1 = Bot1()
