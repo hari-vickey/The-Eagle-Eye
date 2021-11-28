@@ -8,9 +8,10 @@ which can be utilized by multiple Nodes
 
 # Importing Required Packages
 import sys
+import cv2
 import time
 import math
-import cv2
+import pickle
 import numpy as np
 from heapq import heappush, heappop
 from multiprocessing.dummy import Pool
@@ -25,6 +26,7 @@ def init_graph(height, width):
     in the size of the input image
     """
     global graph
+
     for i in range(width):
         for j in range(height):
             graph[(i,j)] = {'visited':False, 'distance':np.inf, 'valid':True, 'parent': (0, 0), 'id':'blank'}
@@ -36,6 +38,7 @@ def render_graph(pt1, pt2):
     also generates the obstacle map and path map
     """
     global graph
+
     clearance = 20
     radius = 20
 
@@ -48,14 +51,6 @@ def render_graph(pt1, pt2):
                 if graph[(i,j)]['id'] != 'obs':
                     graph[(i,j)]['valid'] = False
                     graph[(i,j)]['id'] = 'aug'
-
-# Function to return Graph
-def return_graph():
-    """
-    This Function will return the global Graph
-    """
-    global graph
-    return graph
 
 # Function for Custom Path Planning
 def path_plan_custom(start, end):
@@ -79,34 +74,103 @@ def path_plan_custom(start, end):
 
     return way_point
 
+# Function to write Graph
+def write_graph():
+    """
+    This function will write graph, so that 
+    other nodes can access the graph values
+    """
+    global graph
+    # opening file in write mode (binary)
+    file = open("graph.txt", "wb")
+
+    # serializing dictionary 
+    pickle.dump(graph, file)
+      
+    # closing the file
+    file.close()
+
+# Function to read_Graph
+def read_graph():
+    """
+    This Function will read graph from graph.txt file using
+    pickle module to return it 
+    """
+    # reading the data from the file
+    with open('graph.txt', 'rb') as handle:
+        data = handle.read()
+
+    # reconstructing the data as dictionary
+    graph = pickle.loads(data)
+
+    return graph
+
+# Function to write Location
+def write_location(location):
+    """
+    This function will write graph, so that 
+    other nodes can access the graph values
+    """
+    # opening file in write mode (binary)
+    file = open("location.txt", "wb")
+
+    # serializing dictionary 
+    pickle.dump(location, file)
+      
+    # closing the file
+    file.close()
+
+# Function to read Location
+def read_location():
+    """
+    This Function will read graph from graph.txt file using
+    pickle module to return it 
+    """
+    # reading the data from the file
+    with open('location.txt', 'rb') as handle:
+        data = handle.read()
+
+    # reconstructing the data as dictionary
+    location = pickle.loads(data)
+
+    return location
+
 # Function to plan a Path
-def path_plan(start, goal):
+def path_plan(graph, start, goal):
     """
     This function will generate the custom path using the
     start and end points
     """
-    global graph
     dif_1 = abs(start[0]-goal[0])
     dif_2 = abs(start[1]-goal[1])
 
     # If the Difference between two points is less than 50
     # Then, No waypoints needed
-    if dif_1 <= 80 or dif_2 <= 80:
+    if dif_1 <= 100 or dif_2 <= 100:
+        print("Computing way Points")
         path = [start, goal]
         re = path
     else:
         # Calling Astar Algorithm to compute the shortest path
+        print("Applying A star Algorithm")
         _, path = astar(graph, start, goal)
         path = np.array(path)
+        print("Path Computed")
         # Reducing No of way Points from the above list
+        print("Reducing No of way Points")
         re = reduce_points(path, start, goal)
         re.reverse()
 
     # Defining Constant
     k=1
     # Calculating Necessary Angles to reach Waypoint
+    print("Calculating Angles")
     reps, angs = calc_angle(re)
+    print("Angles Obtained")
+    print(angs)
 
+    print("Reduced Points")
+    print(reps)
     # Removing Start and Goal Points from the waypoint list
     del reps[0], reps[len(reps)-1]
 
@@ -152,10 +216,8 @@ def calc_angle(points):
     This Function will calculate angle between two adjacent points
     from the reduced no of points to turn the bot
     """
-    ## Problem here
-    ## Cumulative angle needed
     l, t = 0, 0
-    temp_ls, ang_ls, red_ls = [], [], []
+    temp_ls, ang_ls, red_ls, pt_ls = [], [], [], []
     for i in range(len(points)-1):
         a = abs(points[i][1]-points[i+1][1])
         b = abs(points[i][0]-points[i+1][0])
@@ -167,13 +229,17 @@ def calc_angle(points):
         t = red_ls[l]
         l += 1
 
-    # red_ls = points
     for i in temp_ls:
         if i in range (-3, 3):
             continue
         ang_ls.append(i)
 
-    return points, ang_ls
+    for i in range(len(points)):
+        x = int(points[i][0])
+        y = int(points[i][1])
+        pt_ls.append((x, y))
+
+    return pt_ls, ang_ls
 
 # Function For A-star Algorithm
 def astar(graph, source, goal):
@@ -233,7 +299,7 @@ def astar(graph, source, goal):
         parent = temp[path[len(path)-1]]['parent']
         path.append(parent)
     min_distance = (temp[(goal_x,goal_y)]['distance'])
-    
+
     return(min_distance, path)
 
 # Function to calculate distance

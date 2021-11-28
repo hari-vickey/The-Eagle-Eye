@@ -12,6 +12,7 @@ ROS Subscriber - /incoming_goal
 import cv2
 import json
 import rospy
+import client
 import actionlib
 import numpy as np
 from helper import function
@@ -42,7 +43,7 @@ class Bot1():
         # Defining Variables for this Class
         self.flag, self.next, self.done, self.indstn = 0, 0, 0, 0
         self.start, self.dest = (0, 0), (0, 0)
-        self.path, self.angle, self.points = [], [], []
+        self.path, self.angle, self.points, self.pt = [], [], [], []
         # self.pos = {}
 
         # Creating a object to CvBridge() class
@@ -75,21 +76,21 @@ class Bot1():
         This Function gets all the published bot position as String and 
         convert the data to dictionary for processing.
         """
-        if self.flag == 1:
-            msg = message_converter.convert_ros_message_to_dictionary(data)
-            temp = msg['data']
-            bot = json.loads(temp)
-            pos = bot['bot1']
-            self.path_execute(pos)
-            value = {'bot1': [pos, self.dest, self.path]}
-            self.str = json.dumps(value)
-            self.viz.publish(self.str)
-            # image = function.mark_points(self.img, bot['bot1'], 
-            #                            self.dest, self.path)
-            # cv2.imshow("bot1", image)
-            # cv2.waitKey(1)
-        else:
-            pass
+        try:
+            if self.flag == 1:
+                msg = message_converter.convert_ros_message_to_dictionary(data)
+                temp = msg['data']
+                bot = json.loads(temp)
+                pos = bot['bot1']
+                self.path_execute(pos)
+                value = {'bot1': [pos, self.dest, self.path]}
+                print(value)
+                msg = json.dumps(value)
+                self.viz.publish(msg)
+            else:
+                pass
+        except Exception as e:
+            print(e)
 
     # This function will be called when Action Server receives a Goal
     def on_goal(self, goal_handle):       
@@ -123,8 +124,11 @@ class Bot1():
                     result = msgBot1Result()
                     result.flag = True
                     goal_handle.set_succeeded(result)
+                    if self.done == 2:
+                        break
 
         except:
+            print(e)
             goal_handle.set_rejected()
 
     # Function to process
@@ -134,15 +138,21 @@ class Bot1():
         the bot
         """
         try:
-            points, self.angle = function.path_plan(start, goal)
-
+            graph = function.read_graph()
+            points, self.angle = function.path_plan(graph, start, goal)
             # Add Start and Goal to the path List
-            points.insert(0, start)
-            points.insert(len(points), goal)
+            # print(points)
+            if len(points) == 0:
+                points.append(start)
+                points.append(goal)
+            else:
+                points.insert(0, start)
+                points.insert(len(points), goal)
             self.path = points
+            # print(self.next, len(self.path), self.path)
             self.flag = 1
-            # self.img = cv2.imread("grid/src/grid3/The-Eagle-Eye/swarmrobot/scripts/img.png")
         except Exception as e:
+            print("processing")
             print(e)
 
     # Function to Monitor Bot
@@ -155,7 +165,7 @@ class Bot1():
             # Get the position of the bot
             if self.next == len(self.path)-1:
                 self.done = 2
-            if self.next == len(self.angle):
+            if self.next == len(self.angle) and self.done != 2:
                 self.goal = self.path[self.next+1]
                 self.done = 1
 
@@ -191,8 +201,8 @@ class Bot1():
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[0] in range(self.goal[0]-5, self.goal[0]+5):
-                    if cur[1] in range(self.goal[1]-5, self.goal[1]+5):
+                if cur[0] in range(self.goal[0]-15, self.goal[0]+15):
+                    if cur[1] in range(self.goal[1]-15, self.goal[1]+15):
                         print("Stop")
                         self.msg.data = [0, 0, 0]
                         self.next += 1
@@ -204,6 +214,7 @@ class Bot1():
                 self.pub.publish(self.msg)
 
             elif self.done == 2:
+                print("self.done is 2")
                 self.done = 0
                 self.flag = 2
 

@@ -130,12 +130,12 @@ frame, inductzone = aruco_detect_inductpoint(frame)
 print('\033[93m' + "Induct Zone Aruco Markers Detected" + '\033[93m')
 print(inductzone)
 
-# start = inductzone[1]
-# goal = closest_point(destination['Jaipur'], start)
-# path, angle = function.path_plan(graph, start, goal)
-# frame = function.mark_points(frame, start, goal, path)
-# print(path)
-# print(angle)
+start = inductzone[1]
+goal = closest_point(destination['Jaipur'], start)
+path, angle = function.path_plan(start, goal)
+frame = function.mark_points(frame, start, goal, path)
+print(path)
+print(angle)
 
 # start = inductzone[2]
 # goal = closest_point(destination['Delhi'], start)

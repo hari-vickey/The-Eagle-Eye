@@ -15,7 +15,6 @@ This node will do the following :
 ##################            Code V1 - Stage 1                #################
 # Importing Required Modules
 import os
-import cv2
 import math
 import json
 import rospy
@@ -23,15 +22,14 @@ import actionlib
 import threading
 import numpy as np
 import pandas as pd
-import cv2.aruco as aruco
 from helper import function
 from sensor_msgs.msg import Image
 from heapq import heappush, heappop
 from cv_bridge import CvBridge, CvBridgeError
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
-# Class Server
-class Server():
+# Class Client
+class Client():
 
     """
     This class has all the required functions to complete the task as
@@ -47,34 +45,22 @@ class Server():
         # Dictionary to Store all the goal handels
         self._goal_handles = {}
 
-        # Creating a object to CvBridge() class
-        self.bridge = CvBridge()
-
-        # Creating Variables to store necessary values
-        self.location = ['Mumbai', 'Delhi', 'Kolkata', 
-                         'Chennai', 'Bengaluru', 'Hyderabad', 
-                         'Pune', 'Ahemdabad', 'Jaipur']
-
-        # Global Varibales for Aruco Marker Detections
-        self.destination, self.inductzone = {}, {}
-        self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
-        self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
-
         self.bot_obs, self.points = [], []
 
         # Global Varibales for Execution
-        self.good, self.Lock = 0, 1
+        self.Lock = 1
         self.n, self.rotate = 0, 0
         self.flag1, self.flag2, self.flag3 = 0, 0, 0
         self.goal, self.goalr, self.pnt = (0, 0), (0, 0), (0, 0)
         self.exec, self.reverse, self.graphc, self.path = 0, 0, 0, 1
 
-        # Subscribing to the ROS Image topic
-        self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback,
-                                          queue_size = 1)
         # Wait for UR5_2 Action Server
         self._ac1.wait_for_server()
         print("Action Server Up")
+        print("waiting for Aruco Markers Detection")
+        # rospy.sleep(3)
+        self.location = function.read_location()
+        print(self.location)
         self.read_sheet()
 
     # Function to read Excel Sheet
@@ -85,198 +71,26 @@ class Server():
         """
         ## Work Needed ##
         # Send Goal to Action Client
-        while True:
-            if self.good == 1 and self.Lock == 1:
-                self.Lock = 0
-                start = self.inductzone[1]
-                goal = self.closest_point(self.destination['Hyderabad'], start)
-                # print(start, goal)
-                self._goal_handles[0] = self.send_goal_1(1, start[0]-60, start[1], 
-                                                         goal[0], goal[1])
+        # Threaded the algorithm function to process real time images
+        # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
+        # thread.start()
+        # self.algorithm(cv_image)
+        start = (self.location[2][0], self.location[2][1])
+        goal = self.closest_point(self.location['Kolkata'], start)
+        print(start, goal)
+        self._goal_handles[0] = self.send_goal_1(1, start[0]-60, 
+                                                 start[1], goal[0], 
+                                                 goal[1])
 
-    # Function for ROS Camera Subscription Callback
-    def callback(self, data):
-        """
-        This functions gets all the image published in the subscribed topic and
-        sends the image to the next function to process them
-        """
-        try:
-            # Convert img msg to an data readable by cv2 library,
-            # to process them further
-            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-
-            if self.aruco1 == 1 and self.aruco2 == 1 and self.graphc == 1:
-                # Threaded the algorithm function to process real time images
-                # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
-                # thread.start()
-                # self.algorithm(cv_image)
-                self.good = 1
-                self.image_sub.unregister()
-
-            # Execute the arena_config function only one time
-            elif self.graphc == 0:
-                self.arena_config(cv_image)
-
-            # Execute the aruco_detection_destination untill it detects,
-            # all the destination points
-            elif self.aruco1 == 0:
-                self.aruco_detect_inductpoint(cv_image)
-
-            # Execute the aruco_detection_inductstation untill it detects,
-            # all the inductstation points
-            elif self.aruco2 == 0:
-                self.aruco_detect_destination(cv_image)
-
-        except Exception as e:
-            # print(e)
-            pass
-
-    # Function to have spatial awareness of the arena
-    def arena_config(self, image):
-        """
-        This function defines the bot radius and calls the next function to
-        create the arena as graph and generates the points of the obstacle
-        """
-        radius, clearance = 0, 0
-        height, width, _ = image.shape
-        function.init_graph(height, width)
-        self.graphc = 1
-        print("Completed Basic Graph Plotting")
-
-    # Function to detect aruco Markers of Induct Station Points
-    def aruco_detect_inductpoint(self, frame):
-        try:
-            self.ind1 = 0
-            parameters =  cv2.aruco.DetectorParameters_create()
-            # Detect the Induct Point markers in the image
-            dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
-            markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
-
-            for i in markerIds:
-                try:
-                    self.temp1.index(i)
-                    self.ind1 += 1
-
-                except ValueError:
-                    temp = int(i)
-                    self.temp1.append(temp)
-                    self.temp2.append(markerCorners[self.ind1].tolist())
-                    self.ind1 += 1
-
-            if len(self.temp1) == 2:
-                self.inductzone = self.extract_induct_point(self.temp1, self.temp2)
-
-                print('\033[93m' + "Induct Zone Aruco Markers Detected" + '\033[93m')
-                print(self.inductzone)
-
-                self.aruco1 = 1
-
-        except Exception as e:
-            pass
-
-    # Function to Extract Induct Points
-    def extract_induct_point(self, ids, bbox):
-        """
-        Extract the induct points from the list and convert
-        it to dictionary and returns it.
-        """
-        l_ind = 0
-        temp_ls, dest_ls = [], []
-
-        for i in ids:
-            name = int(i)
-            cen_x = int((bbox[l_ind][0][0][0] + bbox[l_ind][0][2][0])/2)
-            cen_y = int((bbox[l_ind][0][0][1] + bbox[l_ind][0][2][1])/2)
-            ctp = (cen_x, cen_y)
-            temp_ls.append(ctp)
-            dest_ls.append(name)
-            l_ind += 1
-
-        dest = dict(zip(dest_ls, temp_ls))
-
-        return dest
-
-    # Function to detect aruco Markers of Destination Points
-    def aruco_detect_destination(self, frame):
-        """
-        This Function is responsible to detect all the destination markers
-        to identify all possible location around the chute.
-        """
-        try:
-            self.ind2 = 0
-            parameters =  cv2.aruco.DetectorParameters_create()
-
-            # Detect the markers in the image
-            dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_250)
-            markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
-
-            for i in markerIds:
-                indices = [j for j, x in enumerate(self.temp1) if x == i]
-                if len(indices) == 1:
-                    temp = int(i)
-                    self.temp3.append(temp)
-                    self.temp4.append(markerCorners[self.ind2])
-                elif len(indices) == 0:
-                    temp = int(i)
-                    self.temp3.append(temp)
-                    self.temp4.append(markerCorners[self.ind2])
-                self.ind2 += 1
-
-            if len(self.temp3) == 18:
-                self.destination = self.extract_goal_point(self.temp3, self.temp4)
-                print('\033[92m' + "Destination Markers Detected" + '\033[92m')
-                print(self.destination)
-                print('\033[0m')
-                self.aruco2 = 1
-
-        except:
-            pass
-
-    # Function to Extract Goal Points
-    def extract_goal_point(self, ids, bbox):
-        """
-        This function will extract the co-ords of the goal point and
-        returns a dictionary
-        """
-        ind = 0
-        ids_ls, cor_ls = [], []
-        temp_ls, sum_ls, pts_ls = [], [], []
-
-        for i in ids:
-            ids_ls.append(ids[ind])
-            t = bbox[ind].tolist()
-            cor_ls.append(t[0])
-            ind += 1
-
-        for k in range(1, 10):
-            indices = [i for i, x in enumerate(ids_ls) if x == k]
-            for l in indices:
-                sum_ls = sum_ls + cor_ls[l]
-            temp_ls.append(sum_ls)
-            sum_ls = []
-
-        for i in range(0,9):
-            x1 = int((temp_ls[i][0][0] + temp_ls[i][2][0])/2)
-            y1 = int((temp_ls[i][0][1] + temp_ls[i][2][1])/2)
-            x2 = int((temp_ls[i][4][0] + temp_ls[i][6][0])/2)
-            y2 = int((temp_ls[i][4][1] + temp_ls[i][6][1])/2)
-
-            if (y1<y2):
-                x1, x2 = x2, x1
-                y1, y2 = y2, y1
-
-            d1 = (x1, y1)
-            d2 = (x2, y2)
-            i1 = (x1, y2)
-            i2 = (x2, y1)
-
-            function.render_graph((x1+25, y1-25), (x2-25, y2+25))
-            pts = [d1, d2, i1, i2]
-            pts_ls.append(pts)
-
-        dest = dict(zip(self.location, pts_ls))
-
-        return dest
+        # for i in self.location:
+        #     if str(i) == "2" or str(i) == "1":
+        #         continue
+        #     start = (self.location[1][0], self.location[1][1])
+        #     goal = self.closest_point(self.location[i], start)
+        #     print(start, goal)
+        #     self._goal_handles[0] = self.send_goal_1(1, start[0]-60, 
+        #                                              start[1], goal[0], 
+        #                                              goal[1])
 
     # Function On_Transition
     def on_transition(self, goal_handle):
@@ -325,7 +139,9 @@ class Server():
         goal.induct_y = args[2]
         goal.goal_x = args[3]
         goal.goal_y = args[4]
-        rospy.loginfo("Send goal.")
+        rospy.loginfo("Goal Sent")
+        print("Induct Station - " + str(args[0]))
+        print("Goal Point - " + str(args[3]) + str(args[4]))
         # self.on_transition - It is a function pointer to a function,
         # which will be called when there is a change of state in the 
         # Action Client State Machine
@@ -522,8 +338,8 @@ def main():
     # Initializing the Node
     rospy.init_node('node_server', anonymous=True)
 
-    # Creating Object for the Class Server
-    ser = Server()
+    # Creating Object for the Class Client
+    cli = Client()
 
     try:
         # Spinning the Main Function
@@ -533,7 +349,7 @@ def main():
         rospy.loginfo("Shutting down")
 
         # Deleting the Created Object if Interrupted
-        del ser
+        del cli
 
         # Destroying all the cv2 Windows Created
         cv2.destroyAllWindows()
