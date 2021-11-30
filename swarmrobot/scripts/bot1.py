@@ -56,7 +56,8 @@ class Bot1():
 
         # Defining ROS Publisher
         # To Visualize Path
-        self.viz = rospy.Publisher("/data_visualize", String, queue_size=1)
+        self.viz = rospy.Publisher("/data_visualize", String, latch=True,
+                                   queue_size=4)
         self.str = String()
         self.msg = Int16MultiArray()
 
@@ -90,6 +91,7 @@ class Bot1():
             else:
                 pass
         except Exception as e:
+            print("Exception in Position Callback Function")
             print(e)
 
     # This function will be called when Action Server receives a Goal
@@ -128,6 +130,7 @@ class Bot1():
                         break
 
         except:
+            print("Exception in On Goal Function")
             print(e)
             goal_handle.set_rejected()
 
@@ -152,7 +155,7 @@ class Bot1():
             # print(self.next, len(self.path), self.path)
             self.flag = 1
         except Exception as e:
-            print("processing")
+            print("Exception in Process Goal Function")
             print(e)
 
     # Function to Monitor Bot
@@ -205,21 +208,52 @@ class Bot1():
                     if cur[1] in range(self.goal[1]-15, self.goal[1]+15):
                         print("Stop")
                         self.msg.data = [0, 0, 0]
+                        print("Actuating Servo")
+                        self.servo_actuate()
                         self.next += 1
                         self.done = 0
                 else:
+                    angle = function.dynamic_angle(cur, self.goal)
                     print("Move Forward")
-                    self.msg.data = [1, 0, 0]
+                    self.msg.data = [1, angle, 0]
                     
                 self.pub.publish(self.msg)
 
-            elif self.done == 2:
-                print("self.done is 2")
+            elif self.done == 2 and self.reverse == -1:
+                print("Reverse Path is tracking")
+                self.reverse == 0
+                self.done= 0
+                self.process_goal(cur, self.dest)
+            elif self.done == 2 and self.reverse == 0:
+                print("Bot has returned to Induct zone")
                 self.done = 0
                 self.flag = 2
 
         except Exception as e:
+            print("Exception in Path Execute Function")
             print(e)
+
+    # Function to Actuate Servo
+    def actuate_servo(self):
+        """
+        This function will publish signals to the bot 
+        to actuate the servo
+        1 - 180 degree
+        0 - 0 degree
+        """
+        # Actuate Servo to 180 degree
+        print("Actuate Servo to 180 Degree")
+        self.msg.data = [0, 0, 1]
+        self.pub.publish(self.msg)
+
+        # Sleep For 2 Seconds
+        # So, that the package falls from the bot
+        rospy.sleep(2)
+
+        # Revert the Servo to Normal Position
+        print("Actuate Servo to 0 Degree")
+        self.msg.data = [0, 0, 0]
+        self.pub.publish(self.msg)        
 
     # Function to Cancel Incoming Goal
     def on_cancel(self, goal_handle):
