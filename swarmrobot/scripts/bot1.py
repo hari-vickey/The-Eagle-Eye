@@ -41,10 +41,10 @@ class Bot1():
             receives a Cancel Request.
         '''
         # Defining Variables for this Class
+        self.reverse = 0
         self.flag, self.next, self.done, self.indstn = 0, 0, 0, 0
         self.start, self.dest = (0, 0), (0, 0)
         self.path, self.angle, self.points, self.pt = [], [], [], []
-        # self.pos = {}
 
         # Creating a object to CvBridge() class
         self.bridge = CvBridge()
@@ -85,7 +85,7 @@ class Bot1():
                 pos = bot['bot1']
                 self.path_execute(pos)
                 value = {'bot1': [pos, self.dest, self.path]}
-                print(value)
+                # print(value)
                 msg = json.dumps(value)
                 self.viz.publish(msg)
             else:
@@ -144,13 +144,16 @@ class Bot1():
             graph = function.read_graph()
             points, self.angle = function.path_plan(graph, start, goal)
             # Add Start and Goal to the path List
-            # print(points)
+            print(points)
             if len(points) == 0:
                 points.append(start)
                 points.append(goal)
             else:
+                print("Here1")
                 points.insert(0, start)
                 points.insert(len(points), goal)
+            print("Here")
+            self.start = start
             self.path = points
             # print(self.next, len(self.path), self.path)
             self.flag = 1
@@ -178,9 +181,9 @@ class Bot1():
             if self.done == 0:
                 # If next value is equal to the length of the
                 # path or angle list, then skip the statements.
+                self.goal = self.path[self.next+1]
+                ang = self.angle[self.next]
                 if self.indstn == 1:
-                    self.goal = self.path[self.next+1]
-                    ang = self.angle[self.next]
                     if ang > 0:
                         print("Rotate ClockWise")
                         direct = 2
@@ -196,6 +199,12 @@ class Bot1():
                         print("Rotate ClockWise")
                         direct = 2
 
+                if self.reverse == 1:
+                    if direct == 2:
+                        direct = 3
+                    else:
+                        direct = 2
+
                 self.msg.data = [direct, ang, 0]
                 self.pub.publish(self.msg)
                 self.done = 1
@@ -208,26 +217,26 @@ class Bot1():
                     if cur[1] in range(self.goal[1]-15, self.goal[1]+15):
                         print("Stop")
                         self.msg.data = [0, 0, 0]
-                        print("Actuating Servo")
-                        self.servo_actuate()
                         self.next += 1
                         self.done = 0
                 else:
                     angle = function.dynamic_angle(cur, self.goal)
-                    print("Move Forward")
+                    # print("Move Forward")
+                    # print(angle)
                     self.msg.data = [1, angle, 0]
                     
                 self.pub.publish(self.msg)
 
-            elif self.done == 2 and self.reverse == -1:
-                print("Reverse Path is tracking")
-                self.reverse == 0
-                self.done= 0
-                self.process_goal(cur, self.dest)
             elif self.done == 2 and self.reverse == 0:
+                print("Actuating Servo")
+                self.actuate_servo()
+                print("Reverse Path is tracking")
+                self.done, self.next, self.reverse = 0, 0, 1
+                self.process_goal(self.dest, self.start)
+            elif self.done == 2:
                 print("Bot has returned to Induct zone")
-                self.done = 0
-                self.flag = 2
+                self.done, self.next, self.flag = 0, 0, 2
+                self.reverse = 0
 
         except Exception as e:
             print("Exception in Path Execute Function")

@@ -250,9 +250,8 @@ def dynamic_angle(current, way_point):
     s = abs(current[1] - way_point[1])
     r = abs(current[0] - way_point[0])
     rad =math.atan(s/r)
-    d = rad*(180/(math.pi))
-    deg = (d - t)
-    if d < 5:
+    deg = rad*(180/(math.pi))
+    if deg < 15:
         return 0
     else:
         return deg

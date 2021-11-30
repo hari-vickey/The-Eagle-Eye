@@ -75,8 +75,8 @@ class Client():
         # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
         # thread.start()
         # self.algorithm(cv_image)
-        start = (self.location[2][0], self.location[2][1])
-        goal = self.closest_point(self.location['Kolkata'], start)
+        start = (self.location[1][0], self.location[1][1])
+        goal = self.closest_point(self.location['Jaipur'], start)
         print(start, goal)
         self._goal_handles[0] = self.send_goal_1(1, start[0]-60, 
                                                  start[1], goal[0], 
