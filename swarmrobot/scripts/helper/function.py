@@ -241,6 +241,22 @@ def calc_angle(points):
 
     return pt_ls, ang_ls
 
+# Function for Dynamic angle calculation
+def dynamic_angle(current, way_point):
+    """
+    This function will calculate the dynamic angle for getting the instantaneous angle
+    at any time
+    """
+    s = abs(current[1] - way_point[1])
+    r = abs(current[0] - way_point[0])
+    rad =math.atan(s/r)
+    d = rad*(180/(math.pi))
+    deg = (d - t)
+    if d < 5:
+        return 0
+    else:
+        return deg
+
 # Function For A-star Algorithm
 def astar(graph, source, goal):
     """
