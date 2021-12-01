@@ -30,11 +30,11 @@ try:
         angle = int(input(" Enter Angle : "))
         servo = int(input("Enter Servo : "))
         if direct == 1:
-            for i in range(0, 10):
-                msg.data = [direct, angle, servo]
-                pubs.publish(msg)
-            msg.data = [0, 0, 0]
+            # for i in range(0, 30):
+            msg.data = [direct, angle, servo]
             pubs.publish(msg)
+            # msg.data = [0, 0, 0]
+            # pubs.publish(msg)
         else:
             msg.data = [direct, angle, servo]
             pubs.publish(msg)

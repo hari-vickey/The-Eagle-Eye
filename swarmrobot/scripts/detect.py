@@ -123,16 +123,18 @@ class Detect():
             parameters =  cv2.aruco.DetectorParameters_create()
             # Detect the markers in the image
             dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-            markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
+            markerCorners, markerIds, _ = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
             frame = aruco.drawDetectedMarkers(frame, markerCorners)
             converted = np.int_(markerCorners)
             bot_name, points, cpts = [], [], []
+            l = 0
 
             for i in markerIds:
                 name = 'bot' + str(int(i))
                 bot_name.append(name)
-                pts = [converted[0][0][2].tolist(), converted[0][0][0].tolist()]
+                pts = [converted[l][0][2].tolist(), converted[l][0][0].tolist()]
                 points.append(pts)
+                l += 1
 
             bot = dict(zip(bot_name, points))
 
