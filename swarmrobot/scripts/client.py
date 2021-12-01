@@ -75,10 +75,10 @@ class Client():
         # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
         # thread.start()
         # self.algorithm(cv_image)
-        start = (self.location[1][0], self.location[1][1])
-        goal = self.closest_point(self.location['Jaipur'], start)
+        start = (self.location[2][0], self.location[2][1])
+        goal = self.closest_point(self.location['Pune'], start)
         print(start, goal)
-        self._goal_handles[0] = self.send_goal_1(1, start[0]-60, 
+        self._goal_handles[0] = self.send_goal_1(2, start[0]-60, 
                                                  start[1], goal[0], 
                                                  goal[1])
 
@@ -141,7 +141,7 @@ class Client():
         goal.goal_y = args[4]
         rospy.loginfo("Goal Sent")
         print("Induct Station - " + str(args[0]))
-        print("Goal Point - " + str(args[3]) + str(args[4]))
+        print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")
         # self.on_transition - It is a function pointer to a function,
         # which will be called when there is a change of state in the 
         # Action Client State Machine
@@ -194,137 +194,6 @@ class Client():
             flag = 1
 
         return flag
-
-    # Function to Publish direction command
-    def publish_command_direction(self, bot, goal, cur):
-        """
-        This function will publish command as direction forward
-        based on certain goal commands
-        """
-        #Creating ROS Publisher
-        direction = rospy.Publisher('/direction_control', Int16, queue_size=1)
-        direct = Int16()
-
-        # Declaring Variables with Initial Value
-        x_follow, y_follow, rotate, value = 0, 0, 0, 1
-
-        # Choosing the Axis to make the bot to follow in one direction
-        # This is done by comparing the current position with goal position
-        if cur[0] in range((goal[0]-30), (goal[0]+30)):
-            y_follow = 1
-            # On condition of the following axis
-            # Subtracting x co-ordinates of the bot with goal,
-            # To get the direction of rotatation of the bot
-            # If angle is positive then rotate clockwise
-            # else rotate anti-clockwise
-            value = cur[0] - self.goal[0]
-
-        elif cur[1] in range((goal[1]-30), (goal[1]+30)):
-            x_follow = 1
-            # On condition of the following axis
-            # Subtracting y co-ordinates of the bot with goal,
-            # To get the direction of rotatation of the bot
-            # If angle is positive then rotate anti-clockwise
-            # else rotate clockwise
-            value = self.goal[1] - cur[1]
-
-        # Vertical Movement
-        # Comparing the current y co-ordinates of the bot with goal
-        # If the current position is in the range of the goal position or
-        # withing the limit then, Stopping the Bot
-        # Note: Value=30 is the tolerance added to compensate the tf delay
-        if cur[1] in range((goal[1]-30), (goal[1]+30)) and y_follow == 1:
-            direct = 4
-            direction.publish(direct)
-            rotate = 1
-
-        # If the bot is not in the range of the goal
-        # then Bot is moved forward
-        # Note: Value=30 is the tolerance added to compensate the tf delay
-        elif cur[1] not in range((goal[1]-30), (goal[1]+30)) and y_follow == 1:
-            direct = 1
-            direction.publish(direct)
-
-        # Horizontal Movement
-        # Comparing the current x co-ordinates of the bot with goal
-        # If the current position is in the range of the goal position or
-        # withing the limit then, Stopping the Bot
-        # Note: Value=30 is the tolerance added to compensate the tf delay
-        if cur[0] in range((goal[0]-30), (goal[0]+30)) and x_follow == 1:
-            direct = 4
-            direction.publish(direct)
-            rotate = 1
-
-        # If the bot is not in the range of the goal
-        # then Bot is moved forward
-        # Note: Value=30 is the tolerance added to compensate the tf delay
-        elif cur[0] not in range((goal[0]-30), (goal[0]+30)) and x_follow == 1:
-            direct = 1
-            direction.publish(direct)
-
-        self.publish_command_rotation(bot, value, rotate)
-
-    # Function to publish rotational command
-    def publish_command_rotation(self, bot, val, rot):
-        """
-        This functions get the angle and publish the commands to
-        rotate the bot accordingly
-        """
-        ##
-
-        # Need to Work in this Function
-
-        ##
-
-        # Creating a ROS Publisher
-        direction = rospy.Publisher('/direction_control', Twist, queue_size=1)
-        direct = Int16()
-
-        # Defining Constants
-        angular_speed = 1
-
-        # If the value is less than 0, then rotate clockwise
-        # else rotate anti-clockwise
-        if val<=0:
-            # Work Here
-            i = 1
-        else:
-            # Work Here
-            i = 0
-
-        # If rotate is made to 1 then rotate the bot
-        # Based On the path that the bot is executing
-        # added +55 degree because the base link,
-        # Not at exact center of the bot
-        if rot == 1:
-            if self.path == 1:
-                angle = 180
-                self.path = 2
-            elif self.path == 2 and self.rotate == 0:
-                self.actuate_servo(bot)
-                angle = 360
-                self.exec, self.path, self.reverse = 0, 1, 2
-                self.rotate = 1
-
-    # Function to actuate servo motor
-    def actuate_servo(self, bot):
-
-        # Creating a ROS Publisher
-        servo = rospy.Publisher('/servo_control', Int16, queue_size=1)
-        servo = Int16()
-
-        # Defining angle for servo actuatuion,
-        # To drop the package from bot
-        servo = 1
-        pub1.publish(servo)
-
-        # Wait till the package is dropped
-        rospy.sleep(2)
-
-        # Defined angle as 180 to actuate the
-        # servo back to initial position
-        servo = 0
-        pub1.publish(servo)
 
     # Destructor of the Class
     def __del__(self):

@@ -41,8 +41,8 @@ class Bot1():
             receives a Cancel Request.
         '''
         # Defining Variables for this Class
-        self.reverse = 0
-        self.flag, self.next, self.done, self.indstn = 0, 0, 0, 0
+        self.reverse = False
+        self.flag, self.next, self.ang, self.done, self.indstn = 0, 0, 0, 0, 0
         self.start, self.dest = (0, 0), (0, 0)
         self.path, self.angle, self.points, self.pt = [], [], [], []
 
@@ -66,6 +66,26 @@ class Bot1():
                                            self.pos_callback, 
                                            queue_size=1)
 
+        print("Getting Into Induct Station")
+        self.msg.data = [1, 0, 0]
+        self.pub.publish(self.msg)
+        rospy.sleep(1)
+        self.msg.data = [3, 90, 0]
+        self.pub.publish(self.msg)
+        self.msg.data = [4, 0, 0]
+        self.pub.publish(self.msg)
+        rospy.sleep(1)
+        print("Induct Station Reached")
+        print("Waiting For Package")
+        self.msg.data = [0, 0, 0]
+        self.pub.publish(self.msg)
+        rospy.sleep(1)
+        print("Package Obtained")
+        self.msg.data = [1, 0, 0]
+        self.pub.publish(self.msg)
+        rospy.sleep(1)
+        self.msg.data = [0, 0, 0]
+        self.pub.publish(self.msg)
         # Start the Action Server
         self._as.start()
 
@@ -149,10 +169,9 @@ class Bot1():
                 points.append(start)
                 points.append(goal)
             else:
-                print("Here1")
                 points.insert(0, start)
                 points.insert(len(points), goal)
-            print("Here")
+
             self.start = start
             self.path = points
             # print(self.next, len(self.path), self.path)
@@ -174,6 +193,10 @@ class Bot1():
             if self.next == len(self.angle) and self.done != 2:
                 self.goal = self.path[self.next+1]
                 self.done = 1
+                if len(self.angle) == 0:
+                    self.ang = 0
+                else:
+                    self.ang = self.angle[-1]
 
             # self.goal = self.dest
             # print(self.goal)
@@ -183,28 +206,8 @@ class Bot1():
                 # path or angle list, then skip the statements.
                 self.goal = self.path[self.next+1]
                 ang = self.angle[self.next]
-                if self.indstn == 1:
-                    if ang > 0:
-                        print("Rotate ClockWise")
-                        direct = 2
-                    else:
-                        print("Rotate AntiClockWise")
-                        direct = 3
-
-                elif self.indstn == 2:
-                    if ang > 0:
-                        print("Rotate AntiClockWise")
-                        direct = 3
-                    else:
-                        print("Rotate ClockWise")
-                        direct = 2
-
-                if self.reverse == 1:
-                    if direct == 2:
-                        direct = 3
-                    else:
-                        direct = 2
-
+                direct = function.rotate_direction(self.indstn, ang, 
+                                                   self.reverse)
                 self.msg.data = [direct, ang, 0]
                 self.pub.publish(self.msg)
                 self.done = 1
@@ -228,15 +231,44 @@ class Bot1():
                 self.pub.publish(self.msg)
 
             elif self.done == 2 and self.reverse == 0:
+                turn = abs(self.ang - 45)
+                print("Turning Bot 45 deg to chute")
+                self.msg.data = [1, turn, 0]
+                self.pub.publish(self.msg)
+
                 print("Actuating Servo")
                 self.actuate_servo()
+
+                print("Aligning the Bot to Axis")
+                self.msg.data = [1, 135, 0]
+                self.pub.publish(self.msg)
                 print("Reverse Path is tracking")
-                self.done, self.next, self.reverse = 0, 0, 1
+
+                self.done, self.next = 0, 0
+                self.reverse = True
                 self.process_goal(self.dest, self.start)
+
             elif self.done == 2:
+                turn = abs(self.ang - 180)
+                print("Aligning the Bot to Axis")
+                self.msg.data = [1, turn, 0]
+                self.pub.publish(self.msg)
+
+                print("Getting into Induct Station")
+                self.msg.data = [4, 0, 0]
+                self.pub.publish(self.msg)
+                rospy.sleep(3)
+
                 print("Bot has returned to Induct zone")
+                print("Ready to Get the Next Package")
+                rospy.sleep(2)
+                print("Getting Out of Induct Station")
+                self.msg.data = [1, 0, 0]
+                self.pub.publish(self.msg)
+                rospy.sleep(1)
+
                 self.done, self.next, self.flag = 0, 0, 2
-                self.reverse = 0
+                self.reverse = False
 
         except Exception as e:
             print("Exception in Path Execute Function")

@@ -208,6 +208,15 @@ def reduce_points(points, start, end):
     if t3 == 3 or t4 == 3:
         del rep[len(rep)-2]
 
+    if len(rep) > 2:
+        try:
+            for i in range(len(rep)-1):
+                if abs(rep[i][0]-rep[i+1][0]) <= 80:
+                    if abs(rep[i][1]-rep[i+1][1]) <= 80:
+                        del rep[i]
+        except:
+            pass
+
     return rep
 
 # Function to Calaculate Angle between two successive points
@@ -256,6 +265,35 @@ def dynamic_angle(current, way_point):
     else:
         return deg
 
+# Function to Get Rotate Direction:
+def rotate_direction(indid, ang, reverse):
+    """
+    This function is to know that the rotation of the bot 
+    should be in clockwise or anticlockwise direction
+    """
+    if indid == 1:
+        if ang > 0:
+            print("Rotate ClockWise")
+            direct = 2
+        else:
+            print("Rotate AntiClockWise")
+            direct = 3
+
+    elif indid == 2:
+        if ang < 0:
+            print("Rotate ClockWise")
+            direct = 2
+        else:
+            print("Rotate AntiClockWise")
+            direct = 3
+
+    if reverse == True:
+        if direct == 2:
+            direct = 3
+        else:
+            direct = 2
+
+    return direct
 # Function For A-star Algorithm
 def astar(graph, source, goal):
     """
