@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ROS Node - Simple Action Server - Bot1
+# ROS Node - Action Server - Bot1
 """
 This ROS Node responsible for Bot1 Actions to move the bot,
 To the destination location and drop the package using ROS
@@ -7,7 +7,7 @@ publisher with the help of rosserial_socket_server.
 
 Action Server - /action_bot1
 ROS Publisher - bot1/control_signal
-ROS Subscriber - /incoming_goal
+              - /data_visualize
 """
 import cv2
 import json
@@ -22,6 +22,10 @@ from cv_bridge import CvBridge, CvBridgeError
 from rospy_message_converter import message_converter
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
+"""
+This Class Bot1 consists of all members and modules which is used
+to control the bot1 based on the goal Received from the Client
+"""
 class Bot1():
 
     # Constructor
@@ -41,7 +45,7 @@ class Bot1():
             receives a Cancel Request.
         '''
         # Defining Variables for this Class
-        self.reverse = False
+        self.reverse, self.init = False, True
         self.flag, self.next, self.ang, self.done, self.indstn = 0, 0, 0, 0, 0
         self.start, self.dest = (0, 0), (0, 0)
         self.path, self.angle, self.points, self.pt = [], [], [], []
@@ -66,30 +70,41 @@ class Bot1():
                                            self.pos_callback, 
                                            queue_size=1)
 
-        print("Getting Into Induct Station")
-        self.msg.data = [1, 0, 0]
-        self.pub.publish(self.msg)
-        rospy.sleep(1)
-        self.msg.data = [3, 90, 0]
-        self.pub.publish(self.msg)
-        self.msg.data = [4, 0, 0]
-        self.pub.publish(self.msg)
-        rospy.sleep(1)
-        print("Induct Station Reached")
-        print("Waiting For Package")
-        self.msg.data = [0, 0, 0]
-        self.pub.publish(self.msg)
-        rospy.sleep(1)
-        print("Package Obtained")
-        self.msg.data = [1, 0, 0]
-        self.pub.publish(self.msg)
-        rospy.sleep(1)
-        self.msg.data = [0, 0, 0]
-        self.pub.publish(self.msg)
+        self.bot_init()
         # Start the Action Server
         self._as.start()
 
         rospy.loginfo("Started Bot1 Action Server.")
+
+    # Function Bot Initialize
+    def bot_init(self):
+        """
+        This Function will move the bot from it's starting position
+        to inside the induct zone
+        """
+        try:
+            print("Getting Into Induct Station")
+            self.move_bot(1)
+            rospy.sleep(1)
+
+            self.rotate_bot(90)
+            self.move_bot(4)
+            rospy.sleep(1)
+
+            print("Induct Station Reached")
+            print("Waiting For Package")
+            self.move_bot(0)
+            rospy.sleep(1)
+
+            print("Package Obtained")
+            self.move_bot(1)
+            rospy.sleep(1)
+            self.move_bot(0)
+
+        except Exception as e:
+            print("Exception In Bot Initialize Function")
+            print(e)
+
 
     # Callback Function for Bot Position Subscriber
     def pos_callback(self, data):
@@ -105,7 +120,6 @@ class Bot1():
                 pos = bot['bot1']
                 self.path_execute(pos)
                 value = {'bot1': [pos, self.dest, self.path]}
-                # print(value)
                 msg = json.dumps(value)
                 self.viz.publish(msg)
             else:
@@ -174,8 +188,8 @@ class Bot1():
 
             self.start = start
             self.path = points
-            # print(self.next, len(self.path), self.path)
             self.flag = 1
+
         except Exception as e:
             print("Exception in Process Goal Function")
             print(e)
@@ -198,18 +212,13 @@ class Bot1():
                 else:
                     self.ang = self.angle[-1]
 
-            # self.goal = self.dest
-            # print(self.goal)
             # If self.done is 0 then turn the bot to appropriate angle
             if self.done == 0:
                 # If next value is equal to the length of the
                 # path or angle list, then skip the statements.
                 self.goal = self.path[self.next+1]
                 ang = self.angle[self.next]
-                direct = function.rotate_direction(self.indstn, ang, 
-                                                   self.reverse)
-                self.msg.data = [direct, ang, 0]
-                self.pub.publish(self.msg)
+                self.rotate_bot(ang)
                 self.done = 1
 
             # If self.done is 1 then move the bot to the waypoint
@@ -218,61 +227,59 @@ class Bot1():
                 # then stop the bot else move forward
                 if cur[0] in range(self.goal[0]-15, self.goal[0]+15):
                     if cur[1] in range(self.goal[1]-15, self.goal[1]+15):
-                        print("Stop")
-                        self.msg.data = [0, 0, 0]
+                        print("Reached the Point")
+                        self.move_bot(0)
                         self.next += 1
                         self.done = 0
                 else:
-                    angle = function.dynamic_angle(cur, self.goal)
-                    # print("Move Forward")
-                    # print(angle)
-                    self.msg.data = [1, angle, 0]
-                    
-                self.pub.publish(self.msg)
+                    # angle = function.dynamic_angle(cur, self.goal)
+                    self.move_bot(1)
 
             elif self.done == 2 and self.reverse == 0:
-                turn = abs(self.ang - 45)
                 print("Turning Bot 45 deg to chute")
-                self.msg.data = [1, turn, 0]
-                self.pub.publish(self.msg)
+                self.rotate_bot(self.ang, 45)
 
                 print("Actuating Servo")
                 self.actuate_servo()
 
                 print("Aligning the Bot to Axis")
-                self.msg.data = [1, 135, 0]
-                self.pub.publish(self.msg)
-                print("Reverse Path is tracking")
+                self.rotate_bot(90)
+                self.rotate_bot(45)
 
+                print("Reverse Path is tracking")
                 self.done, self.next = 0, 0
                 self.reverse = True
                 self.process_goal(self.dest, self.start)
 
             elif self.done == 2:
-                turn = abs(self.ang - 180)
-                print("Aligning the Bot to Axis")
-                self.msg.data = [1, turn, 0]
-                self.pub.publish(self.msg)
-
-                print("Getting into Induct Station")
-                self.msg.data = [4, 0, 0]
-                self.pub.publish(self.msg)
-                rospy.sleep(3)
-
-                print("Bot has returned to Induct zone")
-                print("Ready to Get the Next Package")
-                rospy.sleep(2)
-                print("Getting Out of Induct Station")
-                self.msg.data = [1, 0, 0]
-                self.pub.publish(self.msg)
-                rospy.sleep(1)
-
+                self.inductzone(self.ang)
                 self.done, self.next, self.flag = 0, 0, 2
                 self.reverse = False
 
         except Exception as e:
             print("Exception in Path Execute Function")
             print(e)
+
+    # Function to Move Bot
+    def move_bot(self, direct):
+        """
+        This Function to move the bot in desired direction
+        It may be either forward or backward
+        """
+        self.msg.data = [direct, 0, 0]
+        self.pub.publish(self.msg)
+
+    # Function to Rotate Bot
+    def rotate_bot(self, angle, offset=0):
+        """
+        This function is to rotate bot to specific angle
+        based on offset
+        """
+        direct = function.rotate_direction(self.indstn, angle, 
+                                                   self.reverse)
+        turn = abs(angle - offset)
+        self.msg.data = [direct, turn, 0]
+        self.pub.publish(self.msg)
 
     # Function to Actuate Servo
     def actuate_servo(self):
@@ -295,6 +302,33 @@ class Bot1():
         print("Actuate Servo to 0 Degree")
         self.msg.data = [0, 0, 0]
         self.pub.publish(self.msg)        
+
+    # Function Induct Zone
+    def induct_zone(self, ang):
+        """
+        This Function will move the bot inside the induct zone
+        and make the robot wait for next package afterwards 
+        move the bot outside the induct station
+        """
+        print("Aligning the Bot to Axis")
+        self.rotate_bot(ang, 90)
+        self.rotate_bot(90)
+
+        print("Getting into Induct Station")
+        self.move_bot(4)
+        rospy.sleep(2)
+
+        print("Bot has returned to Induct zone")
+        print("Ready to Get the Next Package")
+        self.move_bot(0)        
+        rospy.sleep(2)
+
+        print("Getting Out of Induct Station")
+        self.move_bot(1)
+        rospy.sleep(1)
+
+        self.move_bot(0)
+        rospy.sleep(1)
 
     # Function to Cancel Incoming Goal
     def on_cancel(self, goal_handle):
