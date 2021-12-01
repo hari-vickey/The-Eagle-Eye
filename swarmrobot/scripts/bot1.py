@@ -105,7 +105,6 @@ class Bot1():
             print("Exception In Bot Initialize Function")
             print(e)
 
-
     # Callback Function for Bot Position Subscriber
     def pos_callback(self, data):
         """
@@ -124,6 +123,7 @@ class Bot1():
                 self.viz.publish(msg)
             else:
                 pass
+
         except Exception as e:
             print("Exception in Position Callback Function")
             print(e)
@@ -276,7 +276,7 @@ class Bot1():
         based on offset
         """
         direct = function.rotate_direction(self.indstn, angle, 
-                                                   self.reverse)
+                                           self.reverse)
         turn = abs(angle - offset)
         self.msg.data = [direct, turn, 0]
         self.pub.publish(self.msg)
@@ -301,7 +301,7 @@ class Bot1():
         # Revert the Servo to Normal Position
         print("Actuate Servo to 0 Degree")
         self.msg.data = [0, 0, 0]
-        self.pub.publish(self.msg)        
+        self.pub.publish(self.msg)
 
     # Function Induct Zone
     def induct_zone(self, ang):
@@ -320,7 +320,7 @@ class Bot1():
 
         print("Bot has returned to Induct zone")
         print("Ready to Get the Next Package")
-        self.move_bot(0)        
+        self.move_bot(0)
         rospy.sleep(2)
 
         print("Getting Out of Induct Station")

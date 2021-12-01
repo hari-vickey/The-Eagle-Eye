@@ -294,6 +294,7 @@ def rotate_direction(indid, ang, reverse):
             direct = 2
 
     return direct
+
 # Function For A-star Algorithm
 def astar(graph, source, goal):
     """

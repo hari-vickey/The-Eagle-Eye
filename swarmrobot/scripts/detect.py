@@ -9,8 +9,8 @@ ROS Messages.
 
 ROS Publisher  - /bot_position
 ROS Subscriber - /image_raw
-
 """
+# Importing Required Modules
 import sys
 import cv2
 import json
@@ -109,6 +109,7 @@ class Detect():
                 self.aruco_detect_destination(cv_image)
 
         except Exception as e:
+            print("Exception in Image Subscription Callback")
             print(e)
 
     # Function to detect aruco markers Bot
@@ -118,7 +119,7 @@ class Detect():
         using dictionary of size 4x4 50
         """
         try:
-
+            # Creating Detector Parameters
             parameters =  cv2.aruco.DetectorParameters_create()
             # Detect the markers in the image
             dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
@@ -144,7 +145,6 @@ class Detect():
             bot = dict(zip(bot_name, cpts))
             self.msg = json.dumps(bot)
             self.publisher.publish(self.msg)
-            # print(bot)
 
         except Exception as e:
             pass
@@ -185,7 +185,6 @@ class Detect():
 
             if len(self.temp1) == 2:
                 self.inductzone = self.extract_induct_point(self.temp1, self.temp2)
-
                 self.aruco1 = 1
 
         except Exception as e:
@@ -222,7 +221,6 @@ class Detect():
         try:
             self.ind2 = 0
             parameters =  cv2.aruco.DetectorParameters_create()
-
             # Detect the markers in the image
             dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_250)
             markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
@@ -301,10 +299,10 @@ class Detect():
         msg = message_converter.convert_ros_message_to_dictionary(data)
         temp = msg['data']
         bot = json.loads(temp)
-        # print(bot)
+
         for i in bot:
-            # print(bot[i][0], bot[i][1], bot[i][2])
             img = self.mark_points(self.image, bot[i][0], bot[i][1], bot[i][2])
+
         cv2.imshow("Img", img)
         cv2.waitKey(1)
 
@@ -317,23 +315,31 @@ class Detect():
         # Marking the Start Point and Goal point
         img = cv2.circle(img, start, 2, (255, 0, 0), 8)
         img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
+
         # Marking the Minimized set of goalpoints
         for point1, point2 in zip(ls, ls[1:]):
             cv2.line(img, point1, point2, [0, 255, 0], 2)
 
         img = cv2.resize(img, (640, 360))
+
         return img
 
+# Main Function
 def main(args):
-  
+    # Initializing ROS Node
     rospy.init_node('node_bot_detect', anonymous=True)
+    # Creating instance for the class
     det = Detect()
     try:
+        # Spin the Node
         rospy.spin()
+
     except KeyboardInterrupt:
+        # ShutDown the Node
         rospy.loginfo("Shutting down")
         rospy.on_shutdown(det.clean_shutdown)
 
+    # Destroying CV2 Windows
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
