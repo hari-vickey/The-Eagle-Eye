@@ -8,36 +8,45 @@ def destruct():
     direct = 0
     angle = 0
     servo = 0
-    msg.data = [direct, angle, servo]
-    # print(msg)
-    pubs.publish(msg)
+    msg1.data = [direct, angle, servo]
+    msg2.data = [direct, angle, servo]
+    msg3.data = [direct, angle, servo]
+    msg4.data = [direct, angle, servo]
+    pub1.publish(msg1)
+    pub2.publish(msg2)
+    pub3.publish(msg3)
+    pub4.publish(msg4)
     rospy.logwarn("Shutdown Request Received")
 
 rospy.init_node("Data_Publisher_Node")
 rospy.loginfo("Data Publisher Node")
-pubs = rospy.Publisher("bot2/control_signal", Int16MultiArray, queue_size=1)
-# pubd = rospy.Publisher("/bot", String, queue_size=1)
-msg = Int16MultiArray()
-# st = String()
-rospy.loginfo("Publishing to the topic: /control_signal")
-# des = {'bot1': (1024, 431)}
-# st = json.dumps(des)
-# st = message_converter.convert_dictionary_to_ros_message('std_msgs/String', des)
-# print(msg.data[0])
+pub1 = rospy.Publisher("bot1/control_signal", Int16MultiArray, queue_size=1)
+pub3 = rospy.Publisher("bot3/control_signal", Int16MultiArray, queue_size=1)
+pub4 = rospy.Publisher("bot4/control_signal", Int16MultiArray, queue_size=1)
+pub2 = rospy.Publisher("bot2/control_signal", Int16MultiArray, queue_size=1)
+msg1 = Int16MultiArray()
+msg2 = Int16MultiArray()
+msg3 = Int16MultiArray()
+msg4 = Int16MultiArray()
+
+rospy.loginfo("Publishing to the topic: bot1/control_signal")
+rospy.loginfo("Publishing to the topic: bot2/control_signal")
+rospy.loginfo("Publishing to the topic: bot3/control_signal")
+rospy.loginfo("Publishing to the topic: bot4/control_signal")
+
 try:
     while not rospy.is_shutdown():
         direct = int(input("Enter Direction : "))
         angle = int(input(" Enter Angle : "))
         servo = int(input("Enter Servo : "))
-        if direct == 1:
-            # for i in range(0, 30):
-            msg.data = [direct, angle, servo]
-            pubs.publish(msg)
-            # msg.data = [0, 0, 0]
-            # pubs.publish(msg)
-        else:
-            msg.data = [direct, angle, servo]
-            pubs.publish(msg)
+        msg1.data = [direct, angle, servo]
+        msg2.data = [direct, angle, servo]
+        msg3.data = [direct, angle, servo]
+        msg4.data = [direct, angle, servo]
+        pub1.publish(msg1)
+        pub2.publish(msg2)
+        pub3.publish(msg3)
+        pub4.publish(msg4)
 
-except KeyboardInterrupt:
+except Exception as e:
     destruct()
