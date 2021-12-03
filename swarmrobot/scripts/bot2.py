@@ -45,10 +45,11 @@ class Bot2():
             receives a Cancel Request.
         '''
         # Defining Variables for this Class
+        self.graph = {}
         self.reverse, self.init = False, True
-        self.flag, self.next, self.ang, self.done, self.indstn = 0, 0, 0, 0, 0
         self.start, self.dest = (0, 0), (0, 0)
-        self.path, self.angle, self.points, self.pt = [], [], [], []
+        self.flag, self.next, self.ang, self.done, self.indstn = 0, 0, 0, 0, 0
+        self.path, self.angle, self.points, self.pt, self.bot_obs = [], [], [], [], []
 
         # Creating a object to CvBridge() class
         self.bridge = CvBridge()
@@ -117,6 +118,8 @@ class Bot2():
                 temp = msg['data']
                 bot = json.loads(temp)
                 pos = bot['bot2']
+                # graph = function.bot_in_graph(self.graph, self.bot_obs, pos, 'bot2')
+                # points, self.angle = function.path_plan(self.graph, start, goal)
                 self.path_execute(pos)
                 value = {'bot2': [pos, self.dest, self.path]}
                 msg = json.dumps(value)
@@ -175,8 +178,8 @@ class Bot2():
         the bot
         """
         try:
-            graph = function.read_graph()
-            points, self.angle = function.path_plan(graph, start, goal)
+            self.graph = function.read_graph()
+            points, self.angle = function.path_plan(self.graph, start, goal)
             # Add Start and Goal to the path List
             print(points)
             if len(points) == 0:

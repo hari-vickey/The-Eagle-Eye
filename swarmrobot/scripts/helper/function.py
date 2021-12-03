@@ -135,6 +135,34 @@ def read_location():
 
     return location
 
+# Function to add bots as dynamic obstacles
+def bot_in_graph(graph, bot_obs, bot_dic, exempt_bot_name):
+    """
+    This function is to create and clear the bot as obstacle
+    in the graph for path planning
+    """
+    for i in bot_obs:
+        min1, max1 = int(min(i[0][0],i[1][0])), int(max(i[0][0],i[1][0]))
+        min2, max2 = int(min(i[0][1],i[1][1])), int(max(i[0][1],i[1][1]))
+        for j in range(min1,max1):
+            for k in range(min2,max2):
+                graph[(j,k)]['valid'] = True
+                graph[(j,k)]['id'] = 'blank'
+    bot_obs.clear()
+
+    for i in bot_dic:
+        if i != exempt_bot_name:
+            z=bot_dic[i]
+            min1, max1 = int(min(z[0][0],z[1][0])), int(max(z[0][0],z[1][0]))
+            min2, max2 = int(min(z[0][1],z[1][1])), int(max(z[0][1],z[1][1]))
+            for j in range(min1,max1):
+                for k in range(min2,max2):
+                    graph[(j,k)]['valid'] = False
+                    graph[(j,k)]['id'] = 'obs'
+            bot_obs.append(z)
+
+    return graph
+
 # Function to plan a Path
 def path_plan(graph, start, goal):
     """
