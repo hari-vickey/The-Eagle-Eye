@@ -46,13 +46,14 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int linear = 500;
-int turn = 350;
+int linear = 400;
+int turn = 450;
 
 // Declare Variable to Store the Value of MPU 6050
 float z = 0;
 float z_ang = 0;
 float z_cal = 0;
+float zg = 0;
 
 // Function to get the angle from MPU Sensor
 float mpu() {
@@ -71,25 +72,45 @@ void movement(int direction, float angle=0) {
         Serial.println("Stop");
     }
     if (direction == 1) {
+        zg = mpu();
+      for(int i=0;i<200;i++)
+      {
+        z_ang = mpu();
         digitalWrite(in1, LOW);
         digitalWrite(in2, HIGH);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        analogWrite(ena, linear);
-        analogWrite(enb, linear);
+
+        if(z_ang==zg)
+        {
+          analogWrite(ena, linear);
+          analogWrite(enb, linear);
+        }
+        if(z_ang<zg)
+        {
+          analogWrite(ena, linear);
+          analogWrite(enb, turn);
+        }
+        if(z_ang>zg)
+        {
+          analogWrite(ena, turn);
+          analogWrite(enb, linear);
+        }
+        zg = z_ang;
         Serial.println("Forward");
+      }
     }
     if (direction == 2) {
         z_ang = mpu();
-        z_cal = (-(angle-5)+z_ang);
+        z_cal = (-(angle+30)+z_ang);
         while(z_ang >= z_cal) {
             z_ang = mpu();
             digitalWrite(in1, LOW);
             digitalWrite(in2, HIGH);
-            digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);
-            analogWrite(ena, turn);
-            analogWrite(enb, turn);
+            digitalWrite(in3, LOW);
+            digitalWrite(in4, HIGH);
+            analogWrite(ena, linear);
+            analogWrite(enb, linear);
             Serial.println("Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
@@ -98,15 +119,15 @@ void movement(int direction, float angle=0) {
     }
     if (direction == 3) {
         z_ang = mpu();
-        z_cal = ((angle-5)+z_ang);
+        z_cal = ((angle+30)+z_ang);
         while(z_ang <= z_cal) {
             z_ang = mpu();
+            digitalWrite(in1, HIGH);
+            digitalWrite(in2, LOW);
             digitalWrite(in3, HIGH);
             digitalWrite(in4, LOW);
-            digitalWrite(in3, LOW);
-            digitalWrite(in4, HIGH);
-            analogWrite(ena, turn);
-            analogWrite(enb, turn);
+            analogWrite(ena, linear);
+            analogWrite(enb, linear);
             Serial.println("Anti Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
@@ -121,7 +142,6 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, linear);
         analogWrite(enb, linear);
         Serial.println("Backward");
-        delay(1000);
     }
 }
 
@@ -140,7 +160,7 @@ void controlCb(const std_msgs::Int16MultiArray& con){
     servo_control(con.data[2]);
 }
 // Subscribe to the ROS Topic
-ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot4/control_signal", &controlCb);
+ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot1/control_signal", &controlCb);
 
 void setup() {
     // Set Up esp8266 as Output or Input
@@ -155,8 +175,9 @@ void setup() {
     servo.attach(sm);
 
     // On Boot Set Speed Control Pins to zero
-    analogWrite(D0, 0);
-    analogWrite(D8, 0);
+    analogWrite(ena, 0);
+    analogWrite(enb, 0);
+    servo_control(0);
 
     // Use ESP8266 serial to monitor the process
     // Note: Change your bps at the serial monitor to the below mentioned Value
