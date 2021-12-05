@@ -16,28 +16,39 @@ int ena = D0;
 int in1 = D3;
 int in2 = D4;
 int in3 = D5;
-int in4 = D8;
-int enb = D7;
+int in4 = D7;
+int enb = D8;
 
 // Defining the Pin for Servo Motor Control
 int sm = D6;
-int zg;
+
 // Declare Speed Control Values
 int SPD = 500;
 int SPD1 = 500;
 int forw = 550;
-
 // Declare Variable to Store the Value of MPU 6050
 float z = 0;
 float z_ang = 0;
 float z_cal = 0;
+float zg = 0;
 
 // Function to get the angle from MPU Sensor
-float mpu() {
+float mpu(bool calibrate=false) {
     mpu6050.update();
-    z = mpu6050.getAngleZ();
-     Serial.print("angleZ : ");
-     Serial.println(z);
+    // Getting Calibration Value on setup
+    if (calibrate==true) {
+        z = mpu6050.getAngleZ();
+        Serial.println("MPU Calibration Done");
+        Serial.print("Calibration Value : ");
+        Serial.println(z);
+        delay(1000);
+    }
+    // Get Yaw Values from MPU
+    else {
+        z = mpu6050.getAngleZ();
+        Serial.print("angleZ : ");
+        Serial.println(z);
+    }
     return z;
 }
 
@@ -50,7 +61,7 @@ void movement(int direction, float angle=0) {
     }
     if (direction == 1) {
         zg = mpu();
-      for(int i=0;i<200;i++)
+      for(int i=0;i<100;i++)
       {
         z_ang = mpu();
         digitalWrite(in1, HIGH);
@@ -62,12 +73,12 @@ void movement(int direction, float angle=0) {
           analogWrite(ena, SPD);
           analogWrite(enb, SPD);
         }
-        if(z_ang>zg)
+        if(z_ang<zg)
         {
           analogWrite(ena, SPD);
           analogWrite(enb, forw);
         }
-        if(z_ang<zg)
+        if(z_ang>zg)
         {
           analogWrite(ena, forw);
           analogWrite(enb, SPD);
@@ -78,13 +89,15 @@ void movement(int direction, float angle=0) {
     }
     if (direction == 2) {
         z_ang = mpu();
-        z_cal = (-(angle-5)+z_ang);
+        z_cal = (-(angle+10)+z_ang);
         while(z_ang >= z_cal) {
             z_ang = mpu();
+            // Serial.print("Z angle : ");
+            // Serial.println(z_ang);
             digitalWrite(in1, HIGH);
             digitalWrite(in2, LOW);
             digitalWrite(in3, LOW);
-            digitalWrite(in4, HIGH);        
+            digitalWrite(in4, HIGH);
             analogWrite(ena, SPD);
             analogWrite(enb, SPD);
             Serial.println("Right");
@@ -95,15 +108,15 @@ void movement(int direction, float angle=0) {
     }
     if (direction == 3) {
         z_ang = mpu();
-        z_cal = ((angle-5)+z_ang);
+        z_cal = ((angle+10)+z_ang);
         while(z_ang <= z_cal) {
             z_ang = mpu();
             digitalWrite(in1, LOW);
             digitalWrite(in2, HIGH);
             digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);            
+            digitalWrite(in4, LOW);
             analogWrite(ena, SPD);
-            analogWrite(enb, SPD);
+            analogWrite(enb, SPD1);
             Serial.println("Left");
         }
         analogWrite(ena, 0);
@@ -183,36 +196,34 @@ void setup() {
     // On Boot Set Speed Control Pins to zero
     analogWrite(ena, 0);
     analogWrite(enb, 0);
-    delay(3000);
+
     // Use ESP8266 serial to monitor the process
     // Note: Change your bps at the serial monitor to the below mentioned Value
     Serial.begin(115200);
-    servo_control(0);
+
     //Initialize the I2C Communication
     Wire.begin();
     // Initialize the MPU 6050 Sensor
     mpu6050.begin();
-    z_cal  = mpu();
-
+    z_cal  = mpu(true);
 }
 
 // Loop the neccessary Functions
 void loop() {
-
+    movement(1);
+    movement(1);
+    movement(2, 45);
+    delay(1000);
     servo_control(1);
-    movement(1);
-    movement(1);
-    movement(1);
-    movement(1);
-    movement(1);
-    servo_control(0);
-    movement(1);
-    movement(1);
-    movement(1);
+    delay(1000);
+    movement(3, 45);
+    delay(500);
     movement(2, 90);
     delay(1000);
     servo_control(1);
     delay(1000);
     movement(3, 90);
-    delay(1000);
+    delay(500);
+    movement(0);
+    delay(2000);
 }
