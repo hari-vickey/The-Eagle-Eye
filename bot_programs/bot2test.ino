@@ -16,11 +16,11 @@ int ena = D0;
 int in1 = D3;
 int in2 = D4;
 int in3 = D5;
-int in4 = D6;
+int in4 = D8;
 int enb = D7;
 
 // Defining the Pin for Servo Motor Control
-int sm = D8;
+int sm = D6;
 int zg;
 // Declare Speed Control Values
 int SPD = 500;
@@ -193,12 +193,19 @@ void setup() {
     // Initialize the MPU 6050 Sensor
     mpu6050.begin();
     z_cal  = mpu();
+
+}
+
+// Loop the neccessary Functions
+void loop() {
+
     servo_control(1);
     movement(1);
     movement(1);
     movement(1);
     movement(1);
     movement(1);
+    servo_control(0);
     movement(1);
     movement(1);
     movement(1);
@@ -208,10 +215,4 @@ void setup() {
     delay(1000);
     movement(3, 90);
     delay(1000);
-}
-
-// Loop the neccessary Functions
-void loop() {
-
-    
 }
