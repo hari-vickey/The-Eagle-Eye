@@ -236,20 +236,3 @@ def calculate_distance(goal, current):
     """
     d = math.sqrt(((goal[0]-current[0])*(goal[0]-current[0]))+((goal[1]-current[1])*(goal[1]-current[1])))
     return d
-
-# Function to Mark Points on the Image
-def mark_points(img, start, goal, ls):
-    """
-    Marking Points in the input image
-    Also draw the lines of the path estimated
-    """
-    # Marking the Start Point and Goal point
-    img = cv2.circle(img, start, 2, (255, 0, 0), 8)
-    img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
-    ls.insert(0, start)
-    ls.insert(len(ls), goal)
-    # Marking the Minimized set of goalpoints
-    for point1, point2 in zip(ls, ls[1:]):
-        cv2.line(img, point1, point2, [0, 255, 0], 2)
-
-    return img
