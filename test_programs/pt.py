@@ -163,8 +163,8 @@ def bot_angle(pt1, pt2):
     x = abs(pt2[0] - pt1[0])
     y = abs(pt2[1] - pt1[1])
     rad = math.atan(y/x)
-    deg = rad *(180/(math.pi))
-
+    d = rad *(180/(math.pi))
+    deg = 90 - d
     return deg
 
 place = ['Mumbai', 'Delhi', 'Kolkata', 
