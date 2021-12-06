@@ -13,6 +13,7 @@ ROS Subscriber - /image_raw
 # Importing Required Modules
 import sys
 import cv2
+import math
 import json
 import rospy
 import numpy as np
@@ -45,7 +46,7 @@ class Detect():
         # Global Varibales for Aruco Marker Detections
         self.destination, self.inductzone = {}, {}
         self.completed, self.graphc = 0, 0
-        self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
+        self.aruco1, self.ind1, self.aruco2, self.ind2, self.deg = 0, 0, 0, 0, 0
         self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
 
         # Publishing Bot Positions
@@ -133,8 +134,8 @@ class Detect():
                 name = 'bot' + str(int(i))
                 bot_name.append(name)
                 pts = [converted[l][0][2].tolist(), 
-                       converted[l][0][0].tolist()
-                       converted[l][0][1].tolist()
+                       converted[l][0][0].tolist(),
+                       converted[l][0][1].tolist(),
                        converted[l][0][3].tolist()]
                 points.append(pts)
                 l += 1
@@ -142,17 +143,22 @@ class Detect():
             bot = dict(zip(bot_name, points))
 
             for i in bot:
+                try:
+                    deg = self.bot_angle(bot[i][0], bot[i][3])
+                except ZeroDivisionError:
+                    deg = 0
+
                 x1 = int((bot[i][0][0]+bot[i][1][0])/2)
                 y1 = int((bot[i][0][1]+bot[i][1][1])/2)
-                deg = self.bot_angle(bot[i][0], bot[i][3])
                 point = (x1, y1, int(deg))
                 cpts.append(point)
 
             bot = dict(zip(bot_name, cpts))
             self.msg = json.dumps(bot)
             self.publisher.publish(self.msg)
-
+            print(bot)
         except Exception as e:
+            # print(e)
             pass
 
     # Function to Angle of the Bot
@@ -163,10 +169,16 @@ class Detect():
         """
         x = abs(pt2[0] - pt1[0])
         y = abs(pt2[1] - pt1[1])
-        rad = math.atan(y/x)
-        deg = rad *(180/(math.pi))
 
-        return deg
+        if self.deg < 90:
+            rad = math.atan(y/x)
+        elif self.deg == 90:
+            rad = math.atan(x/y)
+
+        d = rad *(180/(math.pi))
+        self.deg = 90 - d
+
+        return self.deg
 
     # Function to have spatial awareness of the arena
     def arena_config(self, image):
@@ -332,7 +344,7 @@ class Detect():
         Also draw the lines of the path estimated
         """
         # Marking the Start Point and Goal point
-        img = cv2.circle(img, start, 2, (255, 0, 0), 8)
+        img = cv2.circle(img, (start[0], start[1]), 2, (255, 0, 0), 8)
         img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
 
         # Marking the Minimized set of goalpoints
