@@ -46,8 +46,9 @@ class Bot1():
         '''
         # Defining Variables for this Class
         self.reverse, self.init = False, True
-        self.flag, self.next, self.ang, self.done, self.indstn = 0, 0, 0, 0, 0
         self.start, self.dest = (0, 0), (0, 0)
+        self.flag, self.next, self.done = 0, 0, 0
+        self.rotate, self.ang, self.indstn = 0, 0, 0
         self.path, self.angle, self.points, self.pt = [], [], [], []
 
         # Creating a object to CvBridge() class
@@ -70,7 +71,7 @@ class Bot1():
                                            self.pos_callback, 
                                            queue_size=1)
 
-        self.bot_init()
+        # self.bot_init()
         # Start the Action Server
         self._as.start()
 
@@ -116,9 +117,9 @@ class Bot1():
                 msg = message_converter.convert_ros_message_to_dictionary(data)
                 temp = msg['data']
                 bot = json.loads(temp)
-                pos = bot['bot1']
-                self.path_execute(pos)
-                value = {'bot1': [pos, self.dest, self.path]}
+                self.pos = bot['bot1']
+                self.path_execute(self.pos)
+                value = {'bot1': [self.pos, self.dest, self.path]}
                 msg = json.dumps(value)
                 self.viz.publish(msg)
             else:
@@ -216,10 +217,15 @@ class Bot1():
             if self.done == 0:
                 # If next value is equal to the length of the
                 # path or angle list, then skip the statements.
-                self.goal = self.path[self.next+1]
-                ang = self.angle[self.next]
-                self.rotate_bot(ang)
-                self.done = 1
+                if self.rotate == 0:
+                    self.goal = self.path[self.next+1]
+                    ang = self.angle[self.next]
+                    self.rotate = 1
+                elif self.rotate == 1:
+                    self.rotate_bot_check(ang)
+                else:
+                    self.rotate = 0
+                    self.done = 1
 
             # If self.done is 1 then move the bot to the waypoint
             elif self.done == 1:
@@ -233,6 +239,7 @@ class Bot1():
                         self.done = 0
                 else:
                     # angle = function.dynamic_angle(cur, self.goal)
+                    # print("Move Forward")
                     self.move_bot(1)
 
             elif self.done == 2 and self.reverse == 0:
@@ -242,9 +249,9 @@ class Bot1():
                 print("Actuating Servo")
                 self.actuate_servo()
 
-                print("Aligning the Bot to Axis")
-                self.rotate_bot(90)
-                self.rotate_bot(45)
+                # print("Aligning the Bot to Axis")
+                # self.rotate_bot(90)
+                # self.rotate_bot(45)
 
                 print("Reverse Path is tracking")
                 self.done, self.next = 0, 0
@@ -252,7 +259,8 @@ class Bot1():
                 self.process_goal(self.dest, self.start)
 
             elif self.done == 2:
-                self.inductzone(self.ang)
+                print("Stop")
+                self.induct_zone(self.ang)
                 self.done, self.next, self.flag = 0, 0, 2
                 self.reverse = False
 
@@ -301,6 +309,22 @@ class Bot1():
         # Revert the Servo to Normal Position
         print("Actuate Servo to 0 Degree")
         self.msg.data = [0, 0, 0]
+        self.pub.publish(self.msg)
+
+    # Function Check Rotate Bot
+    def rotate_bot_check(self, angle):
+        """
+        This Function is to check the bot that it is rotated 
+        to the specified angle or not
+        """
+        if angle >= self.pos[2]:
+            self.msg.data = [0, 0, 0]
+            self.rotate = 2
+        else:
+            direct = function.rotate_direction(self.indstn, angle, 
+                                               self.reverse)
+            self.msg.data = [direct, 0, 0]
+
         self.pub.publish(self.msg)
 
     # Function Induct Zone

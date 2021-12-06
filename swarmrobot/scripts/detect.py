@@ -132,7 +132,10 @@ class Detect():
             for i in markerIds:
                 name = 'bot' + str(int(i))
                 bot_name.append(name)
-                pts = [converted[l][0][2].tolist(), converted[l][0][0].tolist()]
+                pts = [converted[l][0][2].tolist(), 
+                       converted[l][0][0].tolist()
+                       converted[l][0][1].tolist()
+                       converted[l][0][3].tolist()]
                 points.append(pts)
                 l += 1
 
@@ -141,7 +144,8 @@ class Detect():
             for i in bot:
                 x1 = int((bot[i][0][0]+bot[i][1][0])/2)
                 y1 = int((bot[i][0][1]+bot[i][1][1])/2)
-                point = (x1, y1)
+                deg = self.bot_angle(bot[i][0], bot[i][3])
+                point = (x1, y1, int(deg))
                 cpts.append(point)
 
             bot = dict(zip(bot_name, cpts))
@@ -150,6 +154,19 @@ class Detect():
 
         except Exception as e:
             pass
+
+    # Function to Angle of the Bot
+    def bot_angle(self, pt1, pt2):
+        """
+        This function is to calculate the angle of the bot
+        using the third and four point of the aruco marker
+        """
+        x = abs(pt2[0] - pt1[0])
+        y = abs(pt2[1] - pt1[1])
+        rad = math.atan(y/x)
+        deg = rad *(180/(math.pi))
+
+        return deg
 
     # Function to have spatial awareness of the arena
     def arena_config(self, image):
