@@ -26,7 +26,8 @@ const char* password = "bijubijoy928";
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-IPAddress server(192,168,225,28);
+//IPAddress server(192,168,225,28);// Hari
+IPAddress server(192,168,225,59);// Bijoy
 
 // Set the rosserial socket server port
 const uint16_t serverPort = 44181;
@@ -46,8 +47,9 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int linear = 400;
-int turn = 450;
+int linear = 255;
+int linear1 = 145;
+int turn = 270;
 
 // Declare Variable to Store the Value of MPU 6050
 float z = 0;
@@ -72,39 +74,39 @@ void movement(int direction, float angle=0) {
         Serial.println("Stop");
     }
     if (direction == 1) {
-        zg = mpu();
-      for(int i=0;i<200;i++)
+      zg = mpu();
+      for(int i=0;i<100;i++)
       {
         z_ang = mpu();
         digitalWrite(in1, LOW);
         digitalWrite(in2, HIGH);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-
-        if(z_ang==zg)
+        
+        if(z_ang>zg)
         {
           analogWrite(ena, linear);
-          analogWrite(enb, linear);
+          analogWrite(enb, 100);
         }
         if(z_ang<zg)
         {
-          analogWrite(ena, linear);
-          analogWrite(enb, turn);
+          analogWrite(ena, 100);
+          analogWrite(enb, linear1);
         }
-        if(z_ang>zg)
+        else
         {
-          analogWrite(ena, turn);
-          analogWrite(enb, linear);
+          analogWrite(ena, linear);
+          analogWrite(enb, linear1);
         }
         zg = z_ang;
         Serial.println("Forward");
       }
+      
+          analogWrite(ena, 0);
+          analogWrite(enb, 0);
+          delay(50);
     }
     if (direction == 2) {
-        z_ang = mpu();
-        z_cal = (-(angle+30)+z_ang);
-        while(z_ang >= z_cal) {
-            z_ang = mpu();
             digitalWrite(in1, LOW);
             digitalWrite(in2, HIGH);
             digitalWrite(in3, LOW);
@@ -112,16 +114,8 @@ void movement(int direction, float angle=0) {
             analogWrite(ena, linear);
             analogWrite(enb, linear);
             Serial.println("Clock-Wise Rotation");
-        }
-        analogWrite(ena, 0);
-        analogWrite(enb, 0);
-        Serial.println("Stop");
     }
     if (direction == 3) {
-        z_ang = mpu();
-        z_cal = ((angle+30)+z_ang);
-        while(z_ang <= z_cal) {
-            z_ang = mpu();
             digitalWrite(in1, HIGH);
             digitalWrite(in2, LOW);
             digitalWrite(in3, HIGH);
@@ -129,19 +123,52 @@ void movement(int direction, float angle=0) {
             analogWrite(ena, linear);
             analogWrite(enb, linear);
             Serial.println("Anti Clock-Wise Rotation");
-        }
-        analogWrite(ena, 0);
-        analogWrite(enb, 0);
-        Serial.println("Stop");
     }
     if (direction == 4) {
+      zg = mpu();
+      for(int i=0;i<200;i++)
+      {
+        z_ang = mpu();
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
-        analogWrite(ena, linear);
-        analogWrite(enb, linear);
-        Serial.println("Backward");
+        if(z_ang<zg)
+        {
+          analogWrite(ena, linear);
+          analogWrite(enb, 100);
+        }
+        if(z_ang>zg)
+        {
+          analogWrite(ena, 100);
+          analogWrite(enb, linear1);
+        }
+        else
+        {
+          analogWrite(ena, linear);
+          analogWrite(enb, linear1);
+        }
+        zg = z_ang;
+        Serial.println("Reverse");
+      }
+    }
+    if (direction == 5) {
+            digitalWrite(in1, LOW);
+            digitalWrite(in2, HIGH);
+            digitalWrite(in3, HIGH);
+            digitalWrite(in4, LOW);
+            analogWrite(ena, turn);
+            analogWrite(enb, linear);
+            Serial.println("Clock-Wise Rotation");
+    }
+    if (direction == 6) {
+            digitalWrite(in1, LOW);
+            digitalWrite(in2, HIGH);
+            digitalWrite(in3, HIGH);
+            digitalWrite(in4, LOW);
+            analogWrite(ena, linear);
+            analogWrite(enb, turn);
+            Serial.println("Anti Clock-Wise Rotation");
     }
 }
 
