@@ -146,8 +146,6 @@ def calc_angle(points):
     This Function will calculate angle between two adjacent points
     from the reduced no of points to turn the bot
     """
-    ## Problem here
-    ## Cumulative angle needed
     l, t = 0, 0
     temp_ls, ang_ls, red_ls = [], [], []
     for i in range(len(points)-1):

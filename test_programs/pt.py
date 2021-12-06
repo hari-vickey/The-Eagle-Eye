@@ -112,6 +112,61 @@ def closest_point(pts, pt):
     i_m = d.index(min_res)
     return pts[i_m]
 
+# Function to detect aruco markers Bot
+def aruco_detect_bot(frame):
+    """
+    This function will detect the aruco markers of the bot
+    using dictionary of size 4x4 50
+    """
+    try:
+        # Creating Detector Parameters
+        parameters =  cv2.aruco.DetectorParameters_create()
+        # Detect the markers in the image
+        dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
+        markerCorners, markerIds, _ = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
+        frame = aruco.drawDetectedMarkers(frame, markerCorners)
+        converted = np.int_(markerCorners)
+        bot_name, points, cpts = [], [], []
+        l = 0
+
+        for i in markerIds:
+            name = 'bot' + str(int(i))
+            bot_name.append(name)
+            pts = [converted[l][0][2].tolist(), 
+                   converted[l][0][0].tolist(), 
+                   converted[l][0][1].tolist(), 
+                   converted[l][0][3].tolist()]
+            points.append(pts)
+            l += 1
+
+        bot = dict(zip(bot_name, points))
+        # print(bot)
+        for i in bot:
+            x1 = int((bot[i][0][0]+bot[i][1][0])/2)
+            y1 = int((bot[i][0][1]+bot[i][1][1])/2)
+            deg = bot_angle(bot[i][0], bot[i][3])
+            point = (x1, y1, int(deg))
+            cpts.append(point)
+
+        bot = dict(zip(bot_name, cpts))
+        print(bot)
+
+    except Exception as e:
+        pass
+
+# Function to Angle of the Bot
+def bot_angle(pt1, pt2):
+    """
+    This function is to calculate the angle of the bot
+    using the third and four point of the aruco marker
+    """
+    x = abs(pt2[0] - pt1[0])
+    y = abs(pt2[1] - pt1[1])
+    rad = math.atan(y/x)
+    deg = rad *(180/(math.pi))
+
+    return deg
+
 place = ['Mumbai', 'Delhi', 'Kolkata', 
          'Chennai', 'Bengaluru', 'Hyderabad', 
          'Pune', 'Ahemdabad', 'Jaipur']
@@ -122,20 +177,21 @@ frame = cv2.imread("images/img.png")
 
 function.init_graph(720, 1280)
 
-frame, destination = get_destination(frame)
-print('\033[92m' + "Destination Markers Detected" + '\033[92m')
-print(destination)
+# frame, destination = get_destination(frame)
+# print('\033[92m' + "Destination Markers Detected" + '\033[92m')
+# print(destination)
 
-frame, inductzone = aruco_detect_inductpoint(frame)
-print('\033[93m' + "Induct Zone Aruco Markers Detected" + '\033[93m')
-print(inductzone)
+ang = aruco_detect_bot(frame)
+# frame, inductzone = aruco_detect_inductpoint(frame)
+# print('\033[93m' + "Induct Zone Aruco Markers Detected" + '\033[93m')
+# print(inductzone)
 
-start = inductzone[1]
-goal = closest_point(destination['Jaipur'], start)
-path, angle = function.path_plan(start, goal)
-frame = function.mark_points(frame, start, goal, path)
-print(path)
-print(angle)
+# start = inductzone[1]
+# goal = closest_point(destination['Jaipur'], start)
+# path, angle = function.path_plan(start, goal)
+# frame = function.mark_points(frame, start, goal, path)
+# print(path)
+# print(angle)
 
 # start = inductzone[2]
 # goal = closest_point(destination['Delhi'], start)
@@ -144,15 +200,15 @@ print(angle)
 # print(path)
 # print(angle)
 
-print('\033[94m' + "Induct Station 1 - Destination" + '\033[0m')
-start = inductzone[1]
-for i in destination:
-    goal = closest_point(destination[i], start)
-    print(i, start, goal)
-    path, angle = function.path_plan(start, goal)
-    frame = function.mark_points(frame, start, goal, path)
-    print(path)
-    print(angle)
+# print('\033[94m' + "Induct Station 1 - Destination" + '\033[0m')
+# start = inductzone[1]
+# for i in destination:
+#     goal = closest_point(destination[i], start)
+#     print(i, start, goal)
+#     path, angle = function.path_plan(start, goal)
+#     frame = function.mark_points(frame, start, goal, path)
+#     print(path)
+#     print(angle)
 
 # print('\033[95m'"Induct Station 2 - Induct Station" + '\033[0m')
 # start = inductzone[2]
