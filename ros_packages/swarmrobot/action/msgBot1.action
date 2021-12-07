@@ -1,0 +1,12 @@
+# goal
+int8 induct_station
+int32 induct_x
+int32 induct_y
+int32 goal_x
+int32 goal_y
+---
+# result
+bool flag
+---
+# feedback
+int8 percentage_complete

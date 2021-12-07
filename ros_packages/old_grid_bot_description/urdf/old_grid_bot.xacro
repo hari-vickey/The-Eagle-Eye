@@ -1,0 +1,437 @@
+<?xml version="1.0" ?>
+<robot name="old_grid_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find old_grid_bot_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find old_grid_bot_description)/urdf/old_grid_bot.trans" />
+<xacro:include filename="$(find old_grid_bot_description)/urdf/old_grid_bot.gazebo" />
+<link name="base_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.030583158947851654 0.0024807572051702784 0.007996607847452842"/>
+    <mass value="0.485950277701604"/>
+    <inertia ixx="0.001146" ixy="4e-06" ixz="-0.000239" iyy="0.001934" iyz="-0.0" izz="0.001644"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="servo_motor_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.010587734438734408 0.0084001186327211 0.006274355737184533"/>
+    <mass value="0.008064275407847855"/>
+    <inertia ixx="1e-06" ixy="-0.0" ixz="-0.0" iyy="0.0" iyz="-0.0" izz="1e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.031681 -0.002315 -0.005433"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/servo_motor_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.031681 -0.002315 -0.005433"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/servo_motor_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="servo_actuator_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.004722447291877686 4.322909012404591e-07 -0.005026760619318825"/>
+    <mass value="0.005292303265120139"/>
+    <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.035552 -0.002315 -0.003139"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/servo_actuator_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.035552 -0.002315 -0.003139"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/servo_actuator_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="side_pane_2">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.05195651370572106 -0.0024995677090985935 -0.06871232084610449"/>
+    <mass value="0.07399807568510863"/>
+    <inertia ixx="6.8e-05" ixy="0.0" ixz="-4.2e-05" iyy="0.000205" iyz="-0.0" izz="0.000138"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.075503 0.047685 -0.079034"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/side_pane_2.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.075503 0.047685 -0.079034"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/side_pane_2.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="side_pane_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.05195651370572118 0.0025004322909012305 -0.06871232084610446"/>
+    <mass value="0.07399807568510863"/>
+    <inertia ixx="6.8e-05" ixy="0.0" ixz="-4.2e-05" iyy="0.000205" iyz="-0.0" izz="0.000138"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.075503 -0.052315 -0.079034"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/side_pane_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.075503 -0.052315 -0.079034"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/side_pane_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="connector_rod_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.890800441760933e-07 -0.06749956770909944 -2.161915329777775e-07"/>
+    <mass value="0.0011336594170111678"/>
+    <inertia ixx="2e-06" ixy="-0.0" ixz="0.0" iyy="0.0" iyz="-0.0" izz="2e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.046539 -0.069315 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/connector_rod_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.046539 -0.069315 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/connector_rod_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="left_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.8680151746156577e-07 0.0042454206608824735 -2.2070271555110765e-07"/>
+    <mass value="0.01607890765683399"/>
+    <inertia ixx="3e-06" ixy="-0.0" ixz="-0.0" iyy="6e-06" iyz="-0.0" izz="3e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.046539 0.065685 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/left_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.046539 0.065685 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/left_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="right_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.8680151760034365e-07 -0.00424455421333067 -2.2070271556498544e-07"/>
+    <mass value="0.01607890765683399"/>
+    <inertia ixx="3e-06" ixy="-0.0" ixz="-0.0" iyy="6e-06" iyz="-0.0" izz="3e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.046539 -0.069315 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.046539 -0.069315 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/right_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="castor_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-4.60694217933183e-06 1.876423122246793e-05 -0.007087258397097125"/>
+    <mass value="0.005527871060012059"/>
+    <inertia ixx="1e-06" ixy="-0.0" ixz="-0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.040997 -0.002315 0.031466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/castor_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.040997 -0.002315 0.031466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/castor_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="left_wheel_tyre_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.8908012213456633e-07 0.005000419728007896 -2.1619153321023044e-07"/>
+    <mass value="0.0005281032093428708"/>
+    <inertia ixx="0.0" ixy="0.0" ixz="-0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.046539 0.06644 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/left_wheel_tyre_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.046539 0.06644 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/left_wheel_tyre_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="right_wheel_tyre_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.890801222733442e-07 0.005000444853794736 -2.1619153322410822e-07"/>
+    <mass value="0.0005281032093428708"/>
+    <inertia ixx="0.0" ixy="-0.0" ixz="-0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.046539 -0.06007 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/right_wheel_tyre_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.046539 -0.06007 0.028466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/right_wheel_tyre_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="marker_holder_base_1_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.0012659322751551808 -0.005330648790179797 -0.00599458556090238"/>
+    <mass value="0.0043956000000000195"/>
+    <inertia ixx="1e-06" ixy="-0.0" ixz="-0.0" iyy="1e-06" iyz="-0.0" izz="0.0"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.035997 0.052685 0.007466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/marker_holder_base_1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.035997 0.052685 0.007466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/marker_holder_base_1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="marker_holder_base_2_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.0012659322751550212 0.005669351209820032 -0.005994585560902398"/>
+    <mass value="0.0043956000000000195"/>
+    <inertia ixx="1e-06" ixy="-0.0" ixz="-0.0" iyy="1e-06" iyz="-0.0" izz="0.0"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.035997 -0.057315 0.007466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/marker_holder_base_2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.035997 -0.057315 0.007466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/marker_holder_base_2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="sidesupport_1_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="1.6650938913093105e-07 4.322909012768883e-07 0.074867587733285"/>
+    <mass value="0.20567408133829188"/>
+    <inertia ixx="0.000385" ixy="0.0" ixz="0.0" iyy="0.000395" iyz="0.0" izz="1.2e-05"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.035997 0.058185 0.036466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/sidesupport_1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.035997 0.058185 0.036466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/sidesupport_1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="sidesupport_2_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="1.665093889505198e-07 4.322909011311715e-07 0.07486758773328496"/>
+    <mass value="0.20567408133829188"/>
+    <inertia ixx="0.000385" ixy="0.0" ixz="0.0" iyy="0.000395" iyz="-0.0" izz="1.2e-05"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.035997 -0.062815 0.036466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/sidesupport_2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.035997 -0.062815 0.036466"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/sidesupport_2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="aruco_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="1.6650938946399796e-07 0.06355010767934195 -2.161915332449249e-07"/>
+    <mass value="0.3185682790928806"/>
+    <inertia ixx="0.000276" ixy="0.0" ixz="-0.0" iyy="0.000168" iyz="0.0" izz="0.000443"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.035997 0.061685 -0.108534"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/aruco_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.035997 0.061685 -0.108534"/>
+    <geometry>
+      <mesh filename="package://old_grid_bot_description/meshes/aruco_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="servo_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.031681 0.002315 0.005433"/>
+  <parent link="base_link"/>
+  <child link="servo_motor_1"/>
+</joint>
+
+<joint name="servo_joint" type="revolute">
+  <origin rpy="0 0 0" xyz="-0.003871 0.0 -0.002294"/>
+  <parent link="servo_motor_1"/>
+  <child link="servo_actuator_1"/>
+  <axis xyz="0.860292 0.0 0.509802"/>
+  <limit effort="100" lower="0.0" upper="3.141593" velocity="100"/>
+</joint>
+
+<joint name="left_pane_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="0.075503 -0.047685 0.079034"/>
+  <parent link="base_link"/>
+  <child link="side_pane_2"/>
+</joint>
+
+<joint name="right_pane_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="0.075503 0.052315 0.079034"/>
+  <parent link="base_link"/>
+  <child link="side_pane_1"/>
+</joint>
+
+<joint name="connector_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="0.046539 0.069315 -0.028466"/>
+  <parent link="base_link"/>
+  <child link="connector_rod_1"/>
+</joint>
+
+<joint name="left_wheel_joint" type="continuous">
+  <origin rpy="0 0 0" xyz="0.0 -0.135 0.0"/>
+  <parent link="connector_rod_1"/>
+  <child link="left_wheel_1"/>
+  <axis xyz="-0.0 -1.0 -0.0"/>
+</joint>
+
+<joint name="right_wheel_joint" type="continuous">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+  <parent link="connector_rod_1"/>
+  <child link="right_wheel_1"/>
+  <axis xyz="0.0 1.0 0.0"/>
+</joint>
+
+<joint name="castor_joint" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.040997 0.002315 -0.031466"/>
+  <parent link="base_link"/>
+  <child link="castor_wheel_1"/>
+</joint>
+
+<joint name="left_tyre_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 -0.000755 0.0"/>
+  <parent link="left_wheel_1"/>
+  <child link="left_wheel_tyre_1"/>
+</joint>
+
+<joint name="right_tyre_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 -0.009245 0.0"/>
+  <parent link="right_wheel_1"/>
+  <child link="right_wheel_tyre_1"/>
+</joint>
+
+<joint name="holder_fix_1" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.1115 -0.005 -0.0865"/>
+  <parent link="side_pane_2"/>
+  <child link="marker_holder_base_1_1"/>
+</joint>
+
+<joint name="holder_fix_2" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.1115 0.005 -0.0865"/>
+  <parent link="side_pane_1"/>
+  <child link="marker_holder_base_2_1"/>
+</joint>
+
+<joint name="holder_link_1" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 -0.0055 -0.029"/>
+  <parent link="marker_holder_base_1_1"/>
+  <child link="sidesupport_1_1"/>
+</joint>
+
+<joint name="holder_link_2" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0055 -0.029"/>
+  <parent link="marker_holder_base_2_1"/>
+  <child link="sidesupport_2_1"/>
+</joint>
+
+<joint name="aruco_fix" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 -0.0035 0.145"/>
+  <parent link="sidesupport_1_1"/>
+  <child link="aruco_1"/>
+</joint>
+
+</robot>

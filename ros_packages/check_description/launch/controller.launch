@@ -1,0 +1,9 @@
+<launch>
+
+<rosparam file="$(find check_description)/launch/controller.yaml" command="load"/>
+ <node name="controller_spawner" pkg ="controller_manager" type="spawner" ns="/check_controller" args="servo_joint_position_controller joint_state_controller --shutdown-timeout 3"/>
+<node name="robot_state_publisher" output="screen" pkg="robot_state_publisher" respawn="false" type="robot_state_publisher">
+  <remap from="/joint_states" to="/check/joint_states"/>
+</node>
+
+</launch>

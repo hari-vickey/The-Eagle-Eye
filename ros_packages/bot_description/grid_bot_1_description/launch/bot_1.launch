@@ -1,0 +1,26 @@
+<?xml version='1.0'?>
+<launch>
+
+  <!-- Position of the Robot -->
+  <arg name="arg_x" default="-0.685" />
+  <arg name="arg_y" default="-0.22" />
+  <arg name="arg_z" default="0.065" />
+  <arg name="arg_Y" default="3.14" />
+
+  <!-- Load Robot Description in Parameter Server -->
+  <param command="$(find xacro)/xacro $(find grid_bot_1_description)/urdf/grid_bot_1.xacro" name="robot_description"/>
+
+  <!-- Spawn URDF in Gazebo -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-x $(arg arg_x) -y $(arg arg_y) -z $(arg arg_z) -Y $(arg arg_Y) -param grid_bot_1 -urdf -model check -J servo_joint 0.0" />
+
+  <!-- Launch the Controller for the Robot in Gazebo -->
+  <rosparam file ="$(find grid_bot_1_description)/launch/controllers.yaml"/>
+
+  <node name= "controller_spawner" pkg= "controller_manager" type="spawner" args="controller"/>
+
+  <!-- Robot State Publisher for TF of each joint: publishes all the current states of the joint, then RViz can visualize -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <remap from="/joint_states" to="/bot_1/joint_states" />
+  </node>
+
+</launch>

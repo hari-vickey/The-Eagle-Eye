@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<robot name="check" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find check_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find check_description)/urdf/check.trans" />
+<xacro:include filename="$(find check_description)/urdf/check.gazebo" />
+<link name="base_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="2.1830377130636334e-12 1.7715111342427914e-16 0.02405571225286486"/>
+    <mass value="0.4911798844457979"/>
+    <inertia ixx="0.000369" ixy="0.0" ixz="-0.0" iyy="0.00037" iyz="-0.0" izz="0.000137"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://check_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://check_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="servo_actuator_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.0015000000000000933 -1.1102230246251565e-16 -0.006732181040136093"/>
+    <mass value="0.03497018571649247"/>
+    <inertia ixx="9e-06" ixy="0.0" ixz="-0.0" iyy="5e-06" iyz="0.0" izz="4e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0015 0.0 -0.091"/>
+    <geometry>
+      <mesh filename="package://check_description/meshes/servo_actuator_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0015 0.0 -0.091"/>
+    <geometry>
+      <mesh filename="package://check_description/meshes/servo_actuator_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="servo_joint" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0015 0.0 0.091"/>
+  <parent link="base_link"/>
+  <child link="servo_actuator_1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit effort="100" lower="0.0" upper="3.141593" velocity="100"/>
+</joint>
+
+</robot>
