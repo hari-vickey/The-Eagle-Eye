@@ -88,7 +88,7 @@ class Bot1():
             self.move_bot(1)
             rospy.sleep(1)
 
-            self.rotate_bot(90)
+            self.rotate_bot(89)
             self.move_bot(4)
             rospy.sleep(1)
 
@@ -219,12 +219,12 @@ class Bot1():
                 # path or angle list, then skip the statements.
                 if self.rotate == 0:
                     self.goal = self.path[self.next+1]
-                    ang = self.angle[self.next]
+                    self.ang = self.angle[self.next]
+                    self.rotate_bot(self.ang)
                     self.rotate = 1
                 elif self.rotate == 1:
-                    self.rotate_bot_check(ang)
+                    self.rotate_bot_check(self.ang)
                 else:
-                    self.rotate = 0
                     self.done = 1
 
             # If self.done is 1 then move the bot to the waypoint
@@ -235,8 +235,9 @@ class Bot1():
                     if cur[1] in range(self.goal[1]-15, self.goal[1]+15):
                         print("Reached the Point")
                         self.move_bot(0)
+                        # rospy.sleep(5)
+                        self.rotate, self.done = 0, 0
                         self.next += 1
-                        self.done = 0
                 else:
                     # angle = function.dynamic_angle(cur, self.goal)
                     # print("Move Forward")
@@ -317,10 +318,14 @@ class Bot1():
         This Function is to check the bot that it is rotated 
         to the specified angle or not
         """
-        if angle >= self.pos[2]:
+        if angle <= self.pos[2]:
+            print(angle, self.pos[2], self.pos)
+            print("Angle Obtained")
             self.msg.data = [0, 0, 0]
             self.rotate = 2
+
         else:
+            print("Obtaining Angle")
             direct = function.rotate_direction(self.indstn, angle, 
                                                self.reverse)
             self.msg.data = [direct, 0, 0]
