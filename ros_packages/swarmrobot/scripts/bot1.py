@@ -88,7 +88,7 @@ class Bot1():
             self.move_bot(1)
             rospy.sleep(1)
 
-            self.rotate_bot(89)
+            self.rotate_bot(90)
             self.move_bot(4)
             rospy.sleep(1)
 
@@ -177,7 +177,8 @@ class Bot1():
         """
         try:
             graph = function.read_graph()
-            points, self.angle = function.path_plan(graph, start, goal)
+            # points, self.angle = function.path_plan(graph, start, goal)
+            points, self.angle = function.path_plan_custom(start, goal)
             # Add Start and Goal to the path List
             print(points)
             if len(points) == 0:
@@ -220,6 +221,7 @@ class Bot1():
                 if self.rotate == 0:
                     self.goal = self.path[self.next+1]
                     self.ang = self.angle[self.next]
+                    # self.ang = int(function.dynamic_angle(cur, self.goal))
                     self.rotate_bot(self.ang)
                     self.rotate = 1
                 elif self.rotate == 1:
@@ -231,10 +233,10 @@ class Bot1():
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[0] in range(self.goal[0]-15, self.goal[0]+15):
-                    if cur[1] in range(self.goal[1]-15, self.goal[1]+15):
+                if cur[0] in range(self.goal[0]-35, self.goal[0]+35) and cur[1] in range(self.goal[1]-35, self.goal[1]+35):
                         print("Reached the Point")
-                        self.move_bot(0)
+                        for i in range(0, 10):
+                            self.move_bot(0)
                         # rospy.sleep(5)
                         self.rotate, self.done = 0, 0
                         self.next += 1
@@ -250,9 +252,9 @@ class Bot1():
                 print("Actuating Servo")
                 self.actuate_servo()
 
-                # print("Aligning the Bot to Axis")
-                # self.rotate_bot(90)
-                # self.rotate_bot(45)
+                print("Aligning the Bot to Axis")
+                self.rotate_bot(90)
+                self.rotate_bot(45)
 
                 print("Reverse Path is tracking")
                 self.done, self.next = 0, 0
@@ -318,7 +320,7 @@ class Bot1():
         This Function is to check the bot that it is rotated 
         to the specified angle or not
         """
-        if angle <= self.pos[2]:
+        if abs(angle) <= self.pos[2]:
             print(angle, self.pos[2], self.pos)
             print("Angle Obtained")
             self.msg.data = [0, 0, 0]

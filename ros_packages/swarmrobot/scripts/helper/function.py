@@ -61,14 +61,14 @@ def path_plan_custom(start, end):
     # If the goal is collinear with the current axis is
     # then there is no need of waypoint
     if start[0] == end[0] or start[1] == end[1]:
-        way_point = (end[0],end[1])
+        way_point = (end[0], end[1])
 
     # If the start or goal point is not in the same axis,
     # then resolving the path to horizontal and vertical paths
     elif start[0] != end[0] or start[1] != end[1]:
-        way_point = (start[0], end[1])
+        way_point = (end[0], start[1])
 
-    return way_point
+    return [way_point], [0, 90]
 
 # Function to write Graph
 def write_graph():
@@ -284,10 +284,7 @@ def dynamic_angle(current, way_point):
     r = abs(current[0] - way_point[0])
     rad =math.atan(s/r)
     deg = rad*(180/(math.pi))
-    if deg < 15:
-        return 0
-    else:
-        return deg
+    return deg
 
 # Function to Get Rotate Direction:
 def rotate_direction(indid, ang, reverse):
