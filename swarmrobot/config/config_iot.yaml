@@ -1,8 +1,0 @@
-# config_iot.yaml
-# IoT Configuration
-config_iot:
-  mqtt:
-    server_url: "broker.mqttdashboard.com"        # http://www.hivemq.com/demos/websocket-client/
-    server_port: 1883
-    topic_pub: "/eagleeye/bot_commands"          # <unique_id> = BiAdKaHa
-    qos: 0
