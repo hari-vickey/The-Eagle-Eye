@@ -8,7 +8,6 @@ which can be utilized by multiple Nodes
 
 # Importing Required Packages
 import sys
-import cv2
 import time
 import math
 import pickle
@@ -63,14 +62,11 @@ def path_plan_custom(start, end):
     # then there is no need of waypoint
     if start[0] == end[0] or start[1] == end[1]:
         way_point = (end[0],end[1])
-        # cv2.line(img, start, end, (255, 0, 0), cv2.LINE_4, 1)
 
     # If the start or goal point is not in the same axis,
     # then resolving the path to horizontal and vertical paths
     elif start[0] != end[0] or start[1] != end[1]:
         way_point = (start[0], end[1])
-        # cv2.line(img, start, way_point, (255, 0, 0), cv2.LINE_4, 1)
-        # cv2.line(img, way_point, end, (255, 0, 0), cv2.LINE_4, 1)
 
     return way_point
 
