@@ -1,1 +1,0 @@
-Pyqt5 interface 
