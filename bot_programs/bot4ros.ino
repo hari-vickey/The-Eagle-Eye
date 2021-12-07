@@ -1,6 +1,6 @@
 // Bot 4 Esp Program to Control the movement of the bot and the Servo Motor
 // To connect esp with ROS run this below mentioned command
-// rosrun rosserial_python serial_node.py tcp
+// rosrun rosserial_server socket_node _port:=44181
 // Important Note : Esp8266 is by default active low state 
 // It means the HIGH State = 0 and LOW  State = 1
 
@@ -26,12 +26,15 @@ const char* password = "bijubijoy928";
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-IPAddress server(192,168,225,28);// Hari
-//IPAddress server(192,168,225,59);// Bijoy
+// Hari
+IPAddress server(192,168,225,28);
+
+// Bijoy
+// IPAddress server(192,168,225,59);
 
 // Set the rosserial socket server port
-//const uint16_t serverPort = 44181; // bot4
-const uint16_t serverPort = 11411;//bot1
+const uint16_t serverPort = 44181;
+
 // Creating a ROS Node
 ros::NodeHandle n4;
 
@@ -47,56 +50,64 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int linear = 525;
-int linear1 = 350;
-int turn = 350;
+int l1 = 255;
+int l2 = 145;
+int turn = 270;
+int tilt = 100;
+
+// Defining a Counter
+int count = 1;
 
 // Declare Variable to Store the Value of MPU 6050
 float z = 0;
 float z_ang = 0;
 float z_cal = 0;
-float zg = 0;
+
 
 // Function to get the angle from MPU Sensor
 float mpu() {
     mpu6050.update();
     z = mpu6050.getAngleZ();
-    // Serial.print("angleZ : ");
-    // Serial.println(z);
     return z;
 }
 
 // Function to Move the bot in different Directions
 void movement(int direction, float angle=0) {
+
     if (direction == 0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
+        count = 100;
     }
+
     if (direction == 1) {
+        if (count == 1) z_cal = mpu();
+        else if (count == 100) count = 1;
+        count++;
+
         z_ang = mpu();
         digitalWrite(in1, LOW);
         digitalWrite(in2, HIGH);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        
-        if(z_ang>zg)
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, 0);
+
+        if(z_ang > z_cal) {
+            analogWrite(ena, l1);
+            analogWrite(enb, tilt);
         }
-        if(z_ang<zg)
-        {
-          analogWrite(ena, 0);
-          analogWrite(enb, linear1);
+        else if(z_ang < z_cal) {
+            analogWrite(ena, tilt);
+            analogWrite(enb, l2);
         }
-        else
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, linear1);
+        else {
+            analogWrite(ena, l1);
+            analogWrite(enb, l2);
         }
         Serial.println("Forward");
+
     }
+
     if (direction == 2) {
         z_ang = mpu();
         z_cal = (-(angle)+z_ang);
@@ -106,15 +117,18 @@ void movement(int direction, float angle=0) {
             digitalWrite(in2, HIGH);
             digitalWrite(in3, LOW);
             digitalWrite(in4, HIGH);
-            analogWrite(ena,400);
-            analogWrite(enb, 400);
+            analogWrite(ena, linear);
+            analogWrite(enb, linear);
+            analogWrite(ena, turn);
+            analogWrite(enb, turn);
             Serial.println("Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
-        zg = mpu();
+        count = 1;
     }
+
     if (direction == 3) {
         z_ang = mpu();
         z_cal = ((angle)+z_ang);
@@ -124,57 +138,40 @@ void movement(int direction, float angle=0) {
             digitalWrite(in2, LOW);
             digitalWrite(in3, HIGH);
             digitalWrite(in4, LOW);
-            analogWrite(ena, 400);
-            analogWrite(enb, 400);
+            analogWrite(ena, linear);
+            analogWrite(enb, linear);
+            analogWrite(ena, turn);
+            analogWrite(enb, turn);
             Serial.println("Anti Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
-        zg = mpu();
+        count = 1;
     }
+
     if (direction == 4) {
+        if (count == 1) z_cal = mpu();
+        else if (count == 100) count = 1;
+        count++;
         z_ang = mpu();
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
-        if(z_ang<zg)
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, 0);
+        if(z_ang<z_cal) {
+          analogWrite(ena, l1);
+          analogWrite(enb, tilt);
         }
-        if(z_ang>zg)
-        {
-          analogWrite(ena, 0);
-          analogWrite(enb, linear1);
+        if(z_ang>z_cal) {
+          analogWrite(ena, tilt);
+          analogWrite(enb, l2);
         }
-        else
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, linear1);
+        else {
+            analogWrite(ena, l1);
+            analogWrite(enb, l2);
         }
         Serial.println("Reverse");
-    }
-    if (direction == 5) {
-            digitalWrite(in1, LOW);
-            digitalWrite(in2, HIGH);
-            digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);
-            analogWrite(ena, linear);
-            analogWrite(enb, 0);
-            Serial.println("Clock-Wise Rotation");
-            zg = mpu();
-    }
-    if (direction == 6) {
-            digitalWrite(in1, LOW);
-            digitalWrite(in2, HIGH);
-            digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);
-            analogWrite(ena, 0);
-            analogWrite(enb, linear);
-            Serial.println("Anti Clock-Wise Rotation");
-            zg = mpu();
     }
 }
 
@@ -211,6 +208,7 @@ void setup() {
     analogWrite(ena, 0);
     analogWrite(enb, 0);
     servo_control(0);
+
     // Use ESP8266 serial to monitor the process
     // Note: Change your bps at the serial monitor to the below mentioned Value
     Serial.begin(115200);
@@ -232,13 +230,11 @@ void setup() {
     // Initialize the MPU 6050 Sensor
     mpu6050.begin();
     z_cal  = mpu();
-    zg = mpu();
+
     // Set the connection to rosserial socket server
     n4.getHardware()->setConnection(server, serverPort);
-
     // Initialize ROS Node
     n4.initNode();
-
     // Subscribing the ROS Topics
     n4.subscribe(sub_con);
 }
