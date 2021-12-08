@@ -1,9 +1,6 @@
 <?xml version='1.0'?>
 <launch>
 
-    <!-- Load Parameter Server for Ros Iot Server-->
-    <rosparam file ="$(find swarmrobot)/config/config_iot.yaml"/>
-
     <!-- Launch usb_camera node to connect overhead camera with ROS -->
     <include file="$(find usb_cam)/launch/usb_cam.launch" />
 
