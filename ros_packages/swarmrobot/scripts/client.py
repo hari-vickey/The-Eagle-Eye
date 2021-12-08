@@ -76,7 +76,7 @@ class Client():
         # thread.start()
         # self.algorithm(cv_image)
         start = (self.location[2][0], self.location[2][1])
-        goal = self.closest_point(self.location['Kolkata'], start)
+        goal = self.closest_point(self.location['Chennai'], start)
         print(start, goal)
         self._goal_handles[0] = self.send_goal_1(2, start[0]-60, 
                                                  start[1], goal[0], 

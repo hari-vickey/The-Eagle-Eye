@@ -149,15 +149,15 @@ def path_plan_custom(start, end, reverse):
     # If the goal is collinear or in tolerance with the 
     # current axis then there is no need of waypoint
     if start[0] in range(end[0]-20, end[0]+20) or \
-    start[1] in rnage(end[1]-20, end[1]+20):
+    start[1] in range(end[1]-20, end[1]+20):
         way_point = (end[0], end[1])
-
+        ang = [0]
     # If the goal is within the adjacent squares
     # then the path can be obtained is diagnal
     elif start[0] in range(end[0]-100, end[0]+100) or \
-    start[1] in rnage(end[1]-100, end[1]+100):
+    start[1] in range(end[1]-100, end[1]+100):
         way_point = (end[0], end[1])
-        deg = dynamic_angle(start, goal)
+        deg = int(dynamic_angle(start, end))
         ang = [deg]
     # If the start or goal point is not in the same axis,
     # then resolving the path to horizontal and vertical paths
