@@ -25,8 +25,8 @@ const char* password = "bijubijoy928";
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-//IPAddress server(192,168,225,28);// Hari
-IPAddress server(192,168,225,59);// Bijoy
+IPAddress server(192,168,225,28);// Hari
+//IPAddress server(192,168,225,59);// Bijoy
 
 // Set the rosserial socket server port
 const uint16_t serverPort = 11454;
@@ -49,6 +49,10 @@ int sm = D8;
 int linear = 100;
 int turn = 80;
 
+// Defining a Counter
+int count = 1;
+
+
 // Declare Variable to Store the Value of MPU 6050
 float z = 0;
 float z_ang = 0;
@@ -70,33 +74,34 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
+        count = 1;
     }
     if (direction == 1) {
-        zg = mpu();
-      for(int i=0;i<100;i++)
-      {
+        if (count == 1) zg = mpu();
+        else if (count == 100) count = 1;
+        count++;
+
         z_ang = mpu();
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        if(z_ang==zg)
+        if(z_ang == zg)
         {
           analogWrite(ena, linear);
           analogWrite(enb, linear);
         }
-        if(z_ang>zg)
+        else if(z_ang > zg)
         {
           analogWrite(ena, linear);
           analogWrite(enb, turn);
         }
-        if(z_ang<zg)
+        else if(z_ang < zg)
         {
           analogWrite(ena, turn);
           analogWrite(enb, linear);
         }
         Serial.println("forward");
-      }
     }
     if (direction == 2) {
         z_ang = mpu();
@@ -114,6 +119,7 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
+        count = 1;
     }
     if (direction == 3) {
         z_ang = mpu();
@@ -131,16 +137,34 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
+        count = 1;
     }
     if (direction == 4) {
+        if (count == 1) zg = mpu();
+        else if (count == 100) count = 1;
+        count++;
+        z_ang = mpu();
         digitalWrite(in1, LOW);
         digitalWrite(in2, HIGH);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
-        analogWrite(ena, linear);
-        analogWrite(enb, linear);
-        Serial.println("Backward");
-    }
+        if(z_ang == zg)
+        {
+          analogWrite(ena, linear);
+          analogWrite(enb, linear);
+        }
+        else if(z_ang < zg)
+        {
+          analogWrite(ena, linear);
+          analogWrite(enb, turn);
+        }
+        else if(z_ang > zg)
+        {
+          analogWrite(ena, turn);
+          analogWrite(enb, linear);
+        }
+        Serial.println("forward");
+      }
 }
 
 // Function to control Servo Motor
@@ -156,10 +180,7 @@ void controlCb(const std_msgs::Int16MultiArray& con){
     movement(con.data[0], con.data[1]);
     servo_control(con.data[2]);
 }
-//z_ang = mpu();
-//        z_cal = (-(angle)+z_ang);
-//        while(z_ang >= z_cal) {
-//            z_ang = mpu();
+
 // Subscribe to the ROS Topic
 ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot1/control_signal", &controlCb);
 
@@ -200,7 +221,7 @@ void setup() {
     // Initialize the MPU 6050 Sensor
     mpu6050.begin();
     z_cal = mpu();
-
+    zg = mpu();
     // Set the connection to rosserial socket server
     n2.getHardware()->setConnection(server, serverPort);
 
