@@ -9,11 +9,13 @@ Action Server - /action_bot1
 ROS Publisher - bot1/control_signal
               - /data_visualize
 """
+# Importing Required Modules
 import cv2
 import json
 import rospy
 import client
 import actionlib
+import threading
 import numpy as np
 from helper import function
 from std_msgs.msg import String
@@ -118,7 +120,11 @@ class Bot1():
                 temp = msg['data']
                 bot = json.loads(temp)
                 self.pos = bot['bot1']
-                self.path_execute(self.pos)
+                # Threading Applied
+                thread = threading.Thread(name="worker", target=self.path_execute, 
+                                          args=(self.pos, ))
+                thread.start()
+                # self.path_execute(self.pos)
                 value = {'bot1': [self.pos, self.dest, self.path]}
                 msg = json.dumps(value)
                 self.viz.publish(msg)
@@ -178,7 +184,7 @@ class Bot1():
         try:
             graph = function.read_graph()
             # points, self.angle = function.path_plan(graph, start, goal)
-            points, self.angle = function.path_plan_custom(start, goal)
+            points, self.angle = function.path_plan_custom(start, goal, self.reverse)
             # Add Start and Goal to the path List
             print(points)
             if len(points) == 0:
@@ -233,9 +239,10 @@ class Bot1():
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[0] in range(self.goal[0]-35, self.goal[0]+35) and cur[1] in range(self.goal[1]-35, self.goal[1]+35):
+                if cur[0] in range(self.goal[0]-20, self.goal[0]+20) and \
+                cur[1] in range(self.goal[1]-20, self.goal[1]+20):
                         print("Reached the Point")
-                        for i in range(0, 10):
+                        for i in range(0, 5):
                             self.move_bot(0)
                         # rospy.sleep(5)
                         self.rotate, self.done = 0, 0
@@ -286,10 +293,31 @@ class Bot1():
         This function is to rotate bot to specific angle
         based on offset
         """
-        direct = function.rotate_direction(self.indstn, angle, 
+        temp = angle - offset
+        direct = function.rotate_direction(self.indstn, temp, 
                                            self.reverse)
         turn = abs(angle - offset)
         self.msg.data = [direct, turn, 0]
+        self.pub.publish(self.msg)
+
+    # Function Check Rotate Bot
+    def rotate_bot_check(self, angle):
+        """
+        This Function is to check the bot that it is rotated 
+        to the specified angle or not
+        """
+        if abs(angle) <= self.pos[2]:
+            print(angle, self.pos[2], self.pos)
+            print("Angle Obtained")
+            self.msg.data = [0, 0, 0]
+            self.rotate = 2
+
+        else:
+            print("Obtaining Angle")
+            direct = function.rotate_direction(self.indstn, angle, 
+                                               self.reverse)
+            self.msg.data = [direct, 0, 0]
+
         self.pub.publish(self.msg)
 
     # Function to Actuate Servo
@@ -312,26 +340,6 @@ class Bot1():
         # Revert the Servo to Normal Position
         print("Actuate Servo to 0 Degree")
         self.msg.data = [0, 0, 0]
-        self.pub.publish(self.msg)
-
-    # Function Check Rotate Bot
-    def rotate_bot_check(self, angle):
-        """
-        This Function is to check the bot that it is rotated 
-        to the specified angle or not
-        """
-        if abs(angle) <= self.pos[2]:
-            print(angle, self.pos[2], self.pos)
-            print("Angle Obtained")
-            self.msg.data = [0, 0, 0]
-            self.rotate = 2
-
-        else:
-            print("Obtaining Angle")
-            direct = function.rotate_direction(self.indstn, angle, 
-                                               self.reverse)
-            self.msg.data = [direct, 0, 0]
-
         self.pub.publish(self.msg)
 
     # Function Induct Zone
