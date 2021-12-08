@@ -43,6 +43,8 @@ This package is used to interface the USB camera connected to the USB port of th
 
 The camera needed to be configured appropriate to the arena and make sure to add the camera product id and vendor id in the udev.rules in your system as write mode.
 
+Refer Tutorial here : https://msadowski.github.io/ros-web-tutorial-pt2-cameras/
+
 ## 3.  rosserial
 
 This Open Source package is used mainly for ROS and ESP socket communication. The one way communication of the bot and pc takes place with the IP address mentioned in the bot. Make sure to connect the bot and pc with same Wireless credentials.
