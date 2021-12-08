@@ -51,37 +51,6 @@ def render_graph(pt1, pt2):
                     graph[(i,j)]['valid'] = False
                     graph[(i,j)]['id'] = 'aug'
 
-# Function for Custom Path Planning
-def path_plan_custom(start, end, reverse):
-    """
-    This function will generate the custom path using the
-    start and end points
-    Also draw the lines of the path estimated
-    """
-    # If the goal is collinear or in tolerance with the 
-    # current axis then there is no need of waypoint
-    if start[0] in range(end[0]-20, end[0]+20) or \
-    start[1] in rnage(end[1]-20, end[1]+20):
-        way_point = (end[0], end[1])
-
-    # If the goal is within the adjacent squares
-    # then the path can be obtained is diagnal
-    elif start[0] in range(end[0]-100, end[0]+100) or \
-    start[1] in rnage(end[1]-100, end[1]+100):
-        way_point = (end[0], end[1])
-        deg = dynamic_angle(start, goal)
-        ang = [deg]
-    # If the start or goal point is not in the same axis,
-    # then resolving the path to horizontal and vertical paths
-    elif start[0] != end[0] or start[1] != end[1]:
-        if reverse == False:
-            way_point = (end[0], start[1])
-        else:
-            way_point = (start[0], end[1])
-        ang = [0, 90]
-
-    return [way_point], ang
-
 # Function to write Graph
 def write_graph():
     """
@@ -170,6 +139,36 @@ def bot_in_graph(graph, bot_obs, bot_dic, exempt_bot_name):
             bot_obs.append(z)
 
     return graph
+
+# Function for Custom Path Planning
+def path_plan_custom(start, end, reverse):
+    """
+    This function will generate the custom path using the
+    start and end points
+    """
+    # If the goal is collinear or in tolerance with the 
+    # current axis then there is no need of waypoint
+    if start[0] in range(end[0]-20, end[0]+20) or \
+    start[1] in rnage(end[1]-20, end[1]+20):
+        way_point = (end[0], end[1])
+
+    # If the goal is within the adjacent squares
+    # then the path can be obtained is diagnal
+    elif start[0] in range(end[0]-100, end[0]+100) or \
+    start[1] in rnage(end[1]-100, end[1]+100):
+        way_point = (end[0], end[1])
+        deg = dynamic_angle(start, goal)
+        ang = [deg]
+    # If the start or goal point is not in the same axis,
+    # then resolving the path to horizontal and vertical paths
+    elif start[0] != end[0] or start[1] != end[1]:
+        if reverse == False:
+            way_point = (end[0], start[1])
+        else:
+            way_point = (start[0], end[1])
+        ang = [0, 90]
+
+    return [way_point], ang
 
 # Function to plan a Path
 def path_plan(graph, start, goal):
