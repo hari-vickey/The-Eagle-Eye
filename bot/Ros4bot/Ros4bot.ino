@@ -51,10 +51,11 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int l1 = 255;
-int l2 = 145;
+int l1 = 195;
+int r1 = 150;
+int l2 = l1 - 40;
+int r2 = r1 - 40;
 int turn = 150;
-int tilt = 100;
 
 // Defining a Counter
 int count = 1;
@@ -95,15 +96,15 @@ void movement(int direction, float angle=0) {
 
         if(z_ang > z_cal) {
             analogWrite(ena, l1);
-            analogWrite(enb, tilt);
+            analogWrite(enb, r2);
         }
         else if(z_ang < z_cal) {
-            analogWrite(ena, tilt);
-            analogWrite(enb, l2);
+            analogWrite(ena, l2);
+            analogWrite(enb, r1);
         }
         else {
             analogWrite(ena, l1);
-            analogWrite(enb, l2);
+            analogWrite(enb, r1);
         }
         Serial.println("Forward");
 
@@ -158,15 +159,15 @@ void movement(int direction, float angle=0) {
         digitalWrite(in4, HIGH);
         if(z_ang<z_cal) {
           analogWrite(ena, l1);
-          analogWrite(enb, tilt);
+          analogWrite(enb, r2);
         }
         if(z_ang>z_cal) {
-          analogWrite(ena, tilt);
-          analogWrite(enb, l2);
+          analogWrite(ena, l2);
+          analogWrite(enb, r1);
         }
         else {
             analogWrite(ena, l1);
-            analogWrite(enb, l2);
+            analogWrite(enb, r1);
         }
         Serial.println("Reverse");
     }
