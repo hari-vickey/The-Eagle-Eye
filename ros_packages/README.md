@@ -39,11 +39,18 @@ rosrun swarmrobot bot'n'.py
 
 ## 2. usb_cam
 
-This package is used to interface the USB camera connected to the USB port of the laptop to ROS Image message at 1280*720p resolution at 30fps.
+This package is used to interface the USB camera connected to the USB port of the laptop to ROS Image message at 1280*720p resolution at 30fps. Install the required Modules
 
-The camera needed to be configured appropriate to the arena and make sure to add the camera product id and vendor id in the udev.rules in your system as write mode.
+```bash
+sudo apt-get install v4l-utils
+sudo apt-get install ros-<ROS_Distro>-libuvc-camera
+```
 
-Refer Tutorial here : https://msadowski.github.io/ros-web-tutorial-pt2-cameras/
+The camera needed to be configured appropriate to the arena and make sure to add the camera product id and vendor id in the udev.rules in your system as write mode. Refer the below mentioned tutorial
+
+https://msadowski.github.io/ros-web-tutorial-pt2-cameras/
+
+http://wiki.ros.org/libuvc_camera
 
 ## 3.  rosserial
 
