@@ -1,31 +1,19 @@
 #!/usr/bin/env python3
 """
 Flipkart - Grid 3.0 - Robotics Competition
-ROS Node - server.py (yet to be completed)
+ROS Node - client.py (yet to be completed)
 This node will do the following :
-    1. Subscribe to the images published by the ros
-    2. Create a graph of obstacles to avoid collision with them
-    3. Detect the bots using Aruco Markers
-    4. Decode the aruco marker in the arena to get the destination and induct 
-       station points
-    5. Plan a path using a custom planner or A* Algorithm
-    6. Publish the commands to move the bot using real time comparison between
-       goal and the aruco_detect_bot ouput
+    1. Read the samplesheet.xlsx
+    2. Send Goal to the Server using ROS Action
 """
-##################            Code V1 - Stage 1                #################
 # Importing Required Modules
 import os
 import math
-import json
 import rospy
 import actionlib
 import threading
-import numpy as np
 import pandas as pd
 from helper import function
-from sensor_msgs.msg import Image
-from heapq import heappush, heappop
-from cv_bridge import CvBridge, CvBridgeError
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
 # Class Client
@@ -44,16 +32,6 @@ class Client():
         self._ac1 = actionlib.ActionClient('/action_bot1', msgBot1Action)
         # Dictionary to Store all the goal handels
         self._goal_handles = {}
-
-        self.bot_obs, self.points = [], []
-
-        # Global Varibales for Execution
-        self.Lock = 1
-        self.n, self.rotate = 0, 0
-        self.flag1, self.flag2, self.flag3 = 0, 0, 0
-        self.goal, self.goalr, self.pnt = (0, 0), (0, 0), (0, 0)
-        self.exec, self.reverse, self.graphc, self.path = 0, 0, 0, 1
-
         # Wait for UR5_2 Action Server
         self._ac1.wait_for_server()
         print("Action Server Up")
