@@ -243,9 +243,7 @@ class Bot1():
                 if cur[0] in range(self.goal[0]-20, self.goal[0]+20) and \
                 cur[1] in range(self.goal[1]-20, self.goal[1]+20):
                         print("Reached the Point")
-                        for i in range(0, 5):
-                            self.move_bot(0)
-                        # rospy.sleep(5)
+                        self.move_bot(0)
                         self.rotate, self.done = 0, 0
                         self.next += 1
                 else:
@@ -253,7 +251,7 @@ class Bot1():
                     # print("Move Forward")
                     self.move_bot(1)
 
-            elif self.done == 2 and self.reverse == 0:
+            elif self.done == 2 and self.reverse == False:
                 print("Turning Bot 45 deg to chute")
                 self.rotate_bot(self.ang, 45)
 
