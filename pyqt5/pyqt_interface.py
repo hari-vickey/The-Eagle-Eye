@@ -37,10 +37,10 @@ class Ui_MainWindow(object):
     # ------------------- For creating the tabs -----------------------------------#
 
 
-        self.font = QFont("Times", 10, QFont.Bold)
-        # self.font.setBold(True)
-        # self.font.setWeight(75)
-        # self.font.setKerning(True)
+        self.font = QFont("Times", 12)
+        self.font.setBold(True)
+        self.font.setWeight(75)
+        self.font.setKerning(True)
         self.Processing = QTabWidget(self.centralwidget)
         self.Processing.setObjectName(u"Processing")
         self.Processing.setEnabled(True)
@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
         w = QWidget()
         w.setBackgroundRole(QPalette.Base)
         p = w.palette()
-        p.setColor(w.backgroundRole(), Qt.black)
+        p.setColor(w.backgroundRole(), Qt.red)
         w.setPalette(p)
 
 
@@ -193,7 +193,7 @@ class Ui_MainWindow(object):
         self.tableWidget_3.setItem(4, 0, item)
         self.tableWidget_3.horizontalHeader().setDefaultSectionSize(178)
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(120)
-        self.Processing.addTab(self.tab_5, "")
+        self.Processing.addTab(self.tab_5, "background-color: violet")
 
 
 
@@ -222,7 +222,7 @@ class Ui_MainWindow(object):
 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(960, 730, 200, 90))
+        self.label_2.setGeometry(QRect(1350, 550, 200, 90))
 
         # self.textEdit1 = QTextEdit(self.centralwidget)
         # self.textEdit1.setObjectName(u"textEdit1")
@@ -297,11 +297,10 @@ class Ui_MainWindow(object):
         self.Processing.setTabText(self.Processing.indexOf(self.tab), _translate("MainWindow", "Processing"))
         # self.Processing.indexOf(self.tab).setStyleSheet("background-color: violet")
         self.tab.setStyleSheet("background-color: yellow")
-        # self.tableWidget_2.setSelectedTabIndicatorColor(Color.RED)
-        # self.tableWidget_2.setStyleSheet("""QTabBar::tab:selected{ background: green }""")
-        # QColor = QtGui.QColor(255, 85, 0)
-        # a = self.tabWidget_2.tabBar()
-        # a.setTabTextColor(0, QColor)
+
+        # self.tableWidget_2.setItem(0,1, QTableWidgetItem("#str456"))
+        for i in range(1,5):
+                self.tableWidget_2.setItem(i,0, QTableWidgetItem("Package"+str(i))) 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
     #--------------------------------   For the Tab "Yet to Dispatch"    -------------------------------------#
@@ -330,6 +329,7 @@ class Ui_MainWindow(object):
 
 
     # ------------------------    For the Tab "Delivered"    -------------------------------#
+    
         item = self.tableWidget_3.verticalHeaderItem(1)
         item.setText(_translate("MainWindow", "1"))
         item = self.tableWidget_3.verticalHeaderItem(2)
@@ -348,12 +348,16 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Bot ID"))
         item = self.tableWidget_3.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Time"))
+
+
+
         __sortingEnabled = self.tableWidget_3.isSortingEnabled()
-        self.tableWidget_3.setSortingEnabled(False)
+        self.tableWidget_3.setSortingEnabled(False) 
         self.tableWidget_3.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab_5), _translate("MainWindow", "Delivered"))
         self.tab_5.setStyleSheet("background-color: lightgreen")
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #    
 
         
         """ Function for writing text in the start push button and enabling the video """
@@ -363,13 +367,14 @@ class Ui_MainWindow(object):
         self.pushButton.setText(_translate("MainWindow", "START"))
         self.pushButton.setFont(QFont('Times', 15))
         self.pushButton.clicked.connect(self.StartFeed)
-        #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+        # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
         """ Function for writing text in the stop push button and enabling the video """
         self.pushButton_2.setText(_translate("MainWindow", "STOP"))
         self.pushButton_2.setFont(QFont('Times', 15))
         self.pushButton_2.clicked.connect(self.StopFeed)
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
+        # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Run time", None))
         self.label_2.setFont(QFont('Times', 20))
@@ -410,6 +415,7 @@ class Ui_MainWindow(object):
             
    #-------------------------------------------------------------#  
 
+""" Class for video streaming  """
 class Worker1(QThread):
 
     ImageUpdate = pyqtSignal(QImage)
