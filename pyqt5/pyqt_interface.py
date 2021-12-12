@@ -253,8 +253,8 @@ class Ui_MainWindow(object):
         self.lineEdit_2= QLineEdit(self.centralwidget)
         self.lineEdit_2.setObjectName(u"line_Edit_2")
         self.lineEdit_2.setGeometry(990, 190, 331, 51)
-        # self.searchbar = QLineEdit()
         self.lineEdit_2.textChanged.connect(self.update_display)
+        # self.searchbar = QLineEdit()
         # ... rest of __init__ omitted for clarity.
 
 
