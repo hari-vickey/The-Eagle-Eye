@@ -4,6 +4,8 @@
 // Important Note : Esp8266 is by default active low state 
 // It means the HIGH State = 0 and LOW  State = 1
 
+#define ROSSERIAL_ARDUINO_TCP
+
 // Declaring the Header Files required for the Program
 #include <ESP8266WiFi.h>
 #include <MPU6050_tockn.h>
@@ -13,7 +15,6 @@
 // Including ROS Libraries for Subscribing to the ROS Topics
 #include <ros.h>
 #include <std_msgs/Int16MultiArray.h>
-#define ROSSERIAL_ARDUINO_TCP
 
 // Creating Object for Servo and MPU Sensor
 MPU6050 mpu6050(Wire);
@@ -26,8 +27,8 @@ const char* password = "bijubijoy928";
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-//IPAddress server(192,168,225,28);// Hari
-IPAddress server(192,168,225,59);//Bijoy
+IPAddress server(192,168,225,28);// Hari
+//IPAddress server(192,168,225,59);//Bijoy
 // Set the rosserial socket server port
 const uint16_t serverPort = 45411;
 
