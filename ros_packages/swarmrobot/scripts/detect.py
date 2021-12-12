@@ -201,7 +201,7 @@ class Detect():
             parameters =  cv2.aruco.DetectorParameters_create()
             # Detect the Induct Point markers in the image
             dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
-            markerCorners, markerIds, rejectedCandidates = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
+            markerCorners, markerIds, _ = cv2.aruco.detectMarkers(frame, dictionary, parameters=parameters)
 
             for i in markerIds:
                 try:
