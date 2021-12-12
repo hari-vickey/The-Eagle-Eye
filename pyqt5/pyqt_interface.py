@@ -188,7 +188,7 @@ class Ui_MainWindow(object):
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(120)
         self.Processing.addTab(self.tab_5, "background-color: violet")
 
-    # for Creating frame for video streaming 
+    # For Creating frame for video streaming 
         self.frame = QLabel(self.centralwidget)
         self.frame.setGeometry(QRect(80, 160, 800, 600))
         # self.frame.setStyleSheet("background: black")
@@ -202,23 +202,23 @@ class Ui_MainWindow(object):
         self.frame.setLineWidth(5)
         self.frame.setObjectName("frame")
         
-
+    # For displaying timer content
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setGeometry(QRect(1500, 550, 200, 87))
 
+    # For showing the text "Run time" 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(1350, 550, 200, 90))
 
-
-        # For Creating Start PushButton 
+    # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QRect(309, 800, 141, 51))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.setStyleSheet("background-color : #00FF00")
 
-        # For Creating Stop PushButton 
+    # For Creating Stop PushButton 
         self.pushButton_2 = QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QRect(510, 800,141,51))
         self.pushButton_2.setObjectName("pushButton_2")
@@ -246,7 +246,6 @@ class Ui_MainWindow(object):
         "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:#55aa00;\"> Flipkart Grid 3.0</span></p>\n"
         "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">The Eagle Eye</span></p>\n"
         "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\"> Central Monitoring System</span></p></body></html>"))
-
 
     # For the Tab "Processing"    
         item = self.tableWidget_2.verticalHeaderItem(1)
@@ -282,7 +281,6 @@ class Ui_MainWindow(object):
         for i in range(1,5):
                 self.tableWidget_2.setItem(i,0, QTableWidgetItem("Package"+str(i))) 
 
-
     # For the Tab "Yet to Dispatch" 
         item = self.tableWidget_4.verticalHeaderItem(0)
         item.setText(_translate("MainWindow", "1"))
@@ -304,7 +302,6 @@ class Ui_MainWindow(object):
         self.Processing.setTabText(self.Processing.indexOf(self.tab_2), _translate("MainWindow", "Yet to Dispatch"))
         self.tab_2.setStyleSheet("background-color: pink")
 
-    
     # For the Tab "Delivered" 
         item = self.tableWidget_3.verticalHeaderItem(1)
         item.setText(_translate("MainWindow", "1"))
@@ -352,16 +349,18 @@ class Ui_MainWindow(object):
         self.start = time.time()
         self.s = 0
 
+# Function for updating the image in the frame 
     def ImageUpdateSlot(self, Image1):
         self.frame.setPixmap(QPixmap.fromImage(Image1))
 
-# Function use to start the camera and timer    
+# Function use to start the video and timer    
     def StartFeed(self):
         self.flag == True
         self.Worker1.start()
         self.timer1.timeout.connect(self.showTime)
         self.timer1.start(1000)
 
+# Function use to stop the video and timer
     def StopFeed(self):
         self.flag = False
         self.Worker1.stop()
@@ -385,7 +384,7 @@ class Ui_MainWindow(object):
 class Worker1(QThread):
 
     ImageUpdate = pyqtSignal(QImage)
-# Function for streaming the video 
+# Function for start streaming the video 
     def run(self):
         self.ThreadActive = True
         Capture = cv2.VideoCapture(0)
@@ -398,7 +397,7 @@ class Worker1(QThread):
                 Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
 
-# Function for streaming the video
+# Function for stop streaming the video
     def stop(self):
         self.ThreadActive = False
         Imagelogo = Image.open("black.jpg")
