@@ -258,7 +258,7 @@ class Ui_MainWindow(object):
         # ... rest of __init__ omitted for clarity.
 
 
-    # ... other MainWindow methods ommitted for clarity.
+    # Other MainWindow methods ommitted for clarity.
 
     def update_display(self, text):
 
