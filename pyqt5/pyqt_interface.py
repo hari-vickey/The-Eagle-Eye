@@ -212,6 +212,8 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(1350, 550, 200, 90))
 
+        self.lineEdit_2= QLineEdit(self)
+
     # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QRect(309, 800, 141, 51))
