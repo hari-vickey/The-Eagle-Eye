@@ -11,6 +11,7 @@ import time
 import threading
 from PIL import Image
 from numpy import asarray
+from customwidgets import OnOffWidget
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -212,7 +213,6 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(1350, 550, 200, 90))
 
-        self.lineEdit_2= QLineEdit(self)
 
     # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
@@ -237,6 +237,50 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.Processing.setCurrentIndex(2)
         QMetaObject.connectSlotsByName(MainWindow)
+
+        widget_names = [
+        "Heater", "Stove", "Living Room Light", "Balcony Light",
+        "Fan", "Room Light", "Oven", "Desk Light",
+        "Bedroom Heater", "Wall Switch"]
+        self.process = []
+
+        for name in widget_names:
+            item = OnOffWidget(name)
+            self.controlsLayout.addWidget(item)
+            self.process.append(item)
+
+    # For searchbar input
+        self.lineEdit_2= QLineEdit(self.centralwidget)
+        self.lineEdit_2.setObjectName(u"line_Edit_2")
+        self.lineEdit_2.setGeometry(990, 190, 331, 51)
+        # self.searchbar = QLineEdit()
+        self.lineEdit_2.textChanged.connect(self.update_display)
+        # ... rest of __init__ omitted for clarity.
+
+
+    # ... other MainWindow methods ommitted for clarity.
+
+    def update_display(self, text):
+
+        for ele in self.Processing:
+            if text.lower() in ele.name.lower():
+                ele.show()
+            else:
+                ele.hide()
+
+    def show(self):
+        """
+        Show this widget, and all child widgets.
+        """
+        for w in [self, self.lbl, self.btn_on, self.btn_off]:
+            w.setVisible(True)
+
+    def hide(self):
+        """
+        Hide this widget, and all child widgets.
+        """
+        for w in [self, self.lbl, self.btn_on, self.btn_off]:
+            w.setVisible(False)
 
     def retranslateUi(self, MainWindow):
         _translate = QCoreApplication.translate
