@@ -11,7 +11,7 @@ import time
 import threading
 from PIL import Image
 from numpy import asarray
-from customwidgets import OnOffWidget
+# from customwidgets import OnOffWidget
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -27,11 +27,13 @@ class Ui_MainWindow(object):
         MainWindow.setTabShape(QTabWidget.Rounded)
 
         # self.setStyleSheet("background-color: yellow;")
+    # For creating the Titlebar in the interface
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.textBrowser = QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QRect(10, 30, 1920, 111))
+        self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
         self.textBrowser.setObjectName("textBrowser")
+        self.textBrowser.setStyleSheet("background-color: orange")
 
     # For creating the table
         self.font = QFont("Times", 12)
@@ -47,14 +49,14 @@ class Ui_MainWindow(object):
         self.Processing.setAutoFillBackground(True)
         self.Processing.setTabShape(QTabWidget.Triangular)
 
-        w = QWidget()
-        w.setBackgroundRole(QPalette.Base)
-        p = w.palette()
-        p.setColor(w.backgroundRole(), Qt.red)
-        w.setPalette(p)
 
         self.tab = QWidget()
         self.tab.setObjectName("tab")
+        self.tab.setBackgroundRole(QPalette.Base)
+        p = self.tab.palette()
+        p.setColor(self.tab.backgroundRole(), Qt.red)
+        self.tab.setPalette(p)
+
 
         self.tableWidget_2 = QTableWidget(self.tab)
         self.tableWidget_2.setGeometry(QRect(0, 0, 901, 250))
@@ -230,57 +232,18 @@ class Ui_MainWindow(object):
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.toolBar = QToolBar(MainWindow)
-        self.toolBar.setObjectName("toolBar")
-        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
+        # self.toolBar = QToolBar(MainWindow)
+        # self.toolBar.setObjectName("toolBar")
+        # MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
 
         self.retranslateUi(MainWindow)
         self.Processing.setCurrentIndex(2)
         QMetaObject.connectSlotsByName(MainWindow)
 
-        widget_names = [
-        "Heater", "Stove", "Living Room Light", "Balcony Light",
-        "Fan", "Room Light", "Oven", "Desk Light",
-        "Bedroom Heater", "Wall Switch"]
-        self.process = []
-
-        for name in widget_names:
-            item = OnOffWidget(name)
-            self.controlsLayout.addWidget(item)
-            self.process.append(item)
-
     # For searchbar input
         self.lineEdit_2= QLineEdit(self.centralwidget)
         self.lineEdit_2.setObjectName(u"line_Edit_2")
         self.lineEdit_2.setGeometry(990, 190, 331, 51)
-        self.lineEdit_2.textChanged.connect(self.update_display)
-        # self.searchbar = QLineEdit()
-        # ... rest of __init__ omitted for clarity.
-
-
-    # Other MainWindow methods ommitted for clarity.
-
-    def update_display(self, text):
-
-        for ele in self.Processing:
-            if text.lower() in ele.name.lower():
-                ele.show()
-            else:
-                ele.hide()
-
-    def show(self):
-        """
-        Show this widget, and all child widgets.
-        """
-        for w in [self, self.lbl, self.btn_on, self.btn_off]:
-            w.setVisible(True)
-
-    def hide(self):
-        """
-        Hide this widget, and all child widgets.
-        """
-        for w in [self, self.lbl, self.btn_on, self.btn_off]:
-            w.setVisible(False)
 
     def retranslateUi(self, MainWindow):
         _translate = QCoreApplication.translate
@@ -384,7 +347,7 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "STOP"))
         self.pushButton_2.setFont(QFont('Times', 15))
         self.pushButton_2.clicked.connect(self.StopFeed)
-        self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
+        # self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
 
 
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Run time", None))
