@@ -27,6 +27,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabShape(QTabWidget.Rounded)
 
         # self.setStyleSheet("background-color: yellow;")
+
     # For creating the Titlebar in the interface
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -52,14 +53,14 @@ class Ui_MainWindow(object):
 
         self.tab = QWidget()
         self.tab.setObjectName("tab")
-        self.tab.setBackgroundRole(QPalette.Base)
-        p = self.tab.palette()
-        p.setColor(self.tab.backgroundRole(), Qt.red)
-        self.tab.setPalette(p)
+        # self.tab.setBackgroundRole(QPalette.Base)
+        # p = self.tab.palette()
+        # p.setColor(self.tab.backgroundRole(), Qt.orange)
+        # self.tab.setPalette(p)
 
 
         self.tableWidget_2 = QTableWidget(self.tab)
-        self.tableWidget_2.setGeometry(QRect(0, 0, 901, 250))
+        self.tableWidget_2.setGeometry(QRect(0, 0, 911, 250))
         self.tableWidget_2.setObjectName("tableWidget_2")
         self.tableWidget_2.setColumnCount(7)
         self.tableWidget_2.setRowCount(5)
@@ -106,15 +107,15 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setItem(4, 0, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setItem(4, 3, item)
+        self.tableWidget_2.verticalHeader().setHighlightSections(True)
         self.Processing.addTab(self.tab, "")
-        self.tab.setStyleSheet("background-color: violet")
 
 
         self.tab_2 = QWidget()
         self.tab_2.setObjectName("tab_2")
         # self.tableWidget_2.setStyleSheet("background-color: violet")
         self.tableWidget_4 = QTableWidget(self.tab_2)
-        self.tableWidget_4.setGeometry(QRect(0, 0, 911, 221))
+        self.tableWidget_4.setGeometry(QRect(0, 0, 850, 221))
         self.tableWidget_4.setObjectName("tableWidget_4")
         self.tableWidget_4.setColumnCount(3)
         self.tableWidget_4.setRowCount(4)
@@ -252,9 +253,9 @@ class Ui_MainWindow(object):
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:#55aa00;\"> Flipkart Grid 3.0</span></p>\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">The Eagle Eye</span></p>\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\"> Central Monitoring System</span></p></body></html>"))
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:black;\"><b>Flipkart Grid 3.0</b></span></p>\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\"><b>The Eagle Eye</b></span></p>\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\"><b>Central Monitoring System</span></b></p></body></html>"))
 
     # For the Tab "Processing"    
         item = self.tableWidget_2.verticalHeaderItem(1)
@@ -284,7 +285,7 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab), _translate("MainWindow", "Processing"))
         # self.Processing.indexOf(self.tab).setStyleSheet("background-color: violet")
-        self.tab.setStyleSheet("background-color: yellow")
+        # self.tab.setStyleSheet("background-color: yellow")
 
         # self.tableWidget_2.setItem(0,1, QTableWidgetItem("#str456"))
         for i in range(1,5):
@@ -309,7 +310,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4.setSortingEnabled(False)
         self.tableWidget_4.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab_2), _translate("MainWindow", "Yet to Dispatch"))
-        self.tab_2.setStyleSheet("background-color: pink")
+        # self.tab_2.setStyleSheet("background-color: pink")
 
     # For the Tab "Delivered" 
         item = self.tableWidget_3.verticalHeaderItem(1)
@@ -334,22 +335,22 @@ class Ui_MainWindow(object):
         self.tableWidget_3.setSortingEnabled(False) 
         self.tableWidget_3.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab_5), _translate("MainWindow", "Delivered"))
-        self.tab_5.setStyleSheet("background-color: lightgreen")
+        # self.tab_5.setStyleSheet("background-color: lightgreen")
         
-    # for writing text in the start push button and enabling the video 
+    # For writing text in the start push button and enabling the video 
         self.flag = True
         self.Worker1 = Worker1()
         self.pushButton.setText(_translate("MainWindow", "START"))
         self.pushButton.setFont(QFont('Times', 15))
         self.pushButton.clicked.connect(self.StartFeed)
 
-    # for writing text in the stop push button and enabling the video 
+    # For writing text in the stop push button and enabling the video 
         self.pushButton_2.setText(_translate("MainWindow", "STOP"))
         self.pushButton_2.setFont(QFont('Times', 15))
         self.pushButton_2.clicked.connect(self.StopFeed)
         # self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
 
-
+    # For writing "Run time" text in label_2 
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Run time", None))
         self.label_2.setFont(QFont('Times', 20))
 
@@ -357,25 +358,26 @@ class Ui_MainWindow(object):
         self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
         self.start = time.time()
         self.s = 0
-
-# Function for updating the image in the frame 
+  
     def ImageUpdateSlot(self, Image1):
+        """ Function for updating the image in the frame """
         self.frame.setPixmap(QPixmap.fromImage(Image1))
-
-# Function use to start the video and timer    
+     
     def StartFeed(self):
+        """ Function use to start the video and timer """
         self.flag == True
         self.Worker1.start()
         self.timer1.timeout.connect(self.showTime)
         self.timer1.start(1000)
 
-# Function use to stop the video and timer
+
     def StopFeed(self):
+        """ Function use to stop the video and timer """
         self.flag = False
         self.Worker1.stop()
-
-# method called by timer
+ 
     def showTime(self):
+        """ method called by timer """
         if self.flag == True: 
             text = int(time.time()-self.start)
             fin = str(text)
@@ -388,13 +390,12 @@ class Ui_MainWindow(object):
             self.textEdit.setText(QCoreApplication.translate("MainWindow", fi_s + ":" + fin, None))
             self.textEdit.setFont(QFont('Times', 20))
 
-
-# Class for streaming the video   
 class Worker1(QThread):
-
+    """ Class for streaming the video """
     ImageUpdate = pyqtSignal(QImage)
-# Function for start streaming the video 
+  
     def run(self):
+        """ Function for start streaming the video """
         self.ThreadActive = True
         Capture = cv2.VideoCapture(0)
         while self.ThreadActive:
@@ -406,8 +407,9 @@ class Worker1(QThread):
                 Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
 
-# Function for stop streaming the video
+
     def stop(self):
+        """ Function for stop streaming the video """
         self.ThreadActive = False
         Imagelogo = Image.open("black.jpg")
         numpyarray = asarray(Imagelogo)
