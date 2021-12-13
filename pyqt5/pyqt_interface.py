@@ -11,7 +11,6 @@ import time
 import threading
 from PIL import Image
 from numpy import asarray
-# from customwidgets import OnOffWidget
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -23,7 +22,7 @@ class Ui_MainWindow(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1920, 1080)
-        MainWindow.setAutoFillBackground(False)
+        MainWindow.setAutoFillBackground(True)
         MainWindow.setTabShape(QTabWidget.Rounded)
 
         # self.setStyleSheet("background-color: yellow;")
@@ -34,7 +33,7 @@ class Ui_MainWindow(object):
         self.textBrowser = QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
         self.textBrowser.setObjectName("textBrowser")
-        self.textBrowser.setStyleSheet("background-color: orange")
+        self.textBrowser.setStyleSheet("background-color: black")
 
     # For creating the table
         self.font = QFont("Times", 12)
@@ -50,17 +49,10 @@ class Ui_MainWindow(object):
         self.Processing.setAutoFillBackground(True)
         self.Processing.setTabShape(QTabWidget.Triangular)
 
-
         self.tab = QWidget()
         self.tab.setObjectName("tab")
-        # self.tab.setBackgroundRole(QPalette.Base)
-        # p = self.tab.palette()
-        # p.setColor(self.tab.backgroundRole(), Qt.orange)
-        # self.tab.setPalette(p)
-
-
         self.tableWidget_2 = QTableWidget(self.tab)
-        self.tableWidget_2.setGeometry(QRect(0, 0, 911, 250))
+        self.tableWidget_2.setGeometry(QRect(0, 0, 911, 221))
         self.tableWidget_2.setObjectName("tableWidget_2")
         self.tableWidget_2.setColumnCount(7)
         self.tableWidget_2.setRowCount(5)
@@ -107,15 +99,17 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setItem(4, 0, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setItem(4, 3, item)
+        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(200)
+        self.tableWidget_2.verticalHeader().setDefaultSectionSize(45)
         self.tableWidget_2.verticalHeader().setHighlightSections(True)
+        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(178)
+        self.tableWidget_2.horizontalHeader().setMinimumSectionSize(120)
         self.Processing.addTab(self.tab, "")
-
 
         self.tab_2 = QWidget()
         self.tab_2.setObjectName("tab_2")
-        # self.tableWidget_2.setStyleSheet("background-color: violet")
         self.tableWidget_4 = QTableWidget(self.tab_2)
-        self.tableWidget_4.setGeometry(QRect(0, 0, 850, 221))
+        self.tableWidget_4.setGeometry(QRect(0, 0, 911, 221))
         self.tableWidget_4.setObjectName("tableWidget_4")
         self.tableWidget_4.setColumnCount(3)
         self.tableWidget_4.setRowCount(4)
@@ -149,7 +143,6 @@ class Ui_MainWindow(object):
         self.tableWidget_4.verticalHeader().setDefaultSectionSize(45)
         self.tableWidget_4.verticalHeader().setHighlightSections(True)
         self.Processing.addTab(self.tab_2, "")
-
 
         self.tab_5 = QWidget()
         self.tab_5.setObjectName("tab_5")
@@ -190,7 +183,7 @@ class Ui_MainWindow(object):
         self.tableWidget_3.setItem(4, 0, item)
         self.tableWidget_3.horizontalHeader().setDefaultSectionSize(178)
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(120)
-        self.Processing.addTab(self.tab_5, "background-color: violet")
+        self.Processing.addTab(self.tab_5,"")
 
     # For Creating frame for video streaming 
         self.frame = QLabel(self.centralwidget)
@@ -215,7 +208,6 @@ class Ui_MainWindow(object):
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(1350, 550, 200, 90))
-
 
     # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
@@ -253,11 +245,11 @@ class Ui_MainWindow(object):
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:black;\"><b>Flipkart Grid 3.0</b></span></p>\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\"><b>The Eagle Eye</b></span></p>\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\"><b>Central Monitoring System</span></b></p></body></html>"))
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:orange;\"><b>Flipkart Grid 3.0</b></span></p>\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:orange;\"><b>The Eagle Eye</b></span></p>\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:orange;\"><b>Central Monitoring System</span></b></p></body></html>"))
 
-    # For the Tab "Processing"    
+    # For the Tab "Processing" in the table
         item = self.tableWidget_2.verticalHeaderItem(1)
         item.setText(_translate("MainWindow", "1"))
         item = self.tableWidget_2.verticalHeaderItem(2)
@@ -284,14 +276,12 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setSortingEnabled(False)
         self.tableWidget_2.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab), _translate("MainWindow", "Processing"))
-        # self.Processing.indexOf(self.tab).setStyleSheet("background-color: violet")
-        # self.tab.setStyleSheet("background-color: yellow")
 
-        # self.tableWidget_2.setItem(0,1, QTableWidgetItem("#str456"))
+    # For entering the values in the table
         for i in range(1,5):
                 self.tableWidget_2.setItem(i,0, QTableWidgetItem("Package"+str(i))) 
 
-    # For the Tab "Yet to Dispatch" 
+    # For the Tab "Yet to Dispatch" in the table
         item = self.tableWidget_4.verticalHeaderItem(0)
         item.setText(_translate("MainWindow", "1"))
         item = self.tableWidget_4.verticalHeaderItem(1)
@@ -312,7 +302,7 @@ class Ui_MainWindow(object):
         self.Processing.setTabText(self.Processing.indexOf(self.tab_2), _translate("MainWindow", "Yet to Dispatch"))
         # self.tab_2.setStyleSheet("background-color: pink")
 
-    # For the Tab "Delivered" 
+    # For the Tab "Delivered" in the table 
         item = self.tableWidget_3.verticalHeaderItem(1)
         item.setText(_translate("MainWindow", "1"))
         item = self.tableWidget_3.verticalHeaderItem(2)
