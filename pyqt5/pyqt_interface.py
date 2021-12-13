@@ -17,6 +17,9 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QTimer,QDateTime
 
+sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
 
