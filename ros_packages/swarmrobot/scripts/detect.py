@@ -3,10 +3,8 @@
 ROS Node - detect.py - V1 - Tested
 This Node will detect the aruco markers of the bot then publishes them 
 to other ROS Nodes using ROS publisher.
-
 This Node uses rospy_message_converter to convert dictionary to 
 ROS Messages.
-
 ROS Publisher  - /bot_position
 ROS Subscriber - /image_raw
 """
@@ -144,7 +142,7 @@ class Detect():
 
             for i in bot:
                 try:
-                    deg = self.bot_angle(bot[i][0], bot[i][3])
+                    deg = self.bot_angle(bot[i][2], bot[i][0], bot[i][1], bot[i][3])
                 except ZeroDivisionError:
                     deg = 0
 
@@ -162,23 +160,30 @@ class Detect():
             pass
 
     # Function to Angle of the Bot
-    def bot_angle(self, pt1, pt2):
+    def bot_angle(self, pt2, pt0, pt1, pt3):
         """
         This function is to calculate the angle of the bot
         using the third and four point of the aruco marker
         """
-        x = abs(pt2[0] - pt1[0])
-        y = abs(pt2[1] - pt1[1])
+        print(pt0, pt1, pt2, pt3)
 
-        if self.deg < 90:
-            rad = math.atan(y/x)
-        elif self.deg == 90:
+        x = abs(pt3[0] - pt0[0])
+        y = abs(pt3[1] - pt0[1])
+        p = abs(pt0[0] - pt1[0])
+        q = abs(pt0[1] - pt1[1])
+        if pt0[1] < pt3[1]:
             rad = math.atan(x/y)
+            d = rad *(180/(math.pi))
+        elif pt0[1] > pt3[1] and pt1[1] < pt2[1]:
+            rad = math.atan(q/p)
+            d = rad *(180/(math.pi))
+            d = d + 45
+        elif pt0[1] == pt3[1]:
+            d = 90
+        elif pt0[1] == pt1[1]:
+            d = 180  
 
-        d = rad *(180/(math.pi))
-        self.deg = 90 - d
-
-        return self.deg
+        return d
 
     # Function to have spatial awareness of the arena
     def arena_config(self, image):

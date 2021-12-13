@@ -5,7 +5,6 @@
 This ROS Node responsible for Bot1 Actions to move the bot,
 To the destination location and drop the package using ROS
 publisher with the help of rosserial_socket_server.
-
 Action Server - /action_bot1
 ROS Publisher - bot1/control_signal
               - /data_visualize
@@ -42,7 +41,6 @@ class Bot1():
             * self.on_goal - It is the fuction pointer which points to 
             a function which will be called when should  Action Server 
             receives a Goal.
-
             * self.on_cancel - It is the fuction pointer which points 
             to a function which will be called when the Action Server 
             receives a Cancel Request.
@@ -229,9 +227,9 @@ class Bot1():
                     self.goal = self.path[self.next+1]
                     self.ang = self.angle[self.next]
                     # self.ang = int(function.dynamic_angle(cur, self.goal))
-                    self.rotate_bot(self.ang)
-                    self.rotate = 1
-                elif self.rotate == 1:
+                #     self.rotate_bot(self.ang)
+                #     self.rotate = 1
+                # elif self.rotate == 1:
                     self.rotate_bot_check(self.ang)
                 else:
                     self.done = 1
@@ -292,12 +290,13 @@ class Bot1():
         This function is to rotate bot to specific angle
         based on offset
         """
-        temp = angle - offset
+        temp = angle - self.pos[2]
         direct = function.rotate_direction(self.indstn, temp, 
                                            self.reverse)
-        turn = abs(angle - offset)
+        turn = abs(angle - self.pos[2])
         self.msg.data = [direct, turn, 0]
         self.pub.publish(self.msg)
+        print("turning")
 
     # Function Check Rotate Bot
     def rotate_bot_check(self, angle):
