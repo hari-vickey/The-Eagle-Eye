@@ -167,58 +167,75 @@ def bot_angle(pt1, pt2):
     deg = 90 - d
     return deg
 
+# Function to Mark Points on the Image
+def mark_points(img, start, goal, ls):
+    """
+    Marking Points in the input image
+    Also draw the lines of the path estimated
+    """
+    # Marking the Start Point and Goal point
+    img = cv2.circle(img, start, 2, (255, 0, 0), 8)
+    img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
+    # Marking the Minimized set of goalpoints
+    for point1, point2 in zip(ls, ls[1:]):
+        cv2.line(img, point1, point2, [0, 255, 0], 2)
+
+    img = cv2.resize(img, (640, 360))
+
+    return img
+
 place = ['Mumbai', 'Delhi', 'Kolkata', 
          'Chennai', 'Bengaluru', 'Hyderabad', 
          'Pune', 'Ahemdabad', 'Jaipur']
 
-# graph = {}
+graph = {}
 
 frame = cv2.imread("images/img.png")
 
 function.init_graph(720, 1280)
 
-# frame, destination = get_destination(frame)
-# print('\033[92m' + "Destination Markers Detected" + '\033[92m')
-# print(destination)
+frame, destination = get_destination(frame)
+print('\033[92m' + "Destination Markers Detected" + '\033[92m')
+print(destination)
 
 ang = aruco_detect_bot(frame)
-# frame, inductzone = aruco_detect_inductpoint(frame)
-# print('\033[93m' + "Induct Zone Aruco Markers Detected" + '\033[93m')
-# print(inductzone)
+frame, inductzone = aruco_detect_inductpoint(frame)
+print('\033[93m' + "Induct Zone Aruco Markers Detected" + '\033[93m')
+print(inductzone)
 
-# start = inductzone[1]
-# goal = closest_point(destination['Jaipur'], start)
-# path, angle = function.path_plan(start, goal)
-# frame = function.mark_points(frame, start, goal, path)
-# print(path)
-# print(angle)
+start = inductzone[1]
+goal = closest_point(destination['Jaipur'], start)
+path, angle = function.path_plan(start, goal)
+frame = mark_points(frame, start, goal, path)
+print(path)
+print(angle)
 
-# start = inductzone[2]
-# goal = closest_point(destination['Delhi'], start)
-# path, angle = function.path_plan(graph, start, goal)
-# frame = function.mark_points(frame, start, goal, path)
-# print(path)
-# print(angle)
+start = inductzone[2]
+goal = closest_point(destination['Delhi'], start)
+path, angle = function.path_plan(start, goal)
+frame = mark_points(frame, start, goal, path)
+print(path)
+print(angle)
 
-# print('\033[94m' + "Induct Station 1 - Destination" + '\033[0m')
-# start = inductzone[1]
-# for i in destination:
-#     goal = closest_point(destination[i], start)
-#     print(i, start, goal)
-#     path, angle = function.path_plan(start, goal)
-#     frame = function.mark_points(frame, start, goal, path)
-#     print(path)
-#     print(angle)
+print('\033[94m' + "Induct Station 1 - Destination" + '\033[0m')
+start = inductzone[1]
+for i in destination:
+    goal = closest_point(destination[i], start)
+    print(i, start, goal)
+    path, angle = function.path_plan(start, goal)
+    frame = mark_points(frame, start, goal, path)
+    print(path)
+    print(angle)
 
-# print('\033[95m'"Induct Station 2 - Induct Station" + '\033[0m')
-# start = inductzone[2]
-# for i in destination:
-#     goal = closest_point(destination[i], start)
-#     print(i, start, goal)
-#     path, angle = function.path_plan(graph, start, goal)
-#     frame = function.mark_points(frame, start, goal, path)
-#     print(path)
-#     print(angle)
+print('\033[95m'"Induct Station 2 - Induct Station" + '\033[0m')
+start = inductzone[2]
+for i in destination:
+    goal = closest_point(destination[i], start)
+    print(i, start, goal)
+    path, angle = function.path_plan(start, goal)
+    frame = mark_points(frame, start, goal, path)
+    print(path)
+    print(angle)
 
 cv2.imshow("frame", frame)
 cv2.waitKey()

@@ -49,7 +49,7 @@ class Bot1():
         self.reverse, self.init = False, True
         self.start, self.dest = (0, 0), (0, 0)
         self.flag, self.next, self.done = 0, 0, 0
-        self.rotate, self.ang, self.indstn = 0, 0, 0
+        self.rotate, self.ang, self.i_ang , self.indstn = 0, 0, 0, 0
         self.path, self.angle, self.points, self.pt = [], [], [], []
 
         # Creating a object to CvBridge() class
@@ -227,12 +227,14 @@ class Bot1():
                     self.goal = self.path[self.next+1]
                     self.ang = self.angle[self.next]
                     # self.ang = int(function.dynamic_angle(cur, self.goal))
-                #     self.rotate_bot(self.ang)
-                #     self.rotate = 1
-                # elif self.rotate == 1:
-                    self.rotate_bot_check(self.ang)
+                    self.rotate_bot(self.ang)
+                    self.rotate = 1
+                elif self.rotate == 1:
+                    self.rotate_bot_check(self.ang, self.pos[2])
                 else:
                     self.done = 1
+                    # c=0
+                    self.i_ang = self.ang
 
             # If self.done is 1 then move the bot to the waypoint
             elif self.done == 1:
@@ -247,7 +249,10 @@ class Bot1():
                 else:
                     # angle = function.dynamic_angle(cur, self.goal)
                     # print("Move Forward")
-                    self.move_bot(1)
+                    # if c == 0:
+                    #     pos = self.pos[2]
+                    self.move_bot(1, self.i_ang)
+                    # c = c + 1
 
             elif self.done == 2 and self.reverse == False:
                 print("Turning Bot 45 deg to chute")
@@ -257,8 +262,9 @@ class Bot1():
                 self.actuate_servo()
 
                 print("Aligning the Bot to Axis")
-                self.rotate_bot(90)
-                self.rotate_bot(45)
+                self.rotate_bot(135)
+                # self.rotate_bot(90)
+                # self.rotate_bot(45)
 
                 print("Reverse Path is tracking")
                 self.done, self.next = 0, 0
@@ -276,12 +282,21 @@ class Bot1():
             print(e)
 
     # Function to Move Bot
-    def move_bot(self, direct):
+    def move_bot(self, direct, pos):
         """
         This Function to move the bot in desired direction
         It may be either forward or backward
         """
-        self.msg.data = [direct, 0, 0]
+        dif =  pos - self.pos[2] 
+
+        if direct == 0:
+            self.msg.data = [0, 0, 0]   
+        elif self.pos[2] != pos and direct == 1:
+            direct = function.rotate_direction(self.indstn, dif, 
+                                               self.reverse, 1)
+            self.msg.data = [direct, 0, 0]
+        
+
         self.pub.publish(self.msg)
 
     # Function to Rotate Bot
@@ -290,30 +305,40 @@ class Bot1():
         This function is to rotate bot to specific angle
         based on offset
         """
-        temp = angle - self.pos[2]
+        temp = angle - offset
         direct = function.rotate_direction(self.indstn, temp, 
                                            self.reverse)
-        turn = abs(angle - self.pos[2])
+        turn = abs(angle - offset)
         self.msg.data = [direct, turn, 0]
         self.pub.publish(self.msg)
         print("turning")
 
     # Function Check Rotate Bot
-    def rotate_bot_check(self, angle):
+    def rotate_bot_check(self, angle, current):
         """
         This Function is to check the bot that it is rotated 
         to the specified angle or not
         """
-        if abs(angle) <= self.pos[2]:
-            print(angle, self.pos[2], self.pos)
+        ang = abs(angle)
+        if current in range(ang-10, ang+10):
+            print(ang, current)
             print("Angle Obtained")
             self.msg.data = [0, 0, 0]
             self.rotate = 2
 
         else:
+            if current <= ang:
+                direct = 6
+            elif current >= ang:
+                direct = 5
+            if self.reverse == True:
+                if direct == 5:
+                    direct = 6
+                else:
+                    direct = 5
             print("Obtaining Angle")
-            direct = function.rotate_direction(self.indstn, angle, 
-                                               self.reverse)
+            print(current)
+            
             self.msg.data = [direct, 0, 0]
 
         self.pub.publish(self.msg)

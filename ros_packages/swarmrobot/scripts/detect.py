@@ -165,23 +165,40 @@ class Detect():
         This function is to calculate the angle of the bot
         using the third and four point of the aruco marker
         """
-        print(pt0, pt1, pt2, pt3)
-
         x = abs(pt3[0] - pt0[0])
         y = abs(pt3[1] - pt0[1])
         p = abs(pt0[0] - pt1[0])
         q = abs(pt0[1] - pt1[1])
-        if pt0[1] < pt3[1]:
+        if pt0[1] < pt3[1] and pt0[0] > pt3[0] and pt0[0] > pt1[0]:
             rad = math.atan(x/y)
             d = rad *(180/(math.pi))
-        elif pt0[1] > pt3[1] and pt1[1] < pt2[1]:
+        elif pt0[1] > pt3[1] and pt0[0] > pt3[0] and pt0[1] > pt1[1] and pt0[0] > pt1[0]:
             rad = math.atan(q/p)
             d = rad *(180/(math.pi))
             d = d + 45
+        elif pt0[1] > pt3[1] and pt0[0] > pt3[0] and pt0[1] > pt1[1] and pt0[0] < pt1[0] :
+            rad = math.atan(p/q)
+            d = rad *(180/(math.pi))
+            d = d + 130    
+        elif pt0[1] < pt3[1] and pt0[0] < pt3[0] and pt0[1] < pt1[1]:
+            rad = math.atan(x/y)
+            d = rad *(180/(math.pi))
+        elif pt0[0] < pt3[0] and pt0[0] < pt1[0] and pt0[1] > pt3[1] and pt0[1] < pt1[1]:
+            rad = math.atan(p/q)
+            d = rad *(180/(math.pi))
+            d = d + 45   
+        elif pt0[0] < pt3[0] and pt0[0] < pt1[0] and pt0[1] > pt3[1] and pt0[1] > pt1[1]:
+            rad = math.atan(q/p)
+            d = rad *(180/(math.pi))
+            d = d + 130      
         elif pt0[1] == pt3[1]:
             d = 90
         elif pt0[1] == pt1[1]:
-            d = 180  
+            d = 180 
+        # elif pt0[0] == pt3[0]:
+        #     d = 180
+        elif pt0[0] == pt1[0]:
+            d = 90     
 
         return d
 

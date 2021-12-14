@@ -298,7 +298,7 @@ def dynamic_angle(current, way_point):
     return deg
 
 # Function to Get Rotate Direction:
-def rotate_direction(indid, ang, reverse):
+def rotate_direction(indid, ang, reverse, fine=0):
     """
     This function is to know that the rotation of the bot 
     should be in clockwise or anticlockwise direction
@@ -324,6 +324,9 @@ def rotate_direction(indid, ang, reverse):
             direct = 3
         else:
             direct = 2
+
+    if fine == 1:
+        direct = direct + 3
 
     return direct
 
