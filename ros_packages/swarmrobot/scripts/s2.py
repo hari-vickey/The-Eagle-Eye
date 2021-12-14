@@ -7,12 +7,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int16MultiArray
 from rospy_message_converter import message_converter
 
-"""
-This Class Bot1 consists of all members and modules which is used
-to control the bot1 based on the goal Received from the Client
-"""
 class Test():
-
     # Constructor
     # Initializing the variables of this class
     def __init__(self):
@@ -22,7 +17,7 @@ class Test():
                                    queue_size=1, tcp_nodelay=True)
 
         self.msg = Int16MultiArray()
-        self.indstn = 1
+        self.indstn, self.first = 1, 1
         self.reverse = False
         # Subscribing to the ROS String Topic
         self.botpos_sub = rospy.Subscriber("/bot_position", String, 
@@ -50,9 +45,9 @@ class Test():
             if self.choice == 1:
                 self.rotate_bot(self.ang)
             elif self.choice == 2:
-                print("Try Again Later")
-                self.choice = 0
-                # self.move_straight()
+                # print("Try Again Later")
+                # self.choice = 0
+                self.move_straight()
             value = {'bot1': [self.pos, self.dest, []]}
             msg = json.dumps(value)
             self.viz.publish(msg)
@@ -61,19 +56,23 @@ class Test():
             print(e)
 
     # Function to Move Bot
-    def move_straight(self, direct, pos):
+    def move_straight(self, pos):
         """
         This Function to move the bot in desired direction
         It may be either forward or backward
         """
-        dif =  pos - self.pos[2] 
-
-        if direct == 0:
-            self.msg.data = [0, 0, 0]   
-        elif self.pos[2] != pos and direct == 1:
-            direct = function.rotate_direction(self.indstn, dif, 
-                                               self.reverse, 1)
+        if self.first == 1:
+            self.cang = pos[2]
+            self.first = 2
+        else:
+            if pos[2] in range(self.cang-2. self.cang+2):
+                direct = 1
+            elif pos[2] > self.cang:
+                direct = 5
+            elif pos[2] < self.cang:
+                direct = 6
             self.msg.data = [direct, 0, 0]
+
         self.pub.publish(self.msg)
 
     # Function to Rotate Bot
@@ -107,6 +106,7 @@ class Test():
             # self.rotate = 2
             self.flag = 3
             self.choice = 0
+            self.first = 1
 
         else:
             if current <= ang:
