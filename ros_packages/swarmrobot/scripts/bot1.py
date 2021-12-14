@@ -119,11 +119,7 @@ class Bot1():
                 temp = msg['data']
                 bot = json.loads(temp)
                 self.pos = bot['bot1']
-                # Threading Applied
-                thread = threading.Thread(name="worker", target=self.path_execute, 
-                                          args=(self.pos, ))
-                thread.start()
-                # self.path_execute(self.pos)
+                self.path_execute(self.pos)
                 value = {'bot1': [self.pos, self.dest, self.path]}
                 msg = json.dumps(value)
                 self.viz.publish(msg)
@@ -320,7 +316,7 @@ class Bot1():
         to the specified angle or not
         """
         ang = abs(angle)
-        if current in range(ang-10, ang+10):
+        if current in range(ang-2, ang+2):
             print(ang, current)
             print("Angle Obtained")
             self.msg.data = [0, 0, 0]
