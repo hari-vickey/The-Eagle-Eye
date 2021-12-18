@@ -169,6 +169,7 @@ class Detect():
         y = abs(pt3[1] - pt0[1])
         p = abs(pt0[0] - pt1[0])
         q = abs(pt0[1] - pt1[1])
+        # Right Turn
         if pt0[1] < pt3[1] and pt0[0] > pt3[0] and pt0[0] > pt1[0]:
             rad = math.atan(x/y)
             d = rad *(180/(math.pi))
@@ -180,17 +181,18 @@ class Detect():
             rad = math.atan(p/q)
             d = rad *(180/(math.pi))
             d = d + 130    
+            # Left Turn
         elif pt0[1] < pt3[1] and pt0[0] < pt3[0] and pt0[1] < pt1[1]:
             rad = math.atan(x/y)
-            d = rad *(180/(math.pi))
+            d = -(rad *(180/(math.pi)))
         elif pt0[0] < pt3[0] and pt0[0] < pt1[0] and pt0[1] > pt3[1] and pt0[1] < pt1[1]:
             rad = math.atan(p/q)
             d = rad *(180/(math.pi))
-            d = d + 45   
+            d = -(d + 45)   
         elif pt0[0] < pt3[0] and pt0[0] < pt1[0] and pt0[1] > pt3[1] and pt0[1] > pt1[1]:
             rad = math.atan(q/p)
             d = rad *(180/(math.pi))
-            d = d + 130      
+            d = -(d + 130)      
         elif pt0[1] == pt3[1]:
             d = 90
         elif pt0[1] == pt1[1]:
