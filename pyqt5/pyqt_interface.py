@@ -22,13 +22,14 @@ sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-
+    """
+    Function for creating the widget objects in the proper containers and assigns the 
+    proper object names to them
+    """
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1920, 1080)
         MainWindow.setAutoFillBackground(True)
         MainWindow.setTabShape(QTabWidget.Rounded)
-
-        # self.setStyleSheet("background-color: yellow;")
 
     # For creating the Titlebar in the interface
         self.centralwidget = QWidget(MainWindow)
@@ -242,6 +243,9 @@ class Ui_MainWindow(object):
         self.lineEdit_2.setGeometry(990, 190, 331, 51)
 
     def retranslateUi(self, MainWindow):
+    """
+    Function for setting the text and titles of the widgets.
+    """
         _translate = QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -353,11 +357,15 @@ class Ui_MainWindow(object):
         self.s = 0
   
     def ImageUpdateSlot(self, Image1):
-        """ Function for updating the image in the frame """
+    """ 
+    Function for updating the image in the frame 
+    """
         self.frame.setPixmap(QPixmap.fromImage(Image1))
      
     def StartFeed(self):
-        """ Function use to start the video and timer """
+    """ 
+    Function use to start the video and timer 
+    """
         self.flag == True
         self.Worker1.start()
         self.timer1.timeout.connect(self.showTime)
@@ -365,12 +373,16 @@ class Ui_MainWindow(object):
 
 
     def StopFeed(self):
-        """ Function use to stop the video and timer """
+    """ 
+    Function use to stop the video and timer 
+    """
         self.flag = False
         self.Worker1.stop()
  
     def showTime(self):
-        """ method called by timer """
+    """ 
+    Function to display the timer 
+    """
         if self.flag == True: 
             text = int(time.time()-self.start)
             fin = str(text)
@@ -384,11 +396,15 @@ class Ui_MainWindow(object):
             self.textEdit.setFont(QFont('Times', 20))
 
 class Worker1(QThread):
-    """ Class for streaming the video """
+    """ 
+    Class for streaming the video 
+    """
     ImageUpdate = pyqtSignal(QImage)
   
     def run(self):
-        """ Function for start streaming the video """
+    """ 
+    Function for start streaming the video 
+    """
         self.ThreadActive = True
         Capture = cv2.VideoCapture(0)
         while self.ThreadActive:
@@ -402,7 +418,9 @@ class Worker1(QThread):
 
 
     def stop(self):
-        """ Function for stop streaming the video """
+    """ 
+    Function for stop streaming the video 
+    """
         self.ThreadActive = False
         Imagelogo = Image.open("black.jpg")
         numpyarray = asarray(Imagelogo)
