@@ -195,10 +195,10 @@ class Detect():
             d = -(d + 130)      
         elif pt0[1] == pt3[1]:
             d = 90
-        elif pt0[1] == pt1[1]:
-            d = 180 
-        # elif pt0[0] == pt3[0]:
-        #     d = 180
+        # elif pt0[1] == pt1[1]:
+        #     d = 180 
+        elif pt0[0] == pt3[0] and pt0[1] == pt1[1]:
+            d = 180
         elif pt0[0] == pt1[0]:
             d = 90     
 

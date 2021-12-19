@@ -48,7 +48,7 @@ class Bot1():
         # Defining Variables for this Class
         self.reverse, self.init = False, True
         self.start, self.dest = (0, 0), (0, 0)
-        self.flag, self.next, self.done, self.c_ang = 0, 0, 0, 0
+        self.flag, self.next, self.done, self.c_ang, self.rot = 0, 0, 0, 0, 1
         self.rotate, self.ang, self.i_ang , self.indstn, self.first = 0, 0, 0, 0, 1
         self.path, self.angle, self.points, self.pt = [], [], [], []
 
@@ -179,7 +179,8 @@ class Bot1():
         try:
             graph = function.read_graph()
             # points, self.angle = function.path_plan(graph, start, goal)
-            points, self.angle = function.path_plan_custom(start, goal, self.reverse)
+            points, self.angle = function.path_plan_custom(start, goal, self.indstn, 
+                                                           self.reverse)
             # Add Start and Goal to the path List
             print(points)
             if len(points) == 0:
@@ -224,13 +225,10 @@ class Bot1():
                     self.ang = self.angle[self.next]
                     # self.ang = int(function.dynamic_angle(cur, self.goal))
                     # self.rotate_bot(self.ang)
-                    self.rotate = 1
+                    self.rotate, self.first = 1, 1
                 elif self.rotate == 1:
+                    print("Anlge Need to be Obtained : " + str(self.ang))
                     self.rotate_bot(self.ang)
-                    # self.rotate_bot_check(self.ang, self.pos[2])
-                else:
-                    self.done = 1
-                    self.i_ang = self.ang
 
             # If self.done is 1 then move the bot to the waypoint
             elif self.done == 1:
@@ -245,7 +243,7 @@ class Bot1():
                 else:
                     # angle = function.dynamic_angle(cur, self.goal)
                     # print("Move Forward")
-                    self.move_bot(1, self.i_ang)
+                    self.move_bot(1, cur)
                     # c = c + 1
 
             elif self.done == 2 and self.reverse == False:
@@ -280,16 +278,16 @@ class Bot1():
         It may be either forward or backward
         """
         if self.first == 1:
-            self.cang = pos[2]
+            self.i_ang = pos[2]
             self.first = 2
         else:
-            if pos[2] in range(self.cang-2, self.cang+2):
+            if pos[2] in range(self.i_ang-2, self.i_ang+2):
                 direct = 1
                 print("Forward")
-            elif pos[2] > (self.cang-2):
+            elif pos[2] > (self.i_ang-2):
                 direct = 6
                 print("Left")
-            elif pos[2] < (self.cang+2):
+            elif pos[2] < (self.i_ang+2):
                 direct = 5
                 print("Right")
             self.msg.data = [direct, 0, 0]
@@ -302,7 +300,7 @@ class Bot1():
         This function is to rotate bot to specific angle
         based on offset
         """
-        if self.flag == 1:
+        if self.rot == 1:
             temp = angle - offset
             direct = function.rotate_direction(self.indstn, temp, 
                                                self.reverse)
@@ -310,26 +308,24 @@ class Bot1():
             self.msg.data = [direct, turn, 0]
             self.pub.publish(self.msg)
             print("Bot Rotate Function")
-            self.flag = 2
-        elif self.flag == 2:
-            self.rotate_bot_check(abs(angle), self.pos[2])
+            print(angle)
+            self.rot = 2
+        elif self.rot == 2:
+            self.rotate_bot_check(angle, self.pos[2])
 
     # Function Check Rotate Bot
-    def rotate_bot_check(self, angle, current):
+    def rotate_bot_check(self, ang, current):
         """
         This Function is to check the bot that it is rotated 
         to the specified angle or not
         """
-        ang = abs(angle)
         if current in range(ang-5, ang+5):
             print(ang, current)
             print("Angle Obtained")
+            self.c_ang += 1
             if self.c_ang >= 2:
                 self.msg.data = [0, 0, 0]
-                self.rotate = 2
-                self.flag = 3
-                self.choice = 0
-                self.first = 1
+                self.rot, self.done, self.rotate = 1, 1, 0
 
         else:
             if current <= ang:

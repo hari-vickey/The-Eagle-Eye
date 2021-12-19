@@ -141,7 +141,7 @@ def bot_in_graph(graph, bot_obs, bot_dic, exempt_bot_name):
     return graph
 
 # Function for Custom Path Planning
-def path_plan_custom(start, end, reverse):
+def path_plan_custom(start, end, reverse, indid):
     """
     This function will generate the custom path using the
     start and end points
@@ -157,7 +157,7 @@ def path_plan_custom(start, end, reverse):
     elif start[0] in range(end[0]-100, end[0]+100) or \
     start[1] in range(end[1]-100, end[1]+100):
         way_point = (end[0], end[1])
-        deg = int(dynamic_angle(start, end))
+        deg = int(dynamic_angle(start, end, indid))
         ang = [deg]
     # If the start or goal point is not in the same axis,
     # then resolving the path to horizontal and vertical paths
@@ -286,7 +286,7 @@ def calc_angle(points):
     return pt_ls, ang_ls
 
 # Function for Dynamic angle calculation
-def dynamic_angle(current, way_point):
+def dynamic_angle(current, way_point, ind_id):
     """
     This function will calculate the dynamic angle for getting the instantaneous angle
     at any time
@@ -294,7 +294,11 @@ def dynamic_angle(current, way_point):
     s = abs(current[1] - way_point[1])
     r = abs(current[0] - way_point[0])
     rad =math.atan(s/r)
-    deg = rad*(180/(math.pi))
+    d = rad*(180/(math.pi))
+    if ind_id == 1:
+        deg = d
+    else:
+        deg = -d
     return deg
 
 # Function to Get Rotate Direction:
@@ -303,21 +307,21 @@ def rotate_direction(indid, ang, reverse, fine=0):
     This function is to know that the rotation of the bot 
     should be in clockwise or anticlockwise direction
     """
-    if indid == 1:
-        if ang > 0:
-            print("Rotate ClockWise")
-            direct = 2
-        else:
-            print("Rotate AntiClockWise")
-            direct = 3
+    # if indid == 1:
+    if ang > 0:
+        print("Rotate ClockWise")
+        direct = 2
+    else:
+        print("Rotate AntiClockWise")
+        direct = 3
 
-    elif indid == 2:
-        if ang < 0:
-            print("Rotate ClockWise")
-            direct = 2
-        else:
-            print("Rotate AntiClockWise")
-            direct = 3
+    # elif indid == 2:
+    #     if ang < 0:
+    #         print("Rotate ClockWise")
+    #         direct = 2
+    #     else:
+    #         print("Rotate AntiClockWise")
+    #         direct = 3
 
     if reverse == True:
         if direct == 2:
