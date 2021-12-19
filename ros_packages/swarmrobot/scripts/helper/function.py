@@ -291,11 +291,11 @@ def dynamic_angle(current, way_point, ind_id):
     This function will calculate the dynamic angle for getting the instantaneous angle
     at any time
     """
-    s = abs(current[1] - way_point[1])
-    r = abs(current[0] - way_point[0])
-    rad =math.atan(s/r)
+    s = way_point[1] - current[1]  
+    r = way_point[0] - current[0]
+    rad =math.atan(abs(s)/abs(r))
     d = rad*(180/(math.pi))
-    if ind_id == 1:
+    if s < 0:
         deg = d
     else:
         deg = -d
