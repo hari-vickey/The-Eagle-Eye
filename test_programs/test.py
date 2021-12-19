@@ -326,26 +326,28 @@ graph = init_graph(graph,720,1280)
 
 frame, destination = get_destination(frame, graph)
 frame, inductzone = aruco_detect_inductpoint(frame)
-ins = json.dumps(destination)
-print(ins)
-des = {'bot1': (1024, 431)}
-ins = json.dumps(des)
-print(ins)
+# ins = json.dumps(destination)
+# print(ins)
+# des = {'bot1': (1024, 431)}
+# ins = json.dumps(des)
+# print(ins)
 print(destination)
-destination.update(des)
-print(destination)
+# destination.update(des)
+# print(destination)
 # print(graph)
-# print(destination['Mumbai'][0])
-# print(inductzone[1][0])
-# start = inductzone[1]
-# goal = closest_point(destination['Hyderabad'], start)
-# frame, path, angle = path_plan(graph, frame, start, goal)
-# print(path)
-# print(angle)
+print(destination['Mumbai'][0])
+print(inductzone[1][0])
+start = inductzone[1]
+goal = closest_point(destination['Hyderabad'], start)
+path, angle = path_plan(graph, start, goal)
+frame = mark_points(frame, start, goal, path)
+print(path)
+print(angle)
 
 # start = inductzone[2]
 # goal = closest_point(destination['Delhi'], start)
-# frame, path, angle = path_plan(graph, frame, start, goal)
+# path, angle = path_plan(graph, start, goal)
+# frame = mark_points(frame, start, goal, path)
 # print(path)
 # print(angle)
 
