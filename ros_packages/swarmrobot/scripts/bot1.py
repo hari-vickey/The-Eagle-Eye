@@ -48,7 +48,7 @@ class Bot1():
         # Defining Variables for this Class
         self.reverse, self.init = False, True
         self.start, self.dest = (0, 0), (0, 0)
-        self.flag, self.next, self.done, self.c_ang, self.rot = 0, 0, 0, 0, 1
+        self.flag, self.next, self.done, self.c_ang, self.rot, self.align = 0, 0, 0, 0, 1, 0
         self.rotate, self.ang, self.i_ang , self.indstn, self.first = 0, 0, 0, 0, 1
         self.path, self.angle, self.points, self.pt = [], [], [], []
 
@@ -225,41 +225,39 @@ class Bot1():
                     self.ang = self.angle[self.next]
                     # self.ang = int(function.dynamic_angle(cur, self.goal))
                     # self.rotate_bot(self.ang)
-                    self.rotate, self.first = 1, 1
+                    if self.align == 1:
+                        self.done = 1 
+                        self.rotate = 0
+                    else: 
+                        self.rotate, self.first = 1, 1
                 elif self.rotate == 1:
-                    print("Anlge Need to be Obtained : " + str(self.ang))
+                    print("Angle Need to be Obtained : " + str(self.ang))
                     self.rotate_bot(self.ang)
 
             # If self.done is 1 then move the bot to the waypoint
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[0] in range(self.goal[0]-20, self.goal[0]+20) and \
-                cur[1] in range(self.goal[1]-20, self.goal[1]+20):
+                if cur[0] in range(self.goal[0]-20, self.goal[0]+20) \
+                and cur[1] in range(self.goal[1]-20, self.goal[1]+20):
                         print("Reached the Point")
-                        self.move_bot(0)
+                        self.move_bot(0, cur) 
                         self.rotate, self.done = 0, 0
                         self.next += 1
                 else:
-                    # angle = function.dynamic_angle(cur, self.goal)
                     # print("Move Forward")
                     self.move_bot(1, cur)
-                    # c = c + 1
 
             elif self.done == 2 and self.reverse == False:
-                print("Turning Bot 45 deg to chute")
-                self.rotate_bot(self.ang, 45)
+                # print("Turning Bot 45 deg to chute")
+                # self.rotate_bot(self.ang, 45)
 
-                print("Actuating Servo")
-                self.actuate_servo()
+                # print("Actuating Servo")
+                # self.actuate_servo()
 
                 print("Aligning the Bot to Axis")
-                self.rotate_bot(135)
-
-                print("Reverse Path is tracking")
-                self.done, self.next = 0, 0
-                self.reverse = True
-                self.process_goal(self.dest, self.start)
+                self.bot_align(self.ang)
+                    
 
             elif self.done == 2:
                 print("Stop")
@@ -281,6 +279,7 @@ class Bot1():
             self.i_ang = pos[2]
             self.first = 2
         else:
+            print(self.i_ang)
             if pos[2] in range(self.i_ang-2, self.i_ang+2):
                 direct = 1
                 print("Forward")
@@ -293,6 +292,15 @@ class Bot1():
             self.msg.data = [direct, 0, 0]
 
         self.pub.publish(self.msg)
+
+    def bot_align(self, al):
+        if al < 0:
+            print("In -ve ")
+            self.rotate_bot(175 + al)
+        elif al >= 0:
+            print("In +ve ")
+            self.rotate_bot(175 - al)            
+            
 
     # Function to Rotate Bot
     def rotate_bot(self, angle, offset=0):
@@ -325,18 +333,26 @@ class Bot1():
             self.c_ang += 1
             if self.c_ang >= 2:
                 self.msg.data = [0, 0, 0]
-                self.rot, self.done, self.rotate = 1, 1, 0
+                if self.reverse == False and self.done == 2:
+                    print("Reverse Path is tracking")
+                    self.done, self.rotate = 0, 0
+                    self.next, self.align, self.first = 0, 1, 1
+                    self.reverse = True
+                    self.process_goal(self.dest, self.start)
+                else:    
+                    self.rot, self.done, self.rotate = 1, 1, 0
+                
 
         else:
             if current <= ang:
                 direct = 7
             elif current >= ang:
                 direct = 8
-            if self.reverse == True:
-                if direct == 7:
-                    direct = 8
-                else:
-                    direct = 7
+            # if self.reverse == True:
+            #     if direct == 7:
+            #         direct = 8
+            #     else:
+            #         direct = 7
             print("Obtaining Angle")
             print(current, ang)
 
@@ -374,11 +390,11 @@ class Bot1():
         move the bot outside the induct station
         """
         print("Aligning the Bot to Axis")
-        self.rotate_bot(ang, 90)
-        self.rotate_bot(90)
+        # self.rotate_bot(ang, 90)
+        self.rotate_bot(180)
 
         print("Getting into Induct Station")
-        self.move_bot(4)
+        self.move_bot(1)
         rospy.sleep(2)
 
         print("Bot has returned to Induct zone")
@@ -387,11 +403,11 @@ class Bot1():
         rospy.sleep(2)
 
         print("Getting Out of Induct Station")
-        self.move_bot(1)
-        rospy.sleep(1)
+        self.move_bot(4)
+        rospy.sleep(2)
 
         self.move_bot(0)
-        rospy.sleep(1)
+        rospy.sleep(2)
 
     # Function to Cancel Incoming Goal
     def on_cancel(self, goal_handle):
