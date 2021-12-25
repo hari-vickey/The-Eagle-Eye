@@ -263,10 +263,12 @@ def calc_angle(points):
     l, t = 0, 0
     temp_ls, ang_ls, red_ls, pt_ls = [], [], [], []
     for i in range(len(points)-1):
-        a = abs(points[i][1]-points[i+1][1])
-        b = abs(points[i][0]-points[i+1][0])
-        rad = math.atan(a/b)
+        a = points[i][1]-points[i+1][1]
+        b = points[i][0]-points[i+1][0]
+        rad = math.atan(abs(a)/abs(b))
         d = rad *(180/(math.pi))
+        if a > 0:
+            d = -d
         deg = (d - t)
         temp_ls.append(int(deg))
         red_ls.append(d)
@@ -294,20 +296,18 @@ def dynamic_angle(current, way_point, ind_id):
     s = way_point[1] - current[1]  
     r = way_point[0] - current[0]
     rad =math.atan(abs(s)/abs(r))
-    d = rad*(180/(math.pi))
-    if s < 0:
-        deg = d
-    else:
-        deg = -d
+    deg = rad*(180/(math.pi))
+    if s > 0:
+        deg = -deg
+
     return deg
 
 # Function to Get Rotate Direction:
-def rotate_direction(indid, ang, reverse, fine=0):
+def rotate_direction(ang, fine=0):
     """
     This function is to know that the rotation of the bot 
     should be in clockwise or anticlockwise direction
     """
-    # if indid == 1:
     if ang > 0:
         print("Rotate ClockWise")
         direct = 2
@@ -315,22 +315,26 @@ def rotate_direction(indid, ang, reverse, fine=0):
         print("Rotate AntiClockWise")
         direct = 3
 
-    # elif indid == 2:
-    #     if ang < 0:
-    #         print("Rotate ClockWise")
-    #         direct = 2
-    #     else:
-    #         print("Rotate AntiClockWise")
-    #         direct = 3
-
-    if reverse == True:
-        if direct == 2:
-            direct = 3
-        else:
-            direct = 2
-
     if fine == 1:
         direct = direct + 3
+
+    return direct
+
+# Function to Get directio of rotation based on the offset
+def rotate_offset(cur, ang, turn=0):
+    """
+    This function is to know that the bot need to rotate in
+    the specific direction when the bot overshoots
+    """
+    if cur <= ang:
+        print("Rotate Counter-Clockwise")
+        direct = 5
+    elif cur >= ang:
+        print("Rotate Clockwise")
+        direct = 6
+
+    if turn == 1:
+        direct = direct + 2
 
     return direct
 
