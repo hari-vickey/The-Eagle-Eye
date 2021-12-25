@@ -3,6 +3,7 @@
 // Important Note : Esp8266 is by default active low state 
 // It means the HIGH State = 0 and LOW  State = 1
 
+#define ROSSERIAL_ARDUINO_TCP
 // Declaring the Header Files required for the Program
 #include <ESP8266WiFi.h>
 #include <MPU6050_tockn.h>
@@ -11,7 +12,6 @@
 
 // Including ROS Libraries for Subscribing to the ROS Topics
 #include <ros.h>
-#define ROSSERIAL_ARDUINO_TCP
 #include <std_msgs/Int16MultiArray.h>
 
 // Creating Object for Servo and MPU Sensor
@@ -25,9 +25,7 @@ const char* password = "bijubijoy928";
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-//IPAddress server(192,168,225,28);// Hari
-IPAddress server(192,168,225,59);// Bijoy/
-//IPAddress server(192,168,225,38);// Vishnu/
+IPAddress server(192,168,225,28);// Hari
 // Set the rosserial socket server port
 const uint16_t serverPort = 11454;
 
@@ -53,21 +51,18 @@ int r2 = r1 - 20;
 // Defining a Counter
 int count = 1;
 
-
 // Declare Variable to Store the Value of MPU 6050
 float z = 0;
 float z_ang = 0;
 float z_cal = 0;
 float zg = 0;
+
 // Function to get the angle from MPU Sensor
 float mpu() {
     mpu6050.update();
     z = mpu6050.getAngleZ();
-    // Serial.print("angleZ : ");
-    // Serial.println(z);
     return z;
 }
-
 
 // Function to Move the bot in different Directions
 void movement(int direction, float angle=0) {
@@ -75,35 +70,34 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
-//        count = 1;/
+       count = 1;
     }
     if (direction == 1) {
-//        if (count == 1) zg = mpu();
-//        else if (count == 100) count = 1;
-//        count++;
-//
-//        z_ang = mpu();
+        if (count == 1) zg = mpu();
+        else if (count == 100) count = 1;
+        count++;
+        z_ang = mpu();
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
         analogWrite(ena, l1);
         analogWrite(enb, r1);
-//        if(z_ang == zg)
-//        {
-//          analogWrite(ena, linear);
-//          analogWrite(enb, linear);
-//        }
-//        else if(z_ang > zg)
-//        {
-//          analogWrite(ena, linear);
-//          analogWrite(enb, turn);
-//        }
-//        else if(z_ang < zg)
-//        {
-//          analogWrite(ena, turn);
-//          analogWrite(enb, linear);
-//        }
+       if(z_ang == zg)
+       {
+            analogWrite(ena, linear);
+            analogWrite(enb, linear);
+       }
+       else if(z_ang > zg)
+       {
+            analogWrite(ena, linear);
+            analogWrite(enb, turn);
+       }
+       else if(z_ang < zg)
+       {
+            analogWrite(ena, turn);
+            analogWrite(enb, linear);
+       }
         Serial.println("forward");
     }
     if (direction == 2) {
@@ -122,7 +116,7 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
-//        /count = 1;
+        count = 1;
     }
     if (direction == 3) {
         z_ang = mpu();
@@ -130,7 +124,7 @@ void movement(int direction, float angle=0) {
         while(z_ang <= z_cal) {
             z_ang = mpu();
             digitalWrite(in1, LOW);
-            digitalWrite(in2, HIGH);            
+            digitalWrite(in2, HIGH);
             digitalWrite(in3, HIGH);
             digitalWrite(in4, LOW);
             analogWrite(ena, l2);
@@ -140,7 +134,35 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
-//       / count = 1;
+        count = 1;
+    }
+    if (direction == 4) {
+        if (count == 1) zg = mpu();
+        else if (count == 100) count = 1;
+        count++;
+        z_ang = mpu();
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
+        analogWrite(ena, l1);
+        analogWrite(enb, r1);
+        if(z_ang == zg)
+        {
+            analogWrite(ena, linear);
+            analogWrite(enb, linear);
+        }
+        else if(z_ang < zg)
+        {
+            analogWrite(ena, linear);
+            analogWrite(enb, turn);
+        }
+        else if(z_ang > zg)
+        {
+            analogWrite(ena, turn);
+            analogWrite(enb, linear);
+        }
+        Serial.println("forward");
     }
     if (direction == 5) {
         digitalWrite(in1, HIGH);
@@ -150,11 +172,11 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, l1);
         analogWrite(enb, r2);
         Serial.println("Clock-Wise Rotation");
-//        delay(20);
-//        analogWrite(ena, 0);
-//        analogWrite(enb, 0);
+        delay(10);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
         Serial.println("Stop");
-//        /count = 1;
+        count = 1;
     }
     if (direction == 6) {
         digitalWrite(in1, HIGH);
@@ -164,68 +186,12 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, l2);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
-//        delay(20);
-//        analogWrite(ena, 0);
-//        analogWrite(enb, 0);
-        Serial.println("Stop");
-        //count = 1;
-    }
-     if (direction == 7) {
-            digitalWrite(in1, HIGH);
-            digitalWrite(in2, LOW);
-            digitalWrite(in3, LOW);
-            digitalWrite(in4, HIGH);
-            analogWrite(ena, l1);
-            analogWrite(enb, r1);
-            Serial.println("Clock-Wise Rotation");
         delay(10);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
-//        /count = 1;
+        count = 1;
     }
-    if (direction == 8) {
-            digitalWrite(in1, LOW);
-            digitalWrite(in2, HIGH);            
-            digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);
-            analogWrite(ena, l1);
-            analogWrite(enb, r1);
-            Serial.println("Anti Clock-Wise Rotation");
-        delay(10);
-        analogWrite(ena, 0);
-        analogWrite(enb, 0);
-        Serial.println("Stop");
-//       / count = 1;
-    }
-    if (direction == 4) {
-//        if (count == 1) zg = mpu();
-//        else if (count == 100) count = 1;
-//        count++;
-//        z_ang = mpu();
-        digitalWrite(in1, LOW);
-        digitalWrite(in2, HIGH);
-        digitalWrite(in3, LOW);
-        digitalWrite(in4, HIGH);
-        analogWrite(ena, l1);
-        analogWrite(enb, r1);
-//        if(z_ang == zg)
-//        {
-//          analogWrite(ena, linear);
-//          analogWrite(enb, linear);
-//        }
-//        else if(z_ang < zg)
-//        {
-//          analogWrite(ena, linear);
-//          analogWrite(enb, turn);
-//        }
-//        else if(z_ang > zg)
-//        {
-//          analogWrite(ena, turn);
-//          analogWrite(enb, linear);
-//        }
-        Serial.println("forward");
-      }
 }
 
 // Function to control Servo Motor

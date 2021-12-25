@@ -276,7 +276,7 @@ class Bot1():
             direct = 1
             print("Forward")
         else:
-            direct = function.rotate_offset(pos[2], self.ang)
+            direct = function.publish_offset(pos[2], self.ang)
         self.publish_command(direct)
 
     # Function to Stop Bot
@@ -310,7 +310,7 @@ class Bot1():
                     if self.task != 0:
                         self.first = 0
             else:
-                direct = function.rotate_direction(current, angle, 1)
+                direct = function.publish_offset(current, angle)
                 print("Obtaining Angle")
                 print(current, angle)
         self.publish_command(direct, turn)

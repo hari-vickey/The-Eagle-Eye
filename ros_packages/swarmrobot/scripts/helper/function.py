@@ -321,7 +321,7 @@ def rotate_direction(ang, fine=0):
     return direct
 
 # Function to Get directio of rotation based on the offset
-def rotate_offset(cur, ang, turn=0):
+def publish_offset(cur, ang, turn=0):
     """
     This function is to know that the bot need to rotate in
     the specific direction when the bot overshoots
@@ -332,9 +332,6 @@ def rotate_offset(cur, ang, turn=0):
     elif cur >= ang:
         print("Rotate Clockwise")
         direct = 6
-
-    if turn == 1:
-        direct = direct + 2
 
     return direct
 
