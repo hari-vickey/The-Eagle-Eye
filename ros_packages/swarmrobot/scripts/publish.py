@@ -36,10 +36,10 @@ rospy.loginfo("Publishing to the topic: bot4/control_signal")
 
 try:
     while not rospy.is_shutdown():
-        direct = int(input("Enter Direction : "))
-        angle = int(input(" Enter Angle : "))
-        servo = int(input("Enter Servo : "))
-        # direct, angle, servo = 1, 0, 0
+        # direct = int(input("Enter Direction : "))
+        # angle = int(input(" Enter Angle : "))
+        # servo = int(input("Enter Servo : "))
+        direct, angle, servo = 1, 0, 0
         msg1.data = [direct, angle, servo]
         msg2.data = [direct, angle, servo]
         msg3.data = [direct, angle, servo]

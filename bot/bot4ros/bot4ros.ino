@@ -4,6 +4,8 @@
 // Important Note : Esp8266 is by default active low state 
 // It means the HIGH State = 0 and LOW  State = 1
 
+#define ROSSERIAL_ARDUINO_TCP
+
 // Declaring the Header Files required for the Program
 #include <ESP8266WiFi.h>
 #include <MPU6050_tockn.h>
@@ -13,21 +15,19 @@
 // Including ROS Libraries for Subscribing to the ROS Topics
 #include <ros.h>
 #include <std_msgs/Int16MultiArray.h>
-#define ROSSERIAL_ARDUINO_TCP
 
 // Creating Object for Servo and MPU Sensor
 MPU6050 mpu6050(Wire);
 Servo servo;
 
 // Declaring wifi credentials
-const char* ssid = "Jiji_Tomy";
-const char* password = "bijubijoy928";
+const char* ssid = "hari";
+const char* password = "password";
 
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-//IPAddress server(192,168,225,28);// Hari
-IPAddress server(192,168,225,59);// Bijoy
+IPAddress server(192,168,43,246);// Hari
 
 // Set the rosserial socket server port
 const uint16_t serverPort = 44181;
@@ -47,22 +47,21 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int linear = 150;
-int linear1 = 150;
-int turn = 270;
+int l1 = 250;
+int r1 = 180;
+int l2 = 125;
+int r2 = 125;
+
+// Defining Variables
+int count = 1, flag = 1;
 
 // Declare Variable to Store the Value of MPU 6050
-float z = 0;
-float z_ang = 0;
-float z_cal = 0;
-float zg = 0;
+float z = 0, zg = 0, z_ang = 0, z_cal = 0;
 
 // Function to get the angle from MPU Sensor
 float mpu() {
     mpu6050.update();
     z = mpu6050.getAngleZ();
-    // Serial.print("angleZ : ");
-    // Serial.println(z);
     return z;
 }
 
@@ -74,115 +73,131 @@ void movement(int direction, float angle=0) {
         Serial.println("Stop");
     }
     if (direction == 1) {
-      zg = mpu();
-      for(int i=0;i<150;i++)
-      {
+        if (count == 1) zg = mpu();
+        else if (count == 50) count = 1;
+        count++;      
         z_ang = mpu();
         digitalWrite(in1, LOW);
         digitalWrite(in2, HIGH);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        
-        if(z_ang<zg)
-        {
-          digitalWrite(in1, HIGH);
-          digitalWrite(in2, LOW);
-          digitalWrite(in3, HIGH);
-          digitalWrite(in4, LOW);
-          analogWrite(ena, 0);
-          analogWrite(enb, 200);
+        analogWrite(ena, l1);
+        analogWrite(enb, r1);
+        if(z_ang == zg) {
+            analogWrite(ena, l1);
+            analogWrite(enb, r1);
         }
-        if(z_ang>zg)
-        {
-          digitalWrite(in1, LOW);
-          digitalWrite(in2, HIGH);
-          digitalWrite(in3, LOW);
-          digitalWrite(in4, HIGH);
-          analogWrite(ena, 200);
-          analogWrite(enb, 0);
+        else if(z_ang > zg) {
+            analogWrite(ena, l1);
+            analogWrite(enb, r2);
         }
-        else
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, linear1);
+        else if(z_ang < zg) {
+            analogWrite(ena, l2);
+            analogWrite(enb, r1);
         }
         Serial.println("Forward");
-      }
-      
-          analogWrite(ena, 0);
-          analogWrite(enb, 0);
-          delay(50);
     }
     if (direction == 2) {
+        z_ang = mpu();
+        z_cal = (-(angle)+z_ang);
+        while(z_ang >= z_cal) {
+            z_ang = mpu();
             digitalWrite(in1, LOW);
             digitalWrite(in2, HIGH);
             digitalWrite(in3, LOW);
             digitalWrite(in4, HIGH);
-            analogWrite(ena, linear);
-            analogWrite(enb, linear);
+            analogWrite(ena, l2);
+            analogWrite(enb, r2);
             Serial.println("Clock-Wise Rotation");
+        }
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
     }
     if (direction == 3) {
+        z_ang = mpu();
+        z_cal = ((angle)+z_ang);
+        while(z_ang <= z_cal) {
+            z_ang = mpu();
             digitalWrite(in1, HIGH);
             digitalWrite(in2, LOW);
             digitalWrite(in3, HIGH);
             digitalWrite(in4, LOW);
-            analogWrite(ena, linear);
-            analogWrite(enb, linear);
+            analogWrite(ena, l2);
+            analogWrite(enb, r2);
             Serial.println("Anti Clock-Wise Rotation");
+        }
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
     }
     if (direction == 4) {
-      zg = mpu();
-      for(int i=0;i<200;i++)
-      {
+        if (count == 1) zg = mpu();
+        else if (count == 50) count = 1;
+        count++;
         z_ang = mpu();
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
-        if(z_ang<zg)
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, 100);
+        analogWrite(ena, l1);
+        analogWrite(enb, r1);
+        if(z_ang == zg) {
+            analogWrite(ena, l1);
+            analogWrite(enb, r1);
         }
-        if(z_ang>zg)
-        {
-          analogWrite(ena, 100);
-          analogWrite(enb, linear1);
+        else if(z_ang < zg) {
+            analogWrite(ena, l1);
+            analogWrite(enb, r2);
         }
-        else
-        {
-          analogWrite(ena, linear);
-          analogWrite(enb, linear1);
+        else if(z_ang > zg) {
+            analogWrite(ena, r2);
+            analogWrite(enb, l1);
         }
-        zg = z_ang;
         Serial.println("Reverse");
-      }
     }
     if (direction == 5) {
-            digitalWrite(in1, LOW);
-            digitalWrite(in2, HIGH);
-            digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);
-            analogWrite(ena, turn);
-            analogWrite(enb, linear);
-            Serial.println("Clock-Wise Rotation");
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+        analogWrite(ena, l2);
+        analogWrite(enb, r2);
+        Serial.println("Clock-Wise Rotation");
+        delay(5);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
     }
     if (direction == 6) {
-            digitalWrite(in1, LOW);
-            digitalWrite(in2, HIGH);
-            digitalWrite(in3, HIGH);
-            digitalWrite(in4, LOW);
-            analogWrite(ena, linear);
-            analogWrite(enb, turn);
-            Serial.println("Anti Clock-Wise Rotation");
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+        analogWrite(ena, l2);
+        analogWrite(enb, r2);
+        Serial.println("Anti Clock-Wise Rotation");
+        delay(5);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
     }
 }
 
 // Function to control Servo Motor
 void servo_control(int pos) {
-    if (pos == 0) servo.write(0);
-    if (pos == 1) servo.write(180);
+    if (pos == 0) {
+        servo.write(0);
+        flag = 1;
+    }
+    if (pos == 1) {
+        servo.write(180);
+        flag = 0;
+    }
 }
 
 // Callback function for control signal
@@ -191,8 +206,10 @@ void controlCb(const std_msgs::Int16MultiArray& con){
     Serial.println(con.data[1]);
     Serial.println(con.data[2]);
     movement(con.data[0], con.data[1]);
-    servo_control(con.data[2]);
+    if(con.data[2] == 1 && flag == 1) servo_control(con.data[2]);
+    if(con.data[2] == 0 && flag == 0) servo_control(con.data[2]);
 }
+
 // Subscribe to the ROS Topic
 ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot1/control_signal", &controlCb);
 

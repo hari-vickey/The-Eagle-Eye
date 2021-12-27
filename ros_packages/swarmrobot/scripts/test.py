@@ -50,7 +50,7 @@ class Bot1():
         self.start, self.dest = (0, 0), (0, 0)
         self.flag, self.next, self.done, self.verify = 0, 0, 0, 0
         self.rotate, self.ang, self.indstn, self.first, self.task = 0, 0, 0, 1, 1
-        self.path, self.angle, self.points, self.pt = [], [], [], []
+        self.path, self.angle, self.points, self.way = [], [], [], []
 
         # Creating a object to CvBridge() class
         self.bridge = CvBridge()
@@ -120,7 +120,7 @@ class Bot1():
                 bot = json.loads(temp)
                 self.pos = bot['bot1']
                 self.path_execute(self.pos)
-                value = {'bot1': [self.pos, self.dest, self.path]}
+                value = {'bot1': [self.pos, self.dest, self.way]}
                 msg = json.dumps(value)
                 self.viz.publish(msg)
             else:
@@ -180,20 +180,31 @@ class Bot1():
         try:
             # graph = function.read_graph()
             # points, self.angle = function.path_plan(graph, start, goal)
-            points, self.angle = function.path_plan_custom(start, goal, self.indstn, 
+            points, turns = function.path_plan_custom(start, goal, 
+                                                           self.indstn, 
                                                            self.reverse)
+            self.path = points
+            way_point = points
+            print(self.path)
+
+            if self.reverse == True:
+                for i in range(len(turns)):
+                    turns[i] = 170 - turns[i]
+                print(turns)
+            self.angle = turns
+
             # Add Start and Goal to the path List
             if len(points) == 0:
-                points.append(start)
-                points.append(goal)
+                way_point.append(start)
+                way_point.append(goal)
             else:
-                points.insert(0, start)
-                points.insert(len(points), goal)
+                way_point.insert(0, start)
+                way_point.insert(-1, goal)
 
             print("Final Path List with Start and Goal Points")
-            print(points)
+            self.way = way_point
+            print(self.way)
             self.start = start
-            self.path = points
             self.flag = 1
 
         except Exception as e:
@@ -208,10 +219,11 @@ class Bot1():
         """
         try:
             if self.next == len(self.path)-1:
+                # print("Points list Completed")
                 self.done = 2
 
             # If self.done is 0 then turn the bot to appropriate angle
-            if self.done == 0:
+            elif self.done == 0:
                 # If next value is equal to the length of the
                 # path or angle list, then skip the statements.
                 if self.rotate == 0:
@@ -220,30 +232,31 @@ class Bot1():
                         self.ang = 0
                     else:
                         self.ang = self.angle[self.next]
-                    self.rotate_bot(self.ang, 1)
+                    self.rotate_bot(cur[2], self.ang, 1)
                     self.rotate = 1
                 elif self.rotate == 1:
-                    self.rotate_bot(self.ang)
+                    self.rotate_bot(cur[2], self.ang)
 
             # If self.done is 1 then move the bot to the waypoint
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[0] in range(self.goal[0]-20, self.goal[0]+20) \
-                and cur[1] in range(self.goal[1]-20, self.goal[1]+20):
+                if cur[0] in range(self.goal[0]-30, self.goal[0]+30) \
+                and cur[1] in range(self.goal[1]-30, self.goal[1]+30):
                         print("Reached the Point")
                         self.publish_command(0)
-                        self.rotate, self.done = 0, 0
+                        self.rotate, self.verify, self.done = 0, 0, 1
                         self.next += 1
+                        print(self.next, len(self.path))
                 else:
                     # print("Move Forward")
                     self.move_bot(cur)
 
-            elif self.done == 2 and self.reverse == False:
+            if self.done == 2 and self.reverse == False:
                 if self.task == 1:
-                    self.drop_package(pos)
+                    self.drop_package(cur)
                 elif self.task == 2:
-                    self.align_bot(pos)
+                    self.align_bot(cur)
                 elif self.task == 0:
                     print("Reverse Path is tracking")
                     self.done, self.rotate, self.next = 0, 0, 0
@@ -253,12 +266,13 @@ class Bot1():
 
             elif self.done == 2 and self.reverse == True:
                 if self.task == 1:
-                    self.align_bot(pos)
-                elif self.task = 2:
-                    self.induct_zone(pos)
-            elif self.done == 2:
+                    self.align_bot(cur)
+                elif self.task == 2:
+                    self.induct_zone(cur)
+                    self.done = 3
+            elif self.done == 3:
                 print("Stop")
-                self.induct_zone(self.ang)
+                # self.induct_zone(self.ang)
                 self.done, self.next, self.flag = 0, 0, 2
                 self.reverse = False
 
@@ -272,23 +286,25 @@ class Bot1():
         This Function to move the bot in desired direction
         It may be either forward or backward
         """
-        if pos[2] in range(self.ang-2, self.ang+2):
-            direct = 1
-            print("Forward")
-        else:
-            direct = function.publish_offset(pos[2], self.ang)
+        # if pos[2] in range(self.ang-5, self.ang+5):
+            # direct = 1
+            # print("Forward")
+        # else:
+        #     direct = function.publish_offset(pos[2], self.ang)
+        direct = 1
         self.publish_command(direct)
 
     # Function to Stop Bot
     def publish_command(self, direct, angle=0, servo=0):
         """
-        This function will stop the bot at any call instant
+        This function will send command to the bots using 
+        rosserial socket server through ROS Publisher
         """
         self.msg.data = [direct, angle, servo]
         self.pub.publish(self.msg)
 
     # Function to Rotate Bot
-    def rotate_bot(self, angle, once=0, offset=0):
+    def rotate_bot(self, current, angle, once=0, offset=0):
         """
         This function is to rotate bot to specific angle
         based on offset
@@ -297,33 +313,37 @@ class Bot1():
             temp = angle - offset
             direct = function.rotate_direction(temp)
             turn = abs(angle - offset)
-            print("Rotating Bot to the angle " + str(angle))
+            # print("Rotating Bot to the angle " + str(angle))
         elif once == 0:
             # This statement is to check the bot that 
             # it is rotated to the specified angle or not
             if current in range(angle-2, angle+2):
-                print("Current Angle : " + str(angle))
-                print("Angle in List : " + str(current))
+                # print("Current Angle : " + str(angle))
+                # print("Angle in List : " + str(current))
+                direct, turn = 0, 0
                 self.verify += 1
                 if self.verify >= 2:
-                    direct, turn, self.rotate, self.done = 0, 0, 0, 0
+                    print("Obtained Angle")
+                    # rospy.sleep(2)
+                    direct, turn, self.rotate, self.done = 0, 0, 0, 1
                     if self.task != 0:
                         self.first = 0
             else:
                 direct = function.publish_offset(current, angle)
-                print("Obtaining Angle")
+                # print("Obtaining Angle")
                 print(current, angle)
+                turn = 0
         self.publish_command(direct, turn)
 
     # Function Drop Package
-    def drop_package(self, pos):
+    def drop_package(self, cur):
         """
         This function will make the bot to drop the package from the surface
         of the bot by actuating the servo and then align the bot to the 
         horizontal axis of the camera
         """
         if self.first == 1:
-            self.rotate_bot(pos[2], 0, 45)
+            self.rotate_bot(self.pos[2], -45, 0)
         elif self.first == 0:
             print("Turned Bot 45 deg to chute")
             print("Actuating Servo")
@@ -356,7 +376,7 @@ class Bot1():
         current position
         """
         if self.first == 1:
-            self.rotate_bot(pos[2], 0, 175)
+            self.rotate_bot(self.pos[2], 175, 0)
         if self.first == 0:
             print("Aligned the Bot to Axis")
             self.first, self.task = 1, 0

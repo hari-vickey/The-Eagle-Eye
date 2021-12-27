@@ -309,10 +309,10 @@ def rotate_direction(ang, fine=0):
     should be in clockwise or anticlockwise direction
     """
     if ang > 0:
-        print("Rotate ClockWise")
+        # print("Rotate ClockWise")
         direct = 2
     else:
-        print("Rotate AntiClockWise")
+        # print("Rotate AntiClockWise")
         direct = 3
 
     if fine == 1:
@@ -327,10 +327,10 @@ def publish_offset(cur, ang, turn=0):
     the specific direction when the bot overshoots
     """
     if cur <= ang:
-        print("Rotate Counter-Clockwise")
+        # print("Rotate Counter-Clockwise")
         direct = 5
     elif cur >= ang:
-        print("Rotate Clockwise")
+        # print("Rotate Clockwise")
         direct = 6
 
     return direct
