@@ -163,12 +163,12 @@ def path_plan_custom(start, end, reverse, indid):
     # then resolving the path to horizontal and vertical paths
     elif start[0] != end[0] or start[1] != end[1]:
         if reverse == False:
-            way_point = (end[0], start[1])
+            way_point = (start[1], end[0])
         else:
-            way_point = (start[0], end[1])
+            way_point = (end[0], start[1])
         ang = [0, 90]
 
-    return [way_point], ang
+    return [way_point, end], ang
 
 # Function to plan a Path
 def path_plan(graph, start, goal):

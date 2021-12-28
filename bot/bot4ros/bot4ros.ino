@@ -47,7 +47,7 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int l1 = 250;
+int l1 = 230;
 int r1 = 180;
 int l2 = 125;
 int r2 = 125;

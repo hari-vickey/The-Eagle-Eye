@@ -21,13 +21,13 @@ MPU6050 mpu6050(Wire);
 Servo servo;
 
 // Declaring wifi credentials
-const char* ssid = "Jiji_Tomy";
-const char* password = "bijubijoy928";
+const char* ssid = "hari";
+const char* password = "password";
 
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-IPAddress server(192,168,225,28);
+IPAddress server(192,168,43,246);// Hari
 
 // Set the rosserial socket server port
 const uint16_t serverPort = 11411;
@@ -45,23 +45,23 @@ int enb = D7;
 
 // Defining the Pin for Servo Motor Control
 int sm = D6;
-int zg;
+
 // Declare Speed Control Values
-int linear = 500;
-int linear1 = 550;
-int turn = 500;
+int l1 = 220;
+int r1 = 180;
+int l2 = 125;
+int r2 = 125;
+
+// Defining Variables
+int count = 1, flag = 1;
 
 // Declare Variable to Store the Value of MPU 6050
-float z = 0;
-float z_ang = 0;
-float z_cal = 0;
+float z = 0, zg = 0, z_ang = 0, z_cal = 0;
 
 // Function to get the angle from MPU Sensor
 float mpu() {
     mpu6050.update();
     z = mpu6050.getAngleZ();
-    // Serial.print("angleZ : ");
-    // Serial.println(z);
     return z;
 }
 

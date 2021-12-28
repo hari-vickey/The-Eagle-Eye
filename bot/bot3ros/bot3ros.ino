@@ -28,6 +28,7 @@ const char* password = "password";
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
 IPAddress server(192,168,43,246);// Hari
+
 // Set the rosserial socket server port
 const uint16_t serverPort = 45411;
 
@@ -46,31 +47,21 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-//int l1 = 215;
-//int r1 = 200;
-//int l2 = l1 - 20;
-//int r2 = r1 - 20;
-//int turn = 180;
 int l1 = 220;
 int r1 = 180;
 int l2 = 125;
 int r2 = 125;
 
-// Defining a Counter
+// Defining Variables
 int count = 1, flag = 1;
 
 // Declare Variable to Store the Value of MPU 6050
-float z = 0;
-float z_ang = 0;
-float z_cal = 0;
-float zg = 0;
+float z = 0, zg = 0, z_ang = 0, z_cal = 0;
 
 // Function to get the angle from MPU Sensor
 float mpu() {
     mpu6050.update();
     z = mpu6050.getAngleZ();
-    // Serial.print("angleZ : ");
-    // Serial.println(z);
     return z;
 }
 
@@ -211,6 +202,7 @@ void servo_control(int pos) {
         flag = 0;
     }
 }
+
 // Callback function for control signal
 void controlCb(const std_msgs::Int16MultiArray& con){
     Serial.println(con.data[0]);
@@ -219,8 +211,8 @@ void controlCb(const std_msgs::Int16MultiArray& con){
     movement(con.data[0], con.data[1]);
     if(con.data[2] == 1 && flag == 1) servo_control(con.data[2]);
     if(con.data[2] == 0 && flag == 0) servo_control(con.data[2]);
-//    servo_control(con.data[2]);
 }
+
 // Subscribe to the ROS Topic
 ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot3/control_signal", &controlCb);
 
