@@ -46,8 +46,8 @@ int enb = D6;
 int sm = D8;
 
 // Declare Speed Control Values
-int l1 = 200;
-int r1 = 200;
+int l1 = 180;
+int r1 = 160;
 int l2;
 int r2;
 
@@ -174,9 +174,9 @@ void movement(int direction, float angle=0) {
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
         analogWrite(ena, l1);
-        analogWrite(enb, 150);
+        analogWrite(enb, 120);
         Serial.println("Clock-Wise Rotation");
-        delay(10);
+        delay(8);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
@@ -187,15 +187,72 @@ void movement(int direction, float angle=0) {
         digitalWrite(in2, HIGH);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        analogWrite(ena, 150);
+        analogWrite(ena, 120);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
-        delay(10);
+        delay(8);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
         count = 1;
     }
+    if (direction == 7) {
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
+        analogWrite(ena, l1);
+        analogWrite(enb, 120);
+        Serial.println("Clock-Wise Rotation");
+        delay(8);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
+    }
+    if (direction == 8) {
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
+        analogWrite(ena, 120);
+        analogWrite(enb, r1);
+        Serial.println("Anti Clock-Wise Rotation");
+        delay(8);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
+    }
+    if (direction == 9) {
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+        analogWrite(ena, l1);
+        analogWrite(enb, 120);
+        Serial.println("Clock-Wise Rotation");
+        delay(8);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
+    }
+    if (direction == 10) {
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+        analogWrite(ena, 120);
+        analogWrite(enb, r1);
+        Serial.println("Anti Clock-Wise Rotation");
+        delay(8);
+        analogWrite(ena, 0);
+        analogWrite(enb, 0);
+        Serial.println("Stop");
+        count = 1;
+    }
+    
 }
 
 // Function to control Servo Motor

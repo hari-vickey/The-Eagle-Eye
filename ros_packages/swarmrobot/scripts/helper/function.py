@@ -166,7 +166,10 @@ def path_plan_custom(start, end, reverse, indid):
             way_point = (start[1], end[0])
         else:
             way_point = (end[0], start[1])
-        ang = [0, 90]
+        if indid == 1:
+            ang = [0, 90]
+        else:
+            ang = [0, -89]
 
     return [way_point, end], ang
 
@@ -276,7 +279,7 @@ def calc_angle(points):
         l += 1
 
     for i in temp_ls:
-        if i in range (-3, 3):
+        if i in range (-1, 1):
             continue
         ang_ls.append(i)
 
@@ -285,6 +288,8 @@ def calc_angle(points):
         y = int(points[i][1])
         pt_ls.append((x, y))
 
+    for i in range(len(ang_ls)):
+        ang_ls[i] = -ang_ls[i]
     return pt_ls, ang_ls
 
 # Function for Dynamic angle calculation
@@ -321,17 +326,32 @@ def rotate_direction(ang, fine=0):
     return direct
 
 # Function to Get directio of rotation based on the offset
-def publish_offset(cur, ang, turn=0):
+def publish_offset(cur, ang, rev):
     """
     This function is to know that the bot need to rotate in
     the specific direction when the bot overshoots
     """
-    if cur <= ang:
-        # print("Rotate Counter-Clockwise")
-        direct = 5
-    elif cur >= ang:
-        # print("Rotate Clockwise")
-        direct = 6
+    if rev == 1:
+        if cur <= ang:
+            # print("Rotate Counter-Clockwise")
+            direct = 8
+        elif cur >= ang:
+            # print("Rotate Clockwise")
+            direct = 7
+    elif rev == 0:
+        if cur <= ang:
+            # print("Rotate Counter-Clockwise")
+            direct = 9
+        elif cur >= ang:
+            # print("Rotate Clockwise")
+            direct = 10
+    elif rev == 2:
+        if cur <= ang:
+            # print("Rotate Counter-Clockwise")
+            direct = 5
+        elif cur >= ang:
+            # print("Rotate Clockwise")
+            direct = 6
 
     return direct
 

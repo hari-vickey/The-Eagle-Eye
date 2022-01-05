@@ -49,7 +49,7 @@ class Bot1():
         self.init, self.reverse = True, False
         self.goal, self.start = (0, 0), (0, 0)
         self.use, self.flag, self.next, self.done, self.verify = 0, 0, 0, 0, 0
-        self.rotate, self.ang, self.indsn, self.first, self.task = 0, 0, 0, 1, 1
+        self.rotate, self.ang, self.indsn, self.first, self.task, self.r = 0, 0, 0, 1, 1, 0
 
         self.path, self.angle, self.points = [], [], []
 
@@ -180,19 +180,20 @@ class Bot1():
         """
         try:
             # graph = function.read_graph()
-            # points, self.angle = function.path_plan(graph, start, goal)
+            # points, turns = function.path_plan(graph, start, goal)
             points, turns = function.path_plan_custom(start, goal, 
-                                                           self.indsn, 
-                                                           self.reverse)
-            self.path = points
+                                                      self.indsn, 
+                                                      self.reverse)
             if self.reverse == True:
                 for i in range(len(turns)):
-                    turns[i] = 170 - turns[i]
+                    turns[i] = -turns[i]
+                points[-1] = (points[-1][0]+60, points[-1][1])
                 print(turns)
             self.angle = turns
-
+            self.path = points
             print("Final Path List with Start and Goal Points")
             print(self.path)
+            print(self.angle)
             self.flag = 1
 
         except Exception as e:
@@ -213,6 +214,8 @@ class Bot1():
             elif self.done == 0:
                 # If next value is equal to the length of the
                 # path or angle list, then skip the statements.
+                if self.next == len(self.path)-1:
+                    self.done = 2
                 if self.rotate == 0:
                     self.goal = self.path[self.next]
                     if len(self.angle) == 0:
@@ -228,12 +231,12 @@ class Bot1():
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[1] in range(self.goal[1]-65, self.goal[1]+35) \
-                and cur[0] in range(self.goal[0]-35, self.goal[0]+35):
+                if cur[1] in range(self.goal[1]-45, self.goal[1]+45) \
+                and cur[0] in range(self.goal[0]-60, self.goal[0]+65):
                         print("Reached the Point")
                         for i in range(0, 5):
                             self.publish_command(0)
-                        self.rotate, self.verify, self.done = 0, 0, 1
+                        self.rotate, self.verify, self.done = 0, 0, 0
                         self.next += 1
                         print(self.next, len(self.path))
                 else:
@@ -262,7 +265,7 @@ class Bot1():
                     print(self.done)
             elif self.done == 3:
                 print("Stop")
-                # self.induct_zone(self.ang)
+                self.induct_zone(self.ang)
                 self.done, self.next, self.flag = 0, 0, 2
                 self.reverse = False
 
@@ -277,12 +280,15 @@ class Bot1():
         It may be either forward or backward
         """
         if pos[2] in range(self.ang-2, self.ang+2):
-            direct = 1
             # print("Forward")
             if self.reverse == True:
                 direct = 4
+                self.r = 1
+            else:
+                direct = 1  
+                self.r = 0  
         else:
-            direct = function.publish_offset(pos[2], self.ang)
+            direct = function.publish_offset(pos[2], self.ang, self.r)
         # direct = 1
         self.publish_command(direct)
 
@@ -301,12 +307,12 @@ class Bot1():
         This function is to rotate bot to specific angle
         based on offset
         """
-        if self.reverse == True:
-            if angle in range(abs(angle)-5, abs(angle)+5): 
-                direct, turn, self.rotate, self.done = 0, 0, 0, 1
-        if angle in range(-2, 2):
-            direct, turn, self.rotate, self.done = 0, 0, 0, 1
-        elif once == 1:
+        # if self.reverse == True:
+            # if angle in range(abs(angle)-5, abs(angle)+5): 
+            #     direct, turn, self.rotate, self.done = 0, 0, 0, 1
+        # if current in range(-2, 2):
+        #     direct, turn, self.rotate, self.done = 0, 0, 0, 1
+        if once == 1:
             print("Rotating Bot using Gyro")
             temp = angle - offset
             direct = function.rotate_direction(-temp)
@@ -327,7 +333,7 @@ class Bot1():
                 if self.use == 1:
                     self.first = 0
             else:
-                direct = function.publish_offset(current, angle)
+                direct = function.publish_offset(current, angle, 2)
                 # print("Obtaining Angle")
                 print(current, angle)
                 turn = 0
@@ -341,7 +347,7 @@ class Bot1():
         horizontal axis of the camera
         """
         if self.first == 1:
-            if cur[1] < self.goal[1]:
+            if self.start[1] < self.goal[1]:
                 angle = 45
             else:
                 angle = -45
@@ -378,11 +384,17 @@ class Bot1():
         This function will try to align the bot to the Axis from the 
         current position
         """
-        ang = cur[2]
+        if self.angle[-1] == 90:
+            ang = 90
+        elif self.angle[-1] == -89:
+            ang = -89
+        else:
+            ang = 0
         if self.first == 1:
-            self.rotate_bot(cur[2], 0, 0)
+            self.rotate_bot(cur[2], ang, 0)
+            print("Aligning the Bot to Axis")
             self.use = 1
-        if self.first == 0:
+        elif self.first == 0:
             print("Aligned the Bot to Axis")
             self.use, self.task, self.first = 0, 0, 1
 
@@ -394,8 +406,8 @@ class Bot1():
         move the bot outside the induct station
         """
         print("Getting into Induct Station")
-        self.publish_command(1)
-        rospy.sleep(1)
+        self.publish_command(4)
+        rospy.sleep(0.8)
 
         print("Bot has returned to Induct zone")
         print("Ready to Get the Next Package")
@@ -403,8 +415,8 @@ class Bot1():
         rospy.sleep(2)
 
         print("Getting Out of Induct Station")
-        self.publish_command(4)
-        rospy.sleep(1)
+        self.publish_command(1)
+        rospy.sleep(0.8)
 
         self.publish_command(0)
         rospy.sleep(1)

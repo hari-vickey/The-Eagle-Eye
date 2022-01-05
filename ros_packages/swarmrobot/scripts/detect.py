@@ -370,6 +370,8 @@ class Detect():
         # Marking the Start Point and Goal point
         img = cv2.circle(img, (start[0], start[1]), 2, (255, 0, 0), 8)
         img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
+        if(ls[0][0] == 0 and ls[0][1] == 0):
+            del ls[0]
         ls.insert(0, (start[0], start[1]))
         ls.insert(-1, goal)
         # Marking the Minimized set of goalpoints
