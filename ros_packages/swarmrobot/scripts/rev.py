@@ -279,6 +279,8 @@ class Bot1():
         if pos[2] in range(self.ang-2, self.ang+2):
             direct = 1
             # print("Forward")
+            if self.reverse == True:
+                direct = 4
         else:
             direct = function.publish_offset(pos[2], self.ang)
         # direct = 1
@@ -378,12 +380,7 @@ class Bot1():
         """
         ang = cur[2]
         if self.first == 1:
-            if ang > 0:
-                angle = 175
-            else:
-                angle = -169
-            # angle = -165
-            self.rotate_bot(cur[2], angle, 0)
+            self.rotate_bot(cur[2], 0, 0)
             self.use = 1
         if self.first == 0:
             print("Aligned the Bot to Axis")
