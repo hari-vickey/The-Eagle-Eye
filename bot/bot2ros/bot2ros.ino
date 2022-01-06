@@ -140,7 +140,7 @@ void movement(int direction, float angle=0) {
     }
     if (direction == 4) {
         if (count == 1) zg = mpu();
-        else if (count == 50) count = 1;
+        else if (count == 500) count = 1;
         count++;
         z_ang = mpu();
         digitalWrite(in1, LOW);
