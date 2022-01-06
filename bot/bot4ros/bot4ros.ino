@@ -71,10 +71,11 @@ void movement(int direction, float angle=0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
+        count = 1;
     }
     if (direction == 1) {
         if (count == 1) zg = mpu();
-        else if (count == 50) count = 1;
+        else if (count == 500) count = 1;
         count++;      
         z_ang = mpu();
         digitalWrite(in1, LOW);
@@ -88,10 +89,12 @@ void movement(int direction, float angle=0) {
             analogWrite(enb, r1);
         }
         else if(z_ang > zg) {
+            r2 = r1 - (5*(z_ang - zg));
             analogWrite(ena, l1);
             analogWrite(enb, r2);
         }
         else if(z_ang < zg) {
+            l2 = l1 - (5*(z_ang - zg));
             analogWrite(ena, l2);
             analogWrite(enb, r1);
         }
@@ -124,8 +127,8 @@ void movement(int direction, float angle=0) {
             digitalWrite(in2, LOW);
             digitalWrite(in3, HIGH);
             digitalWrite(in4, LOW);
-            analogWrite(ena, l2);
-            analogWrite(enb, r2);
+            analogWrite(ena, l1);
+            analogWrite(enb, r1);
             Serial.println("Anti Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
@@ -135,7 +138,7 @@ void movement(int direction, float angle=0) {
     }
     if (direction == 4) {
         if (count == 1) zg = mpu();
-        else if (count == 50) count = 1;
+        else if (count == 500) count = 1;
         count++;
         z_ang = mpu();
         digitalWrite(in1, HIGH);
@@ -149,12 +152,14 @@ void movement(int direction, float angle=0) {
             analogWrite(enb, r1);
         }
         else if(z_ang < zg) {
+            r2 = r1 - (5*(z_ang - zg));
             analogWrite(ena, l1);
             analogWrite(enb, r2);
         }
         else if(z_ang > zg) {
-            analogWrite(ena, r2);
-            analogWrite(enb, l1);
+            l2 = l1 - (5*(z_ang - zg));
+            analogWrite(ena, l2);
+            analogWrite(enb, r1);
         }
         Serial.println("Reverse");
     }
@@ -192,11 +197,9 @@ void movement(int direction, float angle=0) {
 void servo_control(int pos) {
     if (pos == 0) {
         servo.write(0);
-        flag = 1;
     }
     if (pos == 1) {
         servo.write(180);
-        flag = 0;
     }
 }
 
@@ -206,12 +209,12 @@ void controlCb(const std_msgs::Int16MultiArray& con){
     Serial.println(con.data[1]);
     Serial.println(con.data[2]);
     movement(con.data[0], con.data[1]);
-    if(con.data[2] == 1 && flag == 1) servo_control(con.data[2]);
-    if(con.data[2] == 0 && flag == 0) servo_control(con.data[2]);
+    if(con.data[2] == 1) servo_control(con.data[2]);
+    if(con.data[2] == 0) servo_control(con.data[2]);
 }
 
 // Subscribe to the ROS Topic
-ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot1/control_signal", &controlCb);
+ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot4/control_signal", &controlCb);
 
 void setup() {
     // Set Up esp8266 as Output or Input
