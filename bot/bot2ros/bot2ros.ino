@@ -19,14 +19,14 @@ MPU6050 mpu6050(Wire);
 Servo servo;
 
 // Declaring wifi credentials
-const char* ssid = "Jiji_Tomy";
-const char* password = "bijubijoy928";
+const char* ssid = "hari";
+const char* password = "password";
 
 // Setting the rosserial socket server IP address
 // Use hostname -I in terminal to get the IP
 // Note : Varies for different wifi connection
-//IPAddress server(192,168,43,246);// Hari
-IPAddress server(192,168,225,59);// Bijoy
+IPAddress server(192,168,43,246);// Hari
+//IPAddress server(192,168,225,59);// Bijoy
 
 // Set the rosserial socket server port
 const uint16_t serverPort = 11454;
@@ -46,8 +46,8 @@ int enb = D6;
 int sm = D8;
 
 // Declare Speed Control Values
-int l1 = 180;
-int r1 = 160;
+int l1 = 200;
+int r1 = 200;
 int l2;
 int r2;
 
@@ -174,7 +174,7 @@ void movement(int direction, float angle=0) {
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
         analogWrite(ena, l1);
-        analogWrite(enb, 120);
+        analogWrite(enb, 150);
         Serial.println("Clock-Wise Rotation");
         delay(8);
         analogWrite(ena, 0);
@@ -187,7 +187,7 @@ void movement(int direction, float angle=0) {
         digitalWrite(in2, HIGH);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        analogWrite(ena, 120);
+        analogWrite(ena, 150);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
         delay(8);
@@ -202,7 +202,7 @@ void movement(int direction, float angle=0) {
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
         analogWrite(ena, l1);
-        analogWrite(enb, 120);
+        analogWrite(enb, 150);
         Serial.println("Clock-Wise Rotation");
         delay(8);
         analogWrite(ena, 0);
@@ -215,7 +215,7 @@ void movement(int direction, float angle=0) {
         digitalWrite(in2, HIGH);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
-        analogWrite(ena, 120);
+        analogWrite(ena, 150);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
         delay(8);
@@ -230,7 +230,7 @@ void movement(int direction, float angle=0) {
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
         analogWrite(ena, l1);
-        analogWrite(enb, 120);
+        analogWrite(enb, 150);
         Serial.println("Clock-Wise Rotation");
         delay(8);
         analogWrite(ena, 0);
@@ -243,7 +243,7 @@ void movement(int direction, float angle=0) {
         digitalWrite(in2, LOW);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
-        analogWrite(ena, 120);
+        analogWrite(ena, 150);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
         delay(8);
@@ -276,7 +276,7 @@ void controlCb(const std_msgs::Int16MultiArray& con){
 }
 
 // Subscribe to the ROS Topic
-ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot1/control_signal", &controlCb);
+ros::Subscriber<std_msgs::Int16MultiArray> sub_con("bot2/control_signal", &controlCb);
 
 void setup() {
     // Set Up esp8266 as Output or Input
