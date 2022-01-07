@@ -9,7 +9,7 @@
 #define ROSSERIAL_ARDUINO_TCP
 
 #include <MPU6050_tockn.h>
-#include <Servo.h>
+#include <MobaTools.h>
 #include <Wire.h>
 
 // Including ROS Libraries for Subscribing to the ROS Topics
@@ -18,7 +18,7 @@
 
 // Creating Object for Servo and MPU Sensor
 MPU6050 mpu6050(Wire);
-Servo servo;
+MoToServo servo;
 
 // Declaring wifi credentials
 const char* ssid = "hari";
@@ -148,8 +148,14 @@ void movement(int direction, float angle=0) {
 
 // Function to control Servo Motor
 void servo_control(int pos) {
-    if (pos == 0) servo.write(0);
-    if (pos == 1) servo.write(180);
+    if (pos == 0) {
+        servo.write(0);
+        flag = 1;
+    }
+    if (pos == 1) {
+        servo.write(180);
+        flag = 0;
+    }
 }
 
 // Callback function for control signal

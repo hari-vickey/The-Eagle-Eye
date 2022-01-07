@@ -4,12 +4,12 @@
 
 // Declaring the Header Files required for the Program
 #include <MPU6050_tockn.h>
-#include <Servo.h>
+#include <MobaTools.h>
 #include <Wire.h>
 
 // Creating Object for Servo and MPU Sensor
 MPU6050 mpu6050(Wire);
-Servo servo;
+MoToServo servo;
 
 // Defining the Pins for Motor Drivers
 int ena = D0;
