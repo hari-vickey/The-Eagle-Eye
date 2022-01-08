@@ -58,7 +58,7 @@ class Bot1():
 
         # Defining ROS Publisher
         # To Communicate with bots
-        self.pub = rospy.Publisher("bot1/control_signal", Int16MultiArray, 
+        self.pub = rospy.Publisher("bot2/control_signal", Int16MultiArray, 
                                    queue_size=1, tcp_nodelay=True)
 
         # Defining ROS Publisher
@@ -73,7 +73,7 @@ class Bot1():
                                            self.pos_callback, 
                                            queue_size=1)
 
-        # self.bot_init()
+        self.bot_init()
         # Start the Action Server
         self._as.start()
 
@@ -82,25 +82,14 @@ class Bot1():
     # Function Bot Initialize
     def bot_init(self):
         """
-        This Function will move the bot from it's starting position
-        to inside the induct zone
+        This Function will move the bot from induct zone to Start Point
         """
         try:
-            # print("Getting Into Induct Station")
-            # self.publish_command(1)
-            # rospy.sleep(1)
-
-            # self.rotate_bot(90)
-            # self.publish_command(4)
-            # rospy.sleep(1)
-            print("In Induct Station")
-            print("Waiting For Package")
-            self.publish_command(0)
-            rospy.sleep(1)
-
+            print("Inside InductZone")
+            rospy.sleep(2)
             print("Package Obtained")
             self.publish_command(1)
-            rospy.sleep(1)
+            rospy.sleep(0.5)
             self.publish_command(0)
 
         except Exception as e:
@@ -119,9 +108,9 @@ class Bot1():
                 msg = message_converter.convert_ros_message_to_dictionary(data)
                 temp = msg['data']
                 bot = json.loads(temp)
-                self.pos = bot['bot1']
+                self.pos = bot['bot2']
                 self.path_execute(self.pos)
-                value = {'bot1': [self.pos, self.goal, self.path]}
+                value = {'bot2': [self.pos, self.goal, self.path]}
                 msg = json.dumps(value)
                 self.viz.publish(msg)
             else:
@@ -163,7 +152,6 @@ class Bot1():
                     result = msgBot1Result()
                     result.flag = True
                     goal_handle.set_succeeded(result)
-                    # if self.done == 2:
                     self.done = 0
                     break
 
@@ -187,11 +175,10 @@ class Bot1():
             if self.reverse == True:
                 for i in range(len(turns)):
                     turns[i] = -turns[i]
-                points[-1] = (points[-1][0]+60, points[-1][1])
-                print(turns)
+                points[-1] = (points[-1][0], points[-1][1])
             self.angle = turns
             self.path = points
-            print("Final Path List with Start and Goal Points")
+            print("Final Path List with Goal Point")
             print(self.path)
             print(self.angle)
             self.flag = 1
@@ -214,15 +201,16 @@ class Bot1():
             elif self.done == 0:
                 # If next value is equal to the length of the
                 # path or angle list, then skip the statements.
-                if self.next == len(self.path)-1:
-                    self.done = 2
                 if self.rotate == 0:
                     self.goal = self.path[self.next]
                     if len(self.angle) == 0:
                         self.ang = 0
                     else:
-                        self.ang = self.angle[self.next]
-                    # self.rotate_bot(cur[2], self.ang, 1)
+                        try:
+                            self.ang = self.angle[self.next]
+                        except:
+                            self.done = 1
+                    self.rotate_bot(cur[2], self.ang, 1)
                     self.rotate = 1
                 elif self.rotate == 1:
                     self.rotate_bot(cur[2], self.ang)
@@ -231,23 +219,21 @@ class Bot1():
             elif self.done == 1:
                 # If the bot is within the range of goal,
                 # then stop the bot else move forward
-                if cur[1] in range(self.goal[1]-45, self.goal[1]+45) \
-                and cur[0] in range(self.goal[0]-60, self.goal[0]+65):
-                        print("Reached the Point")
+                if cur[1] in range(self.goal[1]-25, self.goal[1]+25) \
+                and cur[0] in range(self.goal[0]-25, self.goal[0]+25):
+                        print("Reached the Point" + str(self.goal))
                         for i in range(0, 5):
                             self.publish_command(0)
                         self.rotate, self.verify, self.done = 0, 0, 0
                         self.next += 1
-                        print(self.next, len(self.path))
                 else:
-                    # print("Move Forward")
                     self.move_bot(cur)
 
             if self.done == 2 and self.reverse == False:
                 if self.task == 1:
                     self.drop_package(cur)
                 elif self.task == 2:
-                    self.align_bot(cur)
+                    self.task = 0
                 elif self.task == 0:
                     print("Reverse Path is tracking")
                     self.done, self.rotate, self.next = 0, 0, 0
@@ -259,13 +245,9 @@ class Bot1():
                 if self.task == 1:
                     self.align_bot(cur)
                 elif self.task == 0:
-                    # print("self.done == 3")
-                    # self.induct_zone(cur)
+                    self.induct_zone(cur)
                     self.done = 3
-                    print(self.done)
             elif self.done == 3:
-                print("Stop")
-                self.induct_zone(self.ang)
                 self.done, self.next, self.flag = 0, 0, 2
                 self.reverse = False
 
@@ -283,12 +265,10 @@ class Bot1():
             # print("Forward")
             if self.reverse == True:
                 direct = 4
-                self.r = 1
             else:
                 direct = 1  
-                self.r = 0  
         else:
-            direct = function.publish_offset(pos[2], self.ang, self.r)
+            direct = function.publish_offset(pos[2], self.ang, self.reverse)
         # direct = 1
         self.publish_command(direct)
 
@@ -307,37 +287,25 @@ class Bot1():
         This function is to rotate bot to specific angle
         based on offset
         """
-        # if self.reverse == True:
-            # if angle in range(abs(angle)-5, abs(angle)+5): 
-            #     direct, turn, self.rotate, self.done = 0, 0, 0, 1
-        # if current in range(-2, 2):
-        #     direct, turn, self.rotate, self.done = 0, 0, 0, 1
         if once == 1:
-            print("Rotating Bot using Gyro")
             temp = angle - offset
-            direct = function.rotate_direction(-temp)
+            direct = function.rotate_direction(temp)
             turn = abs(angle - offset)
-            # print("Rotating Bot to the angle " + str(angle))
+            print("Rotating Bot using Gyro" + str(direct) + str(angle))
         elif once == 0:
             # This statement is to check the bot that 
             # it is rotated to the specified angle or not
             if current in range(angle-2, angle+2):
-                # print("Current Angle : " + str(angle))
-                # print("Angle in List : " + str(current))
                 direct, turn = 0, 0
-                # self.verify += 1
-                # if self.verify >= 2:
-                print("Obtained Angle")
-                # rospy.sleep(2)
+                print("Obtained Angle" + str(angle))
+                rospy.sleep(2)
                 direct, turn, self.rotate, self.done = 0, 0, 0, 1
                 if self.use == 1:
                     self.first = 0
             else:
                 direct = function.publish_offset(current, angle, 2)
-                # print("Obtaining Angle")
-                print(current, angle)
                 turn = 0
-        self.publish_command(direct, -turn)
+        self.publish_command(direct, turn)
 
     # Function Drop Package
     def drop_package(self, cur):
@@ -347,15 +315,20 @@ class Bot1():
         horizontal axis of the camera
         """
         if self.first == 1:
-            if self.start[1] < self.goal[1]:
-                angle = 45
-            else:
-                angle = -45
+            if self.indsn == 1:
+                if self.start[1]-20 < self.goal[1]:
+                    angle = -45
+                else:
+                    angle = 45
+            elif self.indsn == 2:
+                if self.start[1]+20 > self.goal[1]:
+                    angle = 45
+                else:
+                    angle = -45
             self.rotate_bot(self.pos[2], angle, 0)
             self.use = 1
         elif self.first == 0:
             print("Turned Bot 45 deg to chute")
-            print("Actuating Servo")
             self.actuate_servo()
             self.use, self.first, self.task = 0, 1, 2
 
@@ -367,6 +340,7 @@ class Bot1():
         1 - 180 degree
         0 - 0 degree
         """
+        print("Actuating Servo")
         # Actuate Servo to 180 degree
         print("Actuate Servo to 180 Degree")
         self.publish_command(0, 0, 1)
@@ -384,18 +358,12 @@ class Bot1():
         This function will try to align the bot to the Axis from the 
         current position
         """
-        if self.angle[-1] == 90:
-            ang = 90
-        elif self.angle[-1] == -89:
-            ang = -89
-        else:
-            ang = 0
         if self.first == 1:
+            ang = self.ang
             self.rotate_bot(cur[2], ang, 0)
-            print("Aligning the Bot to Axis")
             self.use = 1
         elif self.first == 0:
-            print("Aligned the Bot to Axis")
+            print("Aligned the Bot to previous Angle")
             self.use, self.task, self.first = 0, 0, 1
 
     # Function Induct Zone

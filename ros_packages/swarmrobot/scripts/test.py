@@ -1,424 +1,182 @@
 #!/usr/bin/env python3
-# Flipkart - Grid 3.0 - Robotics Competition
-# ROS Node - Action Server - Bot1
 """
-This ROS Node responsible for Bot1 Actions to move the bot,
-To the destination location and drop the package using ROS
-publisher with the help of rosserial_socket_server.
-Action Server - /action_bot1
-ROS Publisher - bot1/control_signal
-              - /data_visualize
+Flipkart - Grid 3.0 - Robotics Competition
+ROS Node - client.py (yet to be completed)
+This node will do the following :
+    1. Read the samplesheet.xlsx
+    2. Send Goal to the Server using ROS Action
 """
 # Importing Required Modules
-import cv2
-import json
+import os
+import math
 import rospy
-import client
 import actionlib
 import threading
-import numpy as np
+import pandas as pd
 from helper import function
-from std_msgs.msg import String
-from std_msgs.msg import Int16MultiArray
-from cv_bridge import CvBridge, CvBridgeError
-from rospy_message_converter import message_converter
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
-"""
-This Class Bot1 consists of all members and modules which is used
-to control the bot1 based on the goal Received from the Client
-"""
-class Bot1():
+# Class Client
+class Client():
+
+    """
+    This class has all the required functions to complete the task as
+    mentioned in the doc string of this file
+    """
 
     # Constructor
     # Initializing the variables of this class
     def __init__(self):
-        # Initialize Simple Action Server
-        self._as = actionlib.ActionServer('/action_bot1', msgBot1Action, 
-                                          self.on_goal, self.on_cancel, 
-                                          auto_start=False)
-        '''
-            * self.on_goal - It is the fuction pointer which points to 
-            a function which will be called when should  Action Server 
-            receives a Goal.
-            * self.on_cancel - It is the fuction pointer which points 
-            to a function which will be called when the Action Server 
-            receives a Cancel Request.
-        '''
-        # Defining Variables for this Class
-        self.init, self.reverse = True, False
-        self.goal, self.start = (0, 0), (0, 0)
-        self.use, self.flag, self.next, self.done, self.verify = 0, 0, 0, 0, 0
-        self.rotate, self.ang, self.indsn, self.first, self.task = 0, 0, 0, 1, 1
 
-        self.path, self.angle, self.points = [], [], []
+        #Initialize SimpleActionClientTurtle
+        self._ac1 = actionlib.ActionClient('/action_bot1', msgBot1Action)
+        # Dictionary to Store all the goal handels
+        self._goal_handles = {}
+        # Wait for UR5_2 Action Server
+        self._ac1.wait_for_server()
+        print("Action Server Up")
+        print("waiting for Aruco Markers Detection")
+        # rospy.sleep(3)
+        self.location = function.read_location()
+        print(self.location)
+        self.read_sheet()
 
-        # Creating a object to CvBridge() class
-        self.bridge = CvBridge()
-
-        # Defining ROS Publisher
-        # To Communicate with bots
-        self.pub = rospy.Publisher("bot1/control_signal", Int16MultiArray, 
-                                   queue_size=1, tcp_nodelay=True)
-
-        # Defining ROS Publisher
-        # To Visualize Path
-        self.viz = rospy.Publisher("/data_visualize", String, latch=True,
-                                   queue_size=4)
-        self.str = String()
-        self.msg = Int16MultiArray()
-
-        # Subscribing to the ROS String Topic
-        self.botpos_sub = rospy.Subscriber("/bot_position", String, 
-                                           self.pos_callback, 
-                                           queue_size=1)
-
-        # self.bot_init()
-        # Start the Action Server
-        self._as.start()
-
-        rospy.loginfo("Started Bot1 Action Server.")
-
-    # Function Bot Initialize
-    def bot_init(self):
+    # Function to read Excel Sheet
+    def read_sheet(self):
         """
-        This Function will move the bot from it's starting position
-        to inside the induct zone
+        This Function will read the excel sheet and sort 
+        induct stations
         """
-        try:
-            # print("Getting Into Induct Station")
-            # self.publish_command(1)
-            # rospy.sleep(1)
+        ## Work Needed ##
+        # Send Goal to Action Client
+        # Threaded the algorithm function to process real time images
+        # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
+        # thread.start()
+        # self.algorithm(cv_image)
+        ind_stn = 1
+        start = (self.location[ind_stn][0], self.location[ind_stn][1])
+        goal = self.closest_point(self.location['Bengaluru'], start)
+        print(start, goal)
+        self._goal_handles[0] = self.send_goal_1(ind_stn, start[0], 
+                                                 start[1], goal[0], 
+                                                 goal[1])
 
-            # self.rotate_bot(90)
-            # self.publish_command(4)
-            # rospy.sleep(1)
-            print("In Induct Station")
-            print("Waiting For Package")
-            self.publish_command(0)
-            rospy.sleep(1)
+        # for i in self.location:
+        #     if str(i) == "2" or str(i) == "1":
+        #         continue
+        #     start = (self.location[1][0], self.location[1][1])
+        #     goal = self.closest_point(self.location[i], start)
+        #     print(start, goal)
+        #     self._goal_handles[0] = self.send_goal_1(1, start[0]-60, 
+        #                                              start[1], goal[0], 
+        #                                              goal[1])
 
-            print("Package Obtained")
-            self.publish_command(1)
-            rospy.sleep(1)
-            self.publish_command(0)
-
-        except Exception as e:
-            print("Exception In Bot Initialize Function")
-            print(e)
-
-    # Callback Function for Bot Position Subscriber
-    def pos_callback(self, data):
+    # Function On_Transition
+    def on_transition(self, goal_handle):
         """
-        This Function gets all the published bot position as String and 
-        convert the data to dictionary for processing.
-
+        This function will be called when there is a change of state in the 
+        Action Client State Machine
         """
-        try:
-            if self.flag == 1:
-                msg = message_converter.convert_ros_message_to_dictionary(data)
-                temp = msg['data']
-                bot = json.loads(temp)
-                self.pos = bot['bot1']
-                self.path_execute(self.pos)
-                value = {'bot1': [self.pos, self.goal, self.path]}
-                msg = json.dumps(value)
-                self.viz.publish(msg)
+
+        # from on_goal() to on_transition(). goal_handle generated by send_goal() is used here.
+        result = msgBot1Result()
+        ind = 0
+        for i in self._goal_handles:
+            if self._goal_handles[i] == goal_handle:
+                ind = i + 1
+                break
+
+        rospy.loginfo("Transition Callback. Client Goal Handle #: " + str(ind))
+
+        # Comm State - Monitors the State Machine of the Client which is different from Server's
+        # Comm State = 2 -> Active
+        # Comm State = 3 -> Wating for Result
+        # Comm State = 7 -> Done
+
+        if goal_handle.get_comm_state() == 2:
+            rospy.loginfo(str(ind) + ": Goal just went active.")
+
+        if goal_handle.get_comm_state() == 7:
+            rospy.loginfo(str(ind) + ": Goal is DONE")
+            rospy.loginfo(goal_handle.get_terminal_state())
+            result = goal_handle.get_result()
+            rospy.loginfo(result.flag)
+            if result.flag == True:
+                rospy.loginfo("Goal successfully completed. Client Goal Handle #: " + str(ind))
             else:
-                pass
+                rospy.loginfo("Goal failed. Client Goal Handle #: " + str(ind))
 
-        except Exception as e:
-            print("Exception in Position Callback Function")
-            print(e)
-
-    # This function will be called when Action Server receives a Goal
-    def on_goal(self, goal_handle):       
+    # Function Send Goal
+    def send_goal_1(self, *args):
         """
-        This function will receive the goal from the action server and
-        process them to acheive the goal
+        This function is used to send Goals to Action Server
         """
-        try:
-            goal = goal_handle.get_goal()
-            rospy.loginfo("Received new goal from Client")
+        # Create a Goal Message object
+        goal = msgBot1Goal()
+        goal.induct_station = args[0]
+        goal.induct_x = args[1]
+        goal.induct_y = args[2]
+        goal.goal_x = args[3]
+        goal.goal_y = args[4]
+        rospy.loginfo("Goal Sent")
+        print("Induct Station - " + str(args[0]))
+        print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")
+        # self.on_transition - It is a function pointer to a function,
+        # which will be called when there is a change of state in the 
+        # Action Client State Machine
+        goal_handle = self._ac1.send_goal(goal, self.on_transition, None)
 
-            self.start = (goal.induct_x, goal.induct_y)
-            print(self.start)
-            self.goal = (goal.goal_x, goal.goal_y)
-            print(self.goal)
-            self.indsn = goal.induct_station
+        return goal_handle
 
-            # Accept the Goal
-            goal_handle.set_accepted()
-
-            # Processing the Goal
-            goal_id = goal_handle.get_goal_id()
-            rospy.loginfo("Processing goal : " + str(goal_id.id))
-            self.process_goal(self.start, self.goal)
-
-            # Check whether the Goal is Processed
-            while True:
-                if self.flag == 2:
-                    rospy.loginfo("Goal Completed")
-                    self.flag = 0
-                    result = msgBot1Result()
-                    result.flag = True
-                    goal_handle.set_succeeded(result)
-                    # if self.done == 2:
-                    self.done = 0
-                    break
-
-        except:
-            print("Exception in On Goal Function")
-            print(e)
-            goal_handle.set_rejected()
-
-    # Function to process
-    def process_goal(self, start, goal):
+    # Function Algorithm
+    def algorithm(self, image):
         """
-        This Function to plan a path and execute them to move 
-        the bot
+        This function is responsible to complete the entire task.
+        It is also combined with multiple control statements to
+        get optimal results
         """
-        try:
-            # graph = function.read_graph()
-            # points, self.angle = function.path_plan(graph, start, goal)
-            points, turns = function.path_plan_custom(start, goal, 
-                                                           self.indsn, 
-                                                           self.reverse)
-            self.path = points
-            if self.reverse == True:
-                for i in range(len(turns)):
-                    turns[i] = 170 - turns[i]
-                print(turns)
-            self.angle = turns
+        self.send_goal()
+        ###############################
+        #                             #
+        ##                           ##
+        ###                         ###
+        # Lot of Work need to be done #
+        ###                         ###
+        ##                           ##
+        #                             #
+        ###############################
 
-            print("Final Path List with Start and Goal Points")
-            print(self.path)
-            self.flag = 1
 
-        except Exception as e:
-            print("Exception in Process Goal Function")
-            print(e)
-
-    # Function to Monitor Bot
-    def path_execute(self, cur):
+    # Function to identify the closest point
+    def closest_point(self, ls, pos):
         """
-        This function will excute the path planned and monitor its
-        status of operation
+        This Function will choose the closest point of the destination
+        from the current position of the bot.
+        """
+        x, y = pos
+        d = list(map(lambda t: math.sqrt(pow(t[0]-x,2)+pow(t[1]-y,2)),ls))
+        min_res = min(d)
+        i = d.index(min_res)
+
+        return ls[i]
+
+    # Function to validate point
+    def validate_point(self, coord, points):
+        """
+        This function will validate the point with obstacles of
+        its presence and returns the result as 1 or 0
         """
         try:
-            if self.next == len(self.path) and self.done != 3:
-                self.done = 2
+            points.index(coord)
+            flag = 0
+        except ValueError:
+            flag = 1
 
-            # If self.done is 0 then turn the bot to appropriate angle
-            elif self.done == 0:
-                # If next value is equal to the length of the
-                # path or angle list, then skip the statements.
-                if self.rotate == 0:
-                    self.goal = self.path[self.next]
-                    if len(self.angle) == 0:
-                        self.ang = 0
-                    else:
-                        self.ang = self.angle[self.next]
-                    # self.rotate_bot(cur[2], self.ang, 1)
-                    self.rotate = 1
-                elif self.rotate == 1:
-                    self.rotate_bot(cur[2], self.ang)
+        return flag
 
-            # If self.done is 1 then move the bot to the waypoint
-            elif self.done == 1:
-                # If the bot is within the range of goal,
-                # then stop the bot else move forward
-                if cur[1] in range(self.goal[1]-65, self.goal[1]+35) \
-                and cur[0] in range(self.goal[0]-35, self.goal[0]+35):
-                        print("Reached the Point")
-                        for i in range(0, 5):
-                            self.publish_command(0)
-                        self.rotate, self.verify, self.done = 0, 0, 1
-                        self.next += 1
-                        print(self.next, len(self.path))
-                else:
-                    # print("Move Forward")
-                    self.move_bot(cur)
-
-            if self.done == 2 and self.reverse == False:
-                if self.task == 1:
-                    self.drop_package(cur)
-                elif self.task == 2:
-                    self.align_bot(cur)
-                elif self.task == 0:
-                    print("Reverse Path is tracking")
-                    self.done, self.rotate, self.next = 0, 0, 0
-                    self.task = 1
-                    self.reverse = True
-                    self.process_goal(self.goal, self.start)
-
-            elif self.done == 2 and self.reverse == True:
-                if self.task == 1:
-                    self.align_bot(cur)
-                elif self.task == 0:
-                    # print("self.done == 3")
-                    # self.induct_zone(cur)
-                    self.done = 3
-                    print(self.done)
-            elif self.done == 3:
-                print("Stop")
-                # self.induct_zone(self.ang)
-                self.done, self.next, self.flag = 0, 0, 2
-                self.reverse = False
-
-        except Exception as e:
-            print("Exception in Path Execute Function")
-            print(e)
-
-    # Function to Move Bot
-    def move_bot(self, pos):
-        """
-        This Function to move the bot in desired direction
-        It may be either forward or backward
-        """
-        if pos[2] in range(self.ang-2, self.ang+2):
-            direct = 1
-            # print("Forward")
-        else:
-            direct = function.publish_offset(pos[2], self.ang)
-        # direct = 1
-        self.publish_command(direct)
-
-    # Function to Stop Bot
-    def publish_command(self, direct, angle=0, servo=0):
-        """
-        This function will send command to the bots using 
-        rosserial socket server through ROS Publisher
-        """
-        self.msg.data = [direct, angle, servo]
-        self.pub.publish(self.msg)
-
-    # Function to Rotate Bot
-    def rotate_bot(self, current, angle, once=0, offset=0):
-        """
-        This function is to rotate bot to specific angle
-        based on offset
-        """
-        if self.reverse == True:
-            if angle in range(abs(angle)-5, abs(angle)+5): 
-                direct, turn, self.rotate, self.done = 0, 0, 0, 1
-        if angle in range(-2, 2):
-            direct, turn, self.rotate, self.done = 0, 0, 0, 1
-        elif once == 1:
-            print("Rotating Bot using Gyro")
-            temp = angle - offset
-            direct = function.rotate_direction(-temp)
-            turn = abs(angle - offset)
-            # print("Rotating Bot to the angle " + str(angle))
-        elif once == 0:
-            # This statement is to check the bot that 
-            # it is rotated to the specified angle or not
-            if current in range(angle-2, angle+2):
-                # print("Current Angle : " + str(angle))
-                # print("Angle in List : " + str(current))
-                direct, turn = 0, 0
-                # self.verify += 1
-                # if self.verify >= 2:
-                print("Obtained Angle")
-                # rospy.sleep(2)
-                direct, turn, self.rotate, self.done = 0, 0, 0, 1
-                if self.use == 1:
-                    self.first = 0
-            else:
-                direct = function.publish_offset(current, angle)
-                # print("Obtaining Angle")
-                print(current, angle)
-                turn = 0
-        self.publish_command(direct, -turn)
-
-    # Function Drop Package
-    def drop_package(self, cur):
-        """
-        This function will make the bot to drop the package from the surface
-        of the bot by actuating the servo and then align the bot to the 
-        horizontal axis of the camera
-        """
-        if self.first == 1:
-            if cur[1] < self.goal[1]:
-                angle = 45
-            else:
-                angle = -45
-            self.rotate_bot(self.pos[2], angle, 0)
-            self.use = 1
-        elif self.first == 0:
-            print("Turned Bot 45 deg to chute")
-            print("Actuating Servo")
-            self.actuate_servo()
-            self.use, self.first, self.task = 0, 1, 2
-
-    # Function to Actuate Servo
-    def actuate_servo(self):
-        """
-        This function will publish signals to the bot 
-        to actuate the servo
-        1 - 180 degree
-        0 - 0 degree
-        """
-        # Actuate Servo to 180 degree
-        print("Actuate Servo to 180 Degree")
-        self.publish_command(0, 0, 1)
-        # Sleep For 2 Seconds
-        # So, that the package falls from the bot
-        rospy.sleep(2)
-
-        # Revert the Servo to Normal Position
-        print("Actuate Servo to 0 Degree")
-        self.publish_command(0)
-
-    # Function to align Bot
-    def align_bot(self, cur):
-        """
-        This function will try to align the bot to the Axis from the 
-        current position
-        """
-        ang = cur[2]
-        if self.first == 1:
-            if ang > 0:
-                angle = 175
-            else:
-                angle = -169
-            # angle = -165
-            self.rotate_bot(cur[2], angle, 0)
-            self.use = 1
-        if self.first == 0:
-            print("Aligned the Bot to Axis")
-            self.use, self.task, self.first = 0, 0, 1
-
-    # Function Induct Zone
-    def induct_zone(self, ang):
-        """
-        This Function will move the bot inside the induct zone
-        and make the robot wait for next package afterwards 
-        move the bot outside the induct station
-        """
-        print("Getting into Induct Station")
-        self.publish_command(1)
-        rospy.sleep(1)
-
-        print("Bot has returned to Induct zone")
-        print("Ready to Get the Next Package")
-        self.publish_command(0)
-        rospy.sleep(2)
-
-        print("Getting Out of Induct Station")
-        self.publish_command(4)
-        rospy.sleep(1)
-
-        self.publish_command(0)
-        rospy.sleep(1)
-
-    # Function to Cancel Incoming Goal
-    def on_cancel(self, goal_handle):
-        """
-        This function will be called when Goal Cancel request is send to the Action Server
-        """
-        rospy.loginfo("Received cancel request.")
-        goal_id = goal_handle.get_goal_id()
+    # Destructor of the Class
+    def __del__(self):
+        rospy.loginfo('\033[94m' + "Shutting Down" + '\033[0m')
 
 # Main Function
 def main():
@@ -426,10 +184,10 @@ def main():
     This is the start of execution of this node
     """
     # Initializing the Node
-    rospy.init_node('node_bot_1', anonymous=True)
+    rospy.init_node('node_client', anonymous=True)
 
-    # Creating Object for the Class Bot1
-    bot1 = Bot1()
+    # Creating Object for the Class Client
+    cli = Client()
 
     try:
         # Spinning the Main Function
@@ -437,8 +195,12 @@ def main():
 
     except KeyboardInterrupt:
         rospy.loginfo("Shutting down")
+
         # Deleting the Created Object if Interrupted
-        del bot1
+        del cli
+
+        # Destroying all the cv2 Windows Created
+        cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main()

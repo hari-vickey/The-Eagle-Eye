@@ -141,21 +141,21 @@ def bot_in_graph(graph, bot_obs, bot_dic, exempt_bot_name):
     return graph
 
 # Function for Custom Path Planning
-def path_plan_custom(start, end, reverse, indid):
+def path_plan_custom(start, end,indid, reverse):
     """
     This function will generate the custom path using the
     start and end points
     """
     # If the goal is collinear or in tolerance with the 
     # current axis then there is no need of waypoint
-    if start[0] in range(end[0]-20, end[0]+20) or \
-    start[1] in range(end[1]-20, end[1]+20):
+    if start[0] in range(end[0]-5, end[0]+5) or \
+    start[1] in range(end[1]-5, end[1]+5):
         way_point = (end[0], end[1])
         ang = [0]
     # If the goal is within the adjacent squares
     # then the path can be obtained is diagnal
-    elif start[0] in range(end[0]-100, end[0]+100) or \
-    start[1] in range(end[1]-100, end[1]+100):
+    elif start[0] in range(end[0]-60, end[0]+60) or \
+    start[1] in range(end[1]-60, end[1]+60):
         way_point = (end[0], end[1])
         deg = int(dynamic_angle(start, end, indid))
         ang = [deg]
@@ -163,13 +163,17 @@ def path_plan_custom(start, end, reverse, indid):
     # then resolving the path to horizontal and vertical paths
     elif start[0] != end[0] or start[1] != end[1]:
         if reverse == False:
-            way_point = (start[1], end[0])
-        else:
             way_point = (end[0], start[1])
-        if indid == 1:
-            ang = [0, 90]
+            if indid == 1:
+                ang = [0, 90]
+            else:
+                ang = [0, -89]
         else:
-            ang = [0, -89]
+            way_point = (start[0], end[1])
+            if indid == 1:
+                ang = [-90, 0]
+            else:
+                ang = [89, 0]
 
     return [way_point, end], ang
 
@@ -308,7 +312,7 @@ def dynamic_angle(current, way_point, ind_id):
     return deg
 
 # Function to Get Rotate Direction:
-def rotate_direction(ang, fine=0):
+def rotate_direction(ang):
     """
     This function is to know that the rotation of the bot 
     should be in clockwise or anticlockwise direction
@@ -320,9 +324,6 @@ def rotate_direction(ang, fine=0):
         # print("Rotate AntiClockWise")
         direct = 3
 
-    if fine == 1:
-        direct = direct + 3
-
     return direct
 
 # Function to Get directio of rotation based on the offset
@@ -331,27 +332,21 @@ def publish_offset(cur, ang, rev):
     This function is to know that the bot need to rotate in
     the specific direction when the bot overshoots
     """
-    if rev == 1:
+    if rev == 2:
         if cur <= ang:
-            # print("Rotate Counter-Clockwise")
-            direct = 8
-        elif cur >= ang:
-            # print("Rotate Clockwise")
-            direct = 7
-    elif rev == 0:
-        if cur <= ang:
-            # print("Rotate Counter-Clockwise")
-            direct = 9
-        elif cur >= ang:
-            # print("Rotate Clockwise")
-            direct = 10
-    elif rev == 2:
-        if cur <= ang:
-            # print("Rotate Counter-Clockwise")
             direct = 5
         elif cur >= ang:
-            # print("Rotate Clockwise")
             direct = 6
+    elif rev == 1:
+        if cur <= ang:
+            direct = 7
+        elif cur >= ang:
+            direct = 8
+    elif rev == 0:
+        if cur <= ang:
+            direct = 9
+        elif cur >= ang:
+            direct = 10
 
     return direct
 

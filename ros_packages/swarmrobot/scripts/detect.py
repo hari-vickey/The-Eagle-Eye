@@ -169,7 +169,6 @@ class Detect():
         y = abs(pt3[1] - pt0[1])
         p = abs(pt0[0] - pt1[0])
         q = abs(pt0[1] - pt1[1])
-        # Right Turn
         if pt0[1] < pt3[1] and pt0[0] > pt3[0] and pt0[0] > pt1[0]:
             rad = math.atan(x/y)
             d = rad *(180/(math.pi))
@@ -195,8 +194,6 @@ class Detect():
             d = -(d + 130)      
         elif pt0[1] == pt3[1]:
             d = 90
-        # elif pt0[1] == pt1[1]:
-        #     d = 180 
         elif pt0[0] == pt3[0] and pt0[1] == pt1[1]:
             d = 180
         elif pt0[0] == pt1[0]:
@@ -377,8 +374,6 @@ class Detect():
         # Marking the Minimized set of goalpoints
         for point1, point2 in zip(ls, ls[1:]):
             cv2.line(img, point1, point2, [0, 255, 0], 2)
-
-        img = cv2.resize(img, (640, 360))
 
         return img
 
