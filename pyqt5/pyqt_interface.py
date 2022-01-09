@@ -25,18 +25,22 @@ class Ui_MainWindow(object):
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1920, 1080)
-        MainWindow.setAutoFillBackground(True)
         MainWindow.setTabShape(QTabWidget.Rounded)
 
-        # self.setStyleSheet("background-color: yellow;")
-
-    # For creating the Titlebar in the interface
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+    # For adding background wallpaper for the main window 
+        self.label = QLabel(self.centralwidget)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(0, -20, 1920, 1080))
+        self.label.setPixmap(QPixmap("mainwindow.png"))
+
+    # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
         self.textBrowser.setObjectName("textBrowser")
-        self.textBrowser.setStyleSheet("background-color: black")
+        self.textBrowser.setStyleSheet("background-color: #fec4fe")
 
     # For creating the table
         self.font = QFont("Times", 12)
@@ -207,6 +211,7 @@ class Ui_MainWindow(object):
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setGeometry(QRect(1500, 550, 200, 87))
 
+
     # For showing the text "Run time" 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
@@ -216,13 +221,15 @@ class Ui_MainWindow(object):
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QRect(309, 800, 141, 51))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.setStyleSheet("background-color : #00FF00")
+        # self.pushButton.setStyleSheet("background-color : #00FF00")
+        self.pushButton.setStyleSheet("border:2px; background-color: #00FF00; border-radius : 20px")
 
     # For Creating Stop PushButton 
         self.pushButton_2 = QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QRect(510, 800,141,51))
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.setStyleSheet("background-color : red")
+        # self.pushButton_2.setStyleSheet("background-color : red")
+        self.pushButton_2.setStyleSheet("border:2px; background-color: red; border-radius : 20px")
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
@@ -351,6 +358,8 @@ class Ui_MainWindow(object):
         self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
         self.start = time.time()
         self.s = 0
+
+        self.label.setText("")
   
     def ImageUpdateSlot(self, Image1):
         """ Function for updating the image in the frame """
@@ -414,8 +423,9 @@ class Worker1(QThread):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv) 
     MainWindow = QMainWindow()
+    MainWindow.setStyleSheet("QMainWindow{background-image: url ('22.png')}")
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
