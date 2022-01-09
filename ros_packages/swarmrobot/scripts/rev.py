@@ -13,14 +13,10 @@ ROS Publisher - bot1/control_signal
 import cv2
 import json
 import rospy
-import client
 import actionlib
-import threading
-import numpy as np
 from helper import function
 from std_msgs.msg import String
 from std_msgs.msg import Int16MultiArray
-from cv_bridge import CvBridge, CvBridgeError
 from rospy_message_converter import message_converter
 from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 
@@ -28,7 +24,7 @@ from swarmrobot.msg import msgBot1Action, msgBot1Goal, msgBot1Result
 This Class Bot1 consists of all members and modules which is used
 to control the bot1 based on the goal Received from the Client
 """
-class Bot1():
+class Rev():
 
     # Constructor
     # Initializing the variables of this class
@@ -46,15 +42,13 @@ class Bot1():
             receives a Cancel Request.
         '''
         # Defining Variables for this Class
-        self.init, self.reverse = True, False
+        self.reverse = False
+        self.path, self.angle = [], []
         self.goal, self.start = (0, 0), (0, 0)
-        self.use, self.flag, self.next, self.done, self.verify = 0, 0, 0, 0, 0
-        self.rotate, self.ang, self.indsn, self.first, self.task, self.r = 0, 0, 0, 1, 1, 0
 
-        self.path, self.angle, self.points = [], [], []
-
-        # Creating a object to CvBridge() class
-        self.bridge = CvBridge()
+        self.first, self.task = 1, 1
+        self.use, self.flag, self.next, self.indsn = 0, 0, 0, 0
+        self.ang, self.done, self.rotate, self.threadLock = 0, 0, 0, 0
 
         # Defining ROS Publisher
         # To Communicate with bots
@@ -109,7 +103,12 @@ class Bot1():
                 temp = msg['data']
                 bot = json.loads(temp)
                 self.pos = bot['bot2']
-                self.path_execute(self.pos)
+                if self.threadLock == 0:
+                    # threading.Thread(name=worker, target=self.path_execute, args=(pos,))
+                    self.path_execute(self.pos)
+                else:
+                    self.stop_bot(self.pos)
+                
                 value = {'bot2': [self.pos, self.goal, self.path]}
                 msg = json.dumps(value)
                 self.viz.publish(msg)
@@ -194,6 +193,7 @@ class Bot1():
         status of operation
         """
         try:
+            self.threadLock = 1
             if self.next == len(self.path) and self.done != 3:
                 self.done = 2
 
@@ -217,18 +217,10 @@ class Bot1():
 
             # If self.done is 1 then move the bot to the waypoint
             elif self.done == 1:
-                # If the bot is within the range of goal,
-                # then stop the bot else move forward
-                if cur[1] in range(self.goal[1]-25, self.goal[1]+25) \
-                and cur[0] in range(self.goal[0]-25, self.goal[0]+25):
-                        print("Reached the Point" + str(self.goal))
-                        for i in range(0, 5):
-                            self.publish_command(0)
-                        self.rotate, self.verify, self.done = 0, 0, 0
-                        self.next += 1
-                else:
-                    self.move_bot(cur)
+                self.move_bot(cur)
 
+            # If self.done is 2 then drop the package and process the  
+            # goal to trace the reverse path
             if self.done == 2 and self.reverse == False:
                 if self.task == 1:
                     self.drop_package(cur)
@@ -241,6 +233,9 @@ class Bot1():
                     self.reverse = True
                     self.process_goal(self.goal, self.start)
 
+            # If self.done is 2 and if the bot is tracing the reverse path
+            # then align the bot to the horizontal axis and get into the 
+            # induct zone to get the package
             elif self.done == 2 and self.reverse == True:
                 if self.task == 1:
                     self.align_bot(cur)
@@ -251,6 +246,7 @@ class Bot1():
                 self.done, self.next, self.flag = 0, 0, 2
                 self.reverse = False
 
+            self.threadLock = 0
         except Exception as e:
             print("Exception in Path Execute Function")
             print(e)
@@ -261,7 +257,15 @@ class Bot1():
         This Function to move the bot in desired direction
         It may be either forward or backward
         """
-        if pos[2] in range(self.ang-2, self.ang+2):
+        # If the bot is within the range of goal,
+        # then stop the bot else move forward
+        if cur[1] in range(self.goal[1]-25, self.goal[1]+25) \
+        and cur[0] in range(self.goal[0]-25, self.goal[0]+25):
+                print("Reached the Point" + str(self.goal))
+                self.publish_command(0)
+                self.rotate, self.done = 0, 0
+                self.next += 1
+        else if pos[2] in range(self.ang-2, self.ang+2):
             # print("Forward")
             if self.reverse == True:
                 direct = 4
@@ -273,13 +277,18 @@ class Bot1():
         self.publish_command(direct)
 
     # Function to Stop Bot
-    def publish_command(self, direct, angle=0, servo=0):
+    def stop_bot(self, cur):
         """
-        This function will send command to the bots using 
-        rosserial socket server through ROS Publisher
+        This Function will be used in for threading to stop
+        the bot more appropriately
         """
-        self.msg.data = [direct, angle, servo]
-        self.pub.publish(self.msg)
+        # Stop the bot, if the following conditions are met
+        if cur[1] in range(self.goal[1]-25, self.goal[1]+25) \
+        and cur[0] in range(self.goal[0]-25, self.goal[0]+25):
+                print("Reached the Point" + str(self.goal))
+                self.publish_command(0)
+                self.rotate, self.done = 0, 0
+                self.next += 1
 
     # Function to Rotate Bot
     def rotate_bot(self, current, angle, once=0, offset=0):
@@ -306,6 +315,15 @@ class Bot1():
                 direct = function.publish_offset(current, angle, 2)
                 turn = 0
         self.publish_command(direct, turn)
+
+    # Function to Publish Commands to the Bot
+    def publish_command(self, direct, angle=0, servo=0):
+        """
+        This function will send command to the bots using 
+        rosserial socket server through ROS Publisher
+        """
+        self.msg.data = [direct, angle, servo]
+        self.pub.publish(self.msg)
 
     # Function Drop Package
     def drop_package(self, cur):
@@ -403,10 +421,10 @@ def main():
     This is the start of execution of this node
     """
     # Initializing the Node
-    rospy.init_node('node_bot_1', anonymous=True)
+    rospy.init_node('node_Rev', anonymous=True)
 
     # Creating Object for the Class Bot1
-    bot1 = Bot1()
+    rev = Rev()
 
     try:
         # Spinning the Main Function
@@ -415,7 +433,7 @@ def main():
     except KeyboardInterrupt:
         rospy.loginfo("Shutting down")
         # Deleting the Created Object if Interrupted
-        del bot1
+        del rev
 
 if __name__ == '__main__':
     main()
