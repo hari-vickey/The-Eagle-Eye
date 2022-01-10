@@ -146,8 +146,8 @@ class Detect():
                 except ZeroDivisionError:
                     deg = 0
 
-                x1 = int((bot[i][0][0]+bot[i][1][0])/2)
-                y1 = int((bot[i][0][1]+bot[i][1][1])/2)
+                x1 = int((bot[i][1][0]+bot[i][2][0])/2)
+                y1 = int((bot[i][1][1]+bot[i][2][1])/2)
                 point = (x1, y1, int(deg))
                 cpts.append(point)
 
@@ -365,16 +365,14 @@ class Detect():
         Also draw the lines of the path estimated
         """
         # Marking the Start Point and Goal point
-        img = cv2.circle(img, (start[0], start[1]), 2, (255, 0, 0), 8)
+        img = cv2.circle(img, start, 2, (255, 0, 0), 8)
         img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
-        if(ls[0][0] == 0 and ls[0][1] == 0):
-            del ls[0]
-        ls.insert(0, (start[0], start[1]))
-        ls.insert(-1, goal)
+        ls.insert(0, start)
         # Marking the Minimized set of goalpoints
         for point1, point2 in zip(ls, ls[1:]):
             cv2.line(img, point1, point2, [0, 255, 0], 2)
 
+        img = cv2.resize(img, (640, 360))
         return img
 
 # Main Function

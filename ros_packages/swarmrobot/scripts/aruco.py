@@ -124,7 +124,7 @@ class Aruco:
                 bot_name.append(name)
                 # print(int(i))
                 # print(converted[1])
-                pts = [converted[l][0][2].tolist(), converted[l][0][0].tolist()]
+                pts = [converted[l][0][1].tolist(), converted[l][0][0].tolist()]
                 points.append(pts)
                 l += 1
 

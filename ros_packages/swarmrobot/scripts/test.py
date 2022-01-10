@@ -32,6 +32,7 @@ class Client():
         self._ac1 = actionlib.ActionClient('/action_bot1', msgBot1Action)
         # Dictionary to Store all the goal handels
         self._goal_handles = {}
+        self.goal_no = 0
         # Wait for UR5_2 Action Server
         self._ac1.wait_for_server()
         print("Action Server Up")
@@ -53,23 +54,24 @@ class Client():
         # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
         # thread.start()
         # self.algorithm(cv_image)
-        ind_stn = 1
-        start = (self.location[ind_stn][0], self.location[ind_stn][1])
-        goal = self.closest_point(self.location['Bengaluru'], start)
-        print(start, goal)
-        self._goal_handles[0] = self.send_goal_1(ind_stn, start[0], 
-                                                 start[1], goal[0], 
-                                                 goal[1])
+        ind_stn = 2
+        # start = (self.location[ind_stn][0], self.location[ind_stn][1])
+        # goal = self.closest_point(self.location['Delhi'], start)
+        # print(start, goal)
+        # self._goal_handles[0] = self.send_goal_1(ind_stn, start[0], 
+        #                                          start[1], goal[0], 
+        #                                          goal[1])
 
-        # for i in self.location:
-        #     if str(i) == "2" or str(i) == "1":
-        #         continue
-        #     start = (self.location[1][0], self.location[1][1])
-        #     goal = self.closest_point(self.location[i], start)
-        #     print(start, goal)
-        #     self._goal_handles[0] = self.send_goal_1(1, start[0]-60, 
-        #                                              start[1], goal[0], 
-        #                                              goal[1])
+        for i in self.location:
+            if str(i) == "2" or str(i) == "1":
+                continue
+            start = (self.location[ind_stn][0], self.location[ind_stn][1])
+            goal = self.closest_point(self.location[i], start)
+            print(start, goal)
+            self._goal_handles[self.goal_no] = self.send_goal_1(ind_stn, 
+                                                     start[0], start[1], 
+                                                     goal[0], goal[1])
+            self.goal_no += 1
 
     # Function On_Transition
     def on_transition(self, goal_handle):

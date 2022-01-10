@@ -141,41 +141,49 @@ def bot_in_graph(graph, bot_obs, bot_dic, exempt_bot_name):
     return graph
 
 # Function for Custom Path Planning
-def path_plan_custom(start, end,indid, reverse):
+def path_plan_custom(start, end, indid, reverse):
     """
     This function will generate the custom path using the
     start and end points
     """
     # If the goal is collinear or in tolerance with the 
     # current axis then there is no need of waypoint
-    if start[0] in range(end[0]-5, end[0]+5) or \
-    start[1] in range(end[1]-5, end[1]+5):
-        way_point = (end[0], end[1])
-        ang = [0]
+    if start[0] in range(end[0]-10, end[0]+10) or \
+    start[1] in range(end[1]-10, end[1]+10):
+        print("Path Planning M1")
+        way_point = [(end[0], end[1])]
+        ang = [2]
+        if indid == 2:
+            ang = [-2]
+
     # If the goal is within the adjacent squares
     # then the path can be obtained is diagnal
-    elif start[0] in range(end[0]-60, end[0]+60) or \
-    start[1] in range(end[1]-60, end[1]+60):
-        way_point = (end[0], end[1])
-        deg = int(dynamic_angle(start, end, indid))
+    elif start[0] in range(end[0]-100, end[0]+100) or \
+    start[1] in range(end[1]-100, end[1]+100):
+        print("Path Planning M2")
+        way_point = [(end[0], end[1])]
+        deg = int(compute_angle(start, end))
         ang = [deg]
     # If the start or goal point is not in the same axis,
     # then resolving the path to horizontal and vertical paths
     elif start[0] != end[0] or start[1] != end[1]:
+        print("Path Planning M3")
         if reverse == False:
-            way_point = (end[0], start[1])
+            way_point = [(end[0], start[1])]
             if indid == 1:
                 ang = [0, 90]
             else:
                 ang = [0, -89]
         else:
-            way_point = (start[0], end[1])
+            way_point = [(start[0], end[1])]
             if indid == 1:
                 ang = [-90, 0]
             else:
                 ang = [89, 0]
 
-    return [way_point, end], ang
+        way_point.append(end)
+
+    return way_point, ang
 
 # Function to plan a Path
 def path_plan(graph, start, goal):
@@ -296,20 +304,33 @@ def calc_angle(points):
         ang_ls[i] = -ang_ls[i]
     return pt_ls, ang_ls
 
-# Function for Dynamic angle calculation
-def dynamic_angle(current, way_point, ind_id):
+# Function for Compute angle calculation
+def compute_angle(current, way_point):
     """
-    This function will calculate the dynamic angle for getting the instantaneous angle
-    at any time
+    This function will compute the required angle for the 
+    custom path planner. Also this function is capable of
+    computing angle between any two points
     """
-    s = way_point[1] - current[1]  
-    r = way_point[0] - current[0]
-    rad =math.atan(abs(s)/abs(r))
-    deg = rad*(180/(math.pi))
-    if s > 0:
-        deg = -deg
+    try:
+        s = way_point[1] - current[1]  
+        r = way_point[0] - current[0]
+        rad = math.atan(abs(s)/abs(r))
+        deg = rad*(180/(math.pi))
+        if s > 0:
+            deg = -deg
 
-    return deg
+        return deg
+    except:
+        return 0
+
+# Function to get Dynamic Angle
+def dynamic_angle(bot_pos, point, reverse):
+    """
+    This function will calculate the dynamic angle for getting the instantaneous angle at any time
+    """
+    deg = compute_angle(bot_pos, point)
+    if reverse == True:
+        deg = -deg
 
 # Function to Get Rotate Direction:
 def rotate_direction(ang):
@@ -325,6 +346,21 @@ def rotate_direction(ang):
         direct = 3
 
     return direct
+
+# Function Choose Side
+def choose_side(start, goal, ind):
+    if ind == 1:
+        if start[1]-20 < goal[1]:
+            angle = -45
+        else:
+            angle = 45
+    elif ind == 2:
+        if start[1]+20 > goal[1]:
+            angle = 45
+        else:
+            angle = -45
+
+    return angle
 
 # Function to Get directio of rotation based on the offset
 def publish_offset(cur, ang, rev):
@@ -343,9 +379,9 @@ def publish_offset(cur, ang, rev):
         elif cur >= ang:
             direct = 8
     elif rev == 0:
-        if cur <= ang:
+        if cur >= ang:
             direct = 9
-        elif cur >= ang:
+        elif cur <= ang:
             direct = 10
 
     return direct

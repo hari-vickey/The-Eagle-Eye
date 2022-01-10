@@ -65,7 +65,7 @@ float mpu() {
 }
 
 // Function to Move the bot in different Directions
-void movement(int direction, float angle=0) {
+int movement(int direction, float angle=0) {
     if (direction == 0) {
         analogWrite(ena, 0);
         analogWrite(enb, 0);
@@ -173,10 +173,10 @@ void movement(int direction, float angle=0) {
         digitalWrite(in2, LOW);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
-        analogWrite(ena, 150);
+        analogWrite(ena, l1);
         analogWrite(enb, r1);
         Serial.println("Clock-Wise Rotation");
-        delay(8);
+        delay(10);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
@@ -188,17 +188,17 @@ void movement(int direction, float angle=0) {
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
         analogWrite(ena, l1);
-        analogWrite(enb, 150);
+        analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
-        delay(8);
+        delay(10);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
         count = 1;
     }
     if (direction == 7) {
-        digitalWrite(in1, HIGH);
-        digitalWrite(in2, LOW);
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
         digitalWrite(in3, LOW);
         digitalWrite(in4, HIGH);
         analogWrite(ena, 150);
@@ -213,8 +213,8 @@ void movement(int direction, float angle=0) {
     if (direction == 8) {
         digitalWrite(in1, LOW);
         digitalWrite(in2, HIGH);
-        digitalWrite(in3, HIGH);
-        digitalWrite(in4, LOW);
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
         analogWrite(ena, l1);
         analogWrite(enb, 150);
         Serial.println("Anti Clock-Wise Rotation");
@@ -227,8 +227,8 @@ void movement(int direction, float angle=0) {
     if (direction == 9) {
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
-        digitalWrite(in3, LOW);
-        digitalWrite(in4, HIGH);
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
         analogWrite(ena, 150);
         analogWrite(enb, r1);
         Serial.println("Clock-Wise Rotation");
@@ -239,8 +239,8 @@ void movement(int direction, float angle=0) {
         count = 1;
     }
     if (direction == 10) {
-        digitalWrite(in1, LOW);
-        digitalWrite(in2, HIGH);
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
         digitalWrite(in3, HIGH);
         digitalWrite(in4, LOW);
         analogWrite(ena, l1);
@@ -252,12 +252,14 @@ void movement(int direction, float angle=0) {
         Serial.println("Stop");
         count = 1;
     }
+    return 0;
 }
 
 // Function to control Servo Motor
-void servo_control(int pos) {
+int servo_control(int pos) {
     if (pos == 0) servo.write(0);
     if (pos == 1) servo.write(180);
+    return 0;
 }
 
 // Callback function for control signal
