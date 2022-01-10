@@ -1,14 +1,14 @@
 <?xml version='1.0'?>
 <launch>
-    <node pkg="rosserial_server" type="socket_node" name="bot1_esp_client" respawn="true" output="screen">
+    <!-- <node pkg="rosserial_server" type="socket_node" name="bot1_esp_client" respawn="true" output="screen">
         <param name="port" value="11411"/>
-    </node>
+    </node> -->
     <node pkg="rosserial_server" type="socket_node" name="bot2_esp_client" respawn="true" output="screen">
         <param name="port" value="11454"/>
     </node>
-    <node pkg="rosserial_server" type="socket_node" name="bot3_esp_client" respawn="true" output="screen">
+    <!-- <node pkg="rosserial_server" type="socket_node" name="bot3_esp_client" respawn="true" output="screen">
         <param name="port" value="45411"/>
-    </node>
+    </node> -->
     <node pkg="rosserial_server" type="socket_node" name="bot4_esp_client" respawn="true" output="screen">
         <param name="port" value="44181"/>
     </node>
