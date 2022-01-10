@@ -19,7 +19,6 @@ from PyQt5.QtCore import QTimer,QDateTime
 
 sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
 
@@ -33,14 +32,14 @@ class Ui_MainWindow(object):
     # For adding background wallpaper for the main window 
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, -20, 1920, 1080))
+        self.label.setGeometry(QRect(0, 0, 1920, 1080))
         self.label.setPixmap(QPixmap("mainwindow.png"))
 
     # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
         self.textBrowser.setObjectName("textBrowser")
-        self.textBrowser.setStyleSheet("background-color: #fec4fe")
+        self.textBrowser.setStyleSheet("background-color: #9999FF")
 
     # For creating the table
         self.font = QFont("Times", 12)
@@ -195,11 +194,9 @@ class Ui_MainWindow(object):
     # For Creating frame for video streaming 
         self.frame = QLabel(self.centralwidget)
         self.frame.setGeometry(QRect(80, 160, 800, 600))
-        # self.frame.setStyleSheet("background: black")
         pixmap = QPixmap('eagle_eye.jpg')
         P = pixmap.scaled(1200, 600, Qt.KeepAspectRatio)
         self.frame.setPixmap(P)
-        # self.frame.setStyleSheet("background: #c1cd32")        
         self.frame.setAutoFillBackground(True)
         self.frame.setFrameShape(QFrame.Box)
         self.frame.setFrameShadow(QFrame.Raised)
@@ -211,7 +208,6 @@ class Ui_MainWindow(object):
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setGeometry(QRect(1500, 550, 200, 87))
 
-
     # For showing the text "Run time" 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
@@ -221,23 +217,18 @@ class Ui_MainWindow(object):
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QRect(309, 800, 141, 51))
         self.pushButton.setObjectName("pushButton")
-        # self.pushButton.setStyleSheet("background-color : #00FF00")
         self.pushButton.setStyleSheet("border:2px; background-color: #00FF00; border-radius : 20px")
 
     # For Creating Stop PushButton 
         self.pushButton_2 = QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QRect(510, 800,141,51))
         self.pushButton_2.setObjectName("pushButton_2")
-        # self.pushButton_2.setStyleSheet("background-color : red")
         self.pushButton_2.setStyleSheet("border:2px; background-color: red; border-radius : 20px")
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        # self.toolBar = QToolBar(MainWindow)
-        # self.toolBar.setObjectName("toolBar")
-        # MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
 
         self.retranslateUi(MainWindow)
         self.Processing.setCurrentIndex(2)
@@ -251,13 +242,14 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+
         self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:#FFA500;\"><b>Flipkart Grid 3.0</b></span></p>\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#FFA500;\"><b>The Eagle Eye</b></span></p>\n"
-        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#FFA500;\"><b>Central Monitoring System</span></b></p></body></html>"))
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:black;\"><b>Flipkart Grid 3.0</b></span></p>\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:black;\"><b>The Eagle Eye</b></span></p>\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:black;\"><b>Central Monitoring System</span></b></p></body></html>"))
 
     # For the Tab "Processing" in the table
         item = self.tableWidget_2.verticalHeaderItem(1)
@@ -372,7 +364,6 @@ class Ui_MainWindow(object):
         self.timer1.timeout.connect(self.showTime)
         self.timer1.start(1000)
 
-
     def StopFeed(self):
         """ Function use to stop the video and timer """
         self.flag = False
@@ -409,7 +400,6 @@ class Worker1(QThread):
                 Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
 
-
     def stop(self):
         """ Function for stop streaming the video """
         self.ThreadActive = False
@@ -420,7 +410,6 @@ class Worker1(QThread):
         Pic = ConvertToQtFormat.scaled(1200, 600, Qt.KeepAspectRatio)
         self.ImageUpdate.emit(Pic)
         self.quit()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv) 
