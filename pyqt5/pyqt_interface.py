@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QTimer,QDateTime
 
-sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
+# sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(0, 0, 1920, 1080))
-        self.label.setPixmap(QPixmap("mainwindow.png"))
+        self.label.setPixmap(QPixmap("images/mainwindow.png"))
 
     # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
@@ -194,7 +194,7 @@ class Ui_MainWindow(object):
     # For Creating frame for video streaming 
         self.frame = QLabel(self.centralwidget)
         self.frame.setGeometry(QRect(80, 160, 800, 600))
-        pixmap = QPixmap('eagle_eye.jpg')
+        pixmap = QPixmap('images/eagle_eye.jpg')
         P = pixmap.scaled(1200, 600, Qt.KeepAspectRatio)
         self.frame.setPixmap(P)
         self.frame.setAutoFillBackground(True)
@@ -403,7 +403,7 @@ class Worker1(QThread):
     def stop(self):
         """ Function for stop streaming the video """
         self.ThreadActive = False
-        Imagelogo = Image.open("black.jpg")
+        Imagelogo = Image.open("images/black.jpg")
         numpyarray = asarray(Imagelogo)
         Imagelogo = cv2.cvtColor(numpyarray, cv2.COLOR_BGR2RGB)
         ConvertToQtFormat = QImage(Imagelogo.data, Imagelogo.shape[1], Imagelogo.shape[0], QImage.Format_RGB888)
@@ -414,7 +414,7 @@ class Worker1(QThread):
 if __name__ == "__main__":
     app = QApplication(sys.argv) 
     MainWindow = QMainWindow()
-    MainWindow.setStyleSheet("QMainWindow{background-image: url ('22.png')}")
+    # MainWindow.setStyleSheet("QMainWindow{background-image: url ('22.png')}")
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
