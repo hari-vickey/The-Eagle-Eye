@@ -217,29 +217,29 @@ class Ui_MainWindow(object):
         self.frame.setLineWidth(5)
         self.frame.setObjectName("frame")
         
-    # For displaying "Run time " content
+        # For displaying "Run time " content
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setGeometry(QRect(400, 900, 200, 87))
 
-    # For showing the text "Run time" 
+        # For showing the text "Run time" 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(250, 900, 200, 90))
 
-    # For adding flipkart logo in the titlebar
+        # For adding flipkart logo in the titlebar
         self.flipkart_logo = QLabel(self.centralwidget)
         self.flipkart_logo.setObjectName(u"flipkart_logo")
         self.flipkart_logo.setGeometry(QRect(1680, -50, 220, 220))
-        logo = QPixmap("images/Flipkart_logo.png")
+        logo = QPixmap("{}/images/Flipkart_logo.png".format(str_pkg_path))
         flipkart_pixmap = logo.scaled(220, 220, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.flipkart_logo.setPixmap(flipkart_pixmap)
 
-    #For adding eagleeye logo in the titlebar
+        #For adding eagleeye logo in the titlebar
         self.eagleeye_logo = QLabel(self.centralwidget)
-        self.eagleeye_logo.setObjectName(u"eagleeye_logo")
+        self.eagleeye_logo.setObjectName(u"eagleeye_logo".format(str_pkg_path))
         self.eagleeye_logo.setGeometry(QRect(0, -55, 220, 220))
-        eagle = QPixmap("images/eagle_eye.jpg")
+        eagle = QPixmap("{}/images/eagle_eye.jpg")
         eagleeye_pixmap = eagle.scaled(170, 180, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.eagleeye_logo.setPixmap(eagleeye_pixmap)
 
