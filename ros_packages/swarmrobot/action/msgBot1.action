@@ -4,9 +4,11 @@ int32 induct_x
 int32 induct_y
 int32 goal_x
 int32 goal_y
+string city
+string pkg_id
 ---
 # result
-bool flag
+bool flag_success
 ---
 # feedback
 int8 percentage_complete

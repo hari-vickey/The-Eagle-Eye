@@ -81,12 +81,6 @@ class Ui_MainWindow(object):
         item = QTableWidgetItem()
         self.tableWidget_2.setVerticalHeaderItem(1, item)
         item = QTableWidgetItem()
-        self.tableWidget_2.setVerticalHeaderItem(2, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setVerticalHeaderItem(3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setVerticalHeaderItem(4, item)
-        item = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(0, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(1, item)
@@ -100,25 +94,25 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setHorizontalHeaderItem(5, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(6, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(0, 0, item)
-        item = QTableWidgetItem()
-        item.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsDragEnabled|Qt.ItemIsDropEnabled|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled|Qt.ItemIsTristate)
-        self.tableWidget_2.setItem(0, 1, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(0, 3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(1, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(1, 3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(3, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(3, 3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(4, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(4, 3, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(0, 0, item)
+        # item = QTableWidgetItem()
+        # item.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsDragEnabled|Qt.ItemIsDropEnabled|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled|Qt.ItemIsTristate)
+        # self.tableWidget_2.setItem(0, 1, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(0, 3, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(1, 0, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(1, 3, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(3, 0, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(3, 3, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(4, 0, item)
+        # item = QTableWidgetItem()
+        # self.tableWidget_2.setItem(4, 3, item)
         self.tableWidget_2.horizontalHeader().setDefaultSectionSize(200)
         self.tableWidget_2.verticalHeader().setDefaultSectionSize(45)
         self.tableWidget_2.verticalHeader().setHighlightSections(True)
@@ -278,14 +272,10 @@ class Ui_MainWindow(object):
         "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:black;\"><b>Central Monitoring System</span></b></p></body></html>"))
 
         # For the Tab "Processing" in the table
-        item = self.tableWidget_2.verticalHeaderItem(1)
+        item = self.tableWidget_2.verticalHeaderItem(0)
         item.setText(_translate("MainWindow", "1"))
-        item = self.tableWidget_2.verticalHeaderItem(2)
+        item = self.tableWidget_2.verticalHeaderItem(1)
         item.setText(_translate("MainWindow", "2"))
-        item = self.tableWidget_2.verticalHeaderItem(3)
-        item.setText(_translate("MainWindow", "3"))
-        item = self.tableWidget_2.verticalHeaderItem(4)
-        item.setText(_translate("MainWindow", "4"))
         item = self.tableWidget_2.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Package ID"))
         item = self.tableWidget_2.horizontalHeaderItem(1)
@@ -304,10 +294,6 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setSortingEnabled(False)
         self.tableWidget_2.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab), _translate("MainWindow", "Processing"))
-
-        # For entering the values in the table
-        for i in range(1,5):
-                self.tableWidget_2.setItem(i,0, QTableWidgetItem("Package"+str(i))) 
 
         # For the Tab "Yet to Dispatch" in the table
         item = self.tableWidget_4.verticalHeaderItem(0)
@@ -436,9 +422,9 @@ class Detect():
 
         # Global Varibales for Aruco Marker Detections
         self.completed, self.graphc = 0, 0
-        self.dict, self.destination, self.inductzone = {}, {}, {}
         self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
         self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
+        self.bot, self.dict, self.destination, self.inductzone = {}, {}, {}, {}
 
         # Publishing Bot Positions
         self.publisher = rospy.Publisher("/bot_position", String, 
@@ -510,8 +496,7 @@ class Detect():
                 self.aruco_detect_destination(cv_image)
 
         except Exception as e:
-            print("Exception in Image Subscription Callback")
-            print(e)
+            pass
 
     # Function to detect aruco markers Bot
     def aruco_detect_bot(self, frame):
@@ -553,12 +538,12 @@ class Detect():
                 point = (x1, y1, int(deg))
                 cpts.append(point)
 
-            bot = dict(zip(bot_name, cpts))
-            self.msg = json.dumps(bot)
+            self.bot = dict(zip(bot_name, cpts))
+            self.msg = json.dumps(self.bot)
             self.publisher.publish(self.msg)
-            print(bot)
+            print(self.bot)
 
-            return bot
+            return self.bot
 
         except Exception as e:
             # print(e)
@@ -755,13 +740,29 @@ class Detect():
         """
         msg = message_converter.convert_ros_message_to_dictionary(data)
         temp = msg['data']
-        bot = json.loads(temp)
+        pos = json.loads(temp)
 
-        for i in bot:
+        for i in pos:
             if i == "bot2":
-                self.dict[i] = bot[i]
+                self.dict[i] = pos[i]
+                self.ui.tableWidget_2.setItem(0, 0, QTableWidgetItem(bot[i][5]))
+                self.ui.tableWidget_2.setItem(0, 1, QTableWidgetItem(bot[i][3]))
+                self.ui.tableWidget_2.setItem(0, 2, QTableWidgetItem(bot[i][4])) 
+                self.ui.tableWidget_2.setItem(0, 3, QTableWidgetItem(bot[i]["2"]))
+                self.ui.tableWidget_2.setItem(0, 4, QTableWidgetItem(bot[i][6]))
+                self.ui.tableWidget_2.setItem(0, 5, QTableWidgetItem(bot[i][7]))
+                loc = "(" + str(self.bot[i][0]) + ", " + str(self.bot[i][1]) + ")"
+                self.ui.tableWidget_2.setItem(0, 6, QTableWidgetItem(loc))
             if i == "bot4":
                 self.dict[i] = bot[i]
+                self.ui.tableWidget_2.setItem(1, 0, QTableWidgetItem(bot[i][5]))
+                self.ui.tableWidget_2.setItem(1, 1, QTableWidgetItem(bot[i][3]))
+                self.ui.tableWidget_2.setItem(1, 2, QTableWidgetItem(bot[i][4])) 
+                self.ui.tableWidget_2.setItem(1, 3, QTableWidgetItem(bot[i]["4"]))
+                self.ui.tableWidget_2.setItem(1, 4, QTableWidgetItem(bot[i][6]))
+                self.ui.tableWidget_2.setItem(1, 5, QTableWidgetItem(bot[i][7]))
+                loc = "(" + str(self.bot[i][0]) + ", " + str(self.bot[i][1]) + ")"
+                self.ui.tableWidget_2.setItem(1, 6, QTableWidgetItem(loc))
 
     # Function to Mark Points on the Image
     def mark_points(self, img, bot):

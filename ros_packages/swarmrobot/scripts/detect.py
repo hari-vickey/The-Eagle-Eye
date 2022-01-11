@@ -358,7 +358,7 @@ class Detect():
         msg = message_converter.convert_ros_message_to_dictionary(data)
         temp = msg['data']
         bot = json.loads(temp)
-
+        print(bot[i])
         for i in bot:
             if i == "bot2":
                 self.dict[i] = bot[i]

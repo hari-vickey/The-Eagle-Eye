@@ -129,14 +129,15 @@ class Rev():
             self.goal = (goal.goal_x, goal.goal_y)
             print(self.goal)
             self.indsn = goal.induct_station
-
+            city = goal.city
+            pkgid = goal.pkg_id
             # Accept the Goal
             goal_handle.set_accepted()
 
             # Processing the Goal
             goal_id = goal_handle.get_goal_id()
             rospy.loginfo("Processing goal : " + str(goal_id.id))
-            self.process_goal(self.start, self.goal)
+            self.process_goal(self.start, self.goal, self.indsn, city, pkgid)
 
             # Check whether the Goal is Processed
             while True:
@@ -155,7 +156,7 @@ class Rev():
             goal_handle.set_rejected()
 
     # Function to process
-    def process_goal(self, start, goal):
+    def process_goal(self, start, goal, indsn, city, pkgid):
         """
         This Function to plan a path and execute them to move 
         the bot
@@ -177,7 +178,11 @@ class Rev():
             print(self.path)
             print(self.angle)
             self.flag = 1
-            value = {self.bot: [start, goal, self.path]}
+            dispatch = True
+            shipment = False
+            if self.reverse == True:
+                shipment = True
+            value = {self.bot: [start, goal, self.path, indsn, city, pkgid, dispatch, shipment]}
             msg = json.dumps(value)
             self.viz.publish(msg)
 

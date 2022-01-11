@@ -174,8 +174,12 @@ class Bot2():
             self.path = points
             print("Final Path List and Angle List with Goal Point")
             print(self.path, self.angle)
+            dispatch = "Yes"
+            shipment = "No"
+            if self.reverse == True:
+                shipment = "Yes"
             self.flag = 1
-            value = {'bot2': [start, goal, self.path]}
+            value = {'bot2': [start, goal, self.path, indsn, city, pkgid, dispatch, shipment]}
             msg = json.dumps(value)
             self.viz.publish(msg)
 

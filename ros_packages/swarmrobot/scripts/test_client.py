@@ -50,12 +50,13 @@ class Client():
         """
         # Send Goal to Action Client
         ind_stn = 2
+        city = "Delhi"
         start = (self.location[ind_stn][0], self.location[ind_stn][1])
-        goal = self.closest_point(self.location['Delhi'], start)
+        goal = self.closest_point(self.location[city], start)
         print(start, goal)
         self._goal_handles[0] = self.send_goal_1(ind_stn, start[0], 
                                                  start[1], goal[0], 
-                                                 goal[1])
+                                                 goal[1], city, "1")
 
         # for i in self.location:
         #     if str(i) == "2" or str(i) == "1":
@@ -115,6 +116,8 @@ class Client():
         goal.induct_y = args[2]
         goal.goal_x = args[3]
         goal.goal_y = args[4]
+        goal.city = args[5]
+        goal.pkg_id = args[6]
         rospy.loginfo("Goal Sent")
         print("Induct Station - " + str(args[0]))
         print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")

@@ -111,6 +111,8 @@ class Client():
         goal.induct_y = args[2]
         goal.goal_x = args[3]
         goal.goal_y = args[4]
+        goal.city = args[5]
+        goal.pkg_id = args[6]
         rospy.loginfo("Goal Sent")
         print("Induct Station - " + str(args[0]))
         print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")
@@ -169,6 +171,8 @@ class Client():
         goal.induct_y = args[2]
         goal.goal_x = args[3]
         goal.goal_y = args[4]
+        goal.city = args[5]
+        goal.pkg_id = args[6]
         rospy.loginfo("Goal Sent")
         print("Induct Station - " + str(args[0]))
         print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")
@@ -196,6 +200,7 @@ class Client():
         #                             #
         ###############################
         for i in range(0, 15):
+            pkgid_1 = self.df1.iloc[i][0]
             ind_stn = int(self.df1.iloc[i][1])
             city = self.df1.iloc[i][2]
             print(ind_stn, city)
@@ -204,10 +209,11 @@ class Client():
             print(start, goal)
             self._goal_handles_2[self.goal_no_2] = self.send_goal_2(ind_stn, 
                                                      start[0], start[1], 
-                                                     goal[0], goal[1])
+                                                     goal[0], goal[1], city, pkgid_1)
             self.goal_no_2 += 1
 
         for i in range(0, 15):
+            pkgid_2 = self.df1.iloc[i][0]
             ind_stn = int(self.df2.iloc[i][1])
             city = self.df2.iloc[i][2]
             print(ind_stn, city)
@@ -216,7 +222,7 @@ class Client():
             print(start, goal)
             self._goal_handles_4[self.goal_no_4] = self.send_goal_4(ind_stn, 
                                                      start[0], start[1], 
-                                                     goal[0], goal[1])
+                                                     goal[0], goal[1], city, pkgid_2)
             self.goal_no_4 += 1
 
 
