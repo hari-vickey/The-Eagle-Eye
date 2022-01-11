@@ -24,7 +24,7 @@ from swarmrobot.msg import msgBot2Action, msgBot2Goal, msgBot2Result
 This Class Bot1 consists of all members and modules which is used
 to control the bot1 based on the goal Received from the Client
 """
-class Rev():
+class Bot2():
 
     # Constructor
     # Initializing the variables of this class
@@ -54,13 +54,10 @@ class Rev():
         # To Communicate with bots
         self.pub = rospy.Publisher("bot2/control_signal", Int16MultiArray, 
                                    queue_size=1)
-        # self.pub = rospy.Publisher("bot4/control_signal", Int16MultiArray, 
-        #                            queue_size=1)
 
         # Defining ROS Publisher
         # To Visualize Path
-        self.viz = rospy.Publisher("/data_visualize", String, latch=True,
-                                   queue_size=4)
+        self.viz = rospy.Publisher("/data_visualize", String, queue_size=1)
         self.str = String()
         self.msg = Int16MultiArray()
 

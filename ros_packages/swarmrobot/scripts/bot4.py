@@ -24,13 +24,13 @@ from swarmrobot.msg import msgBot4Action, msgBot4Goal, msgBot4Result
 This Class Bot1 consists of all members and modules which is used
 to control the bot1 based on the goal Received from the Client
 """
-class Rev():
+class Bot4():
 
     # Constructor
     # Initializing the variables of this class
     def __init__(self):
         # Initialize Simple Action Server
-        self._as = actionlib.ActionServer('/action_bot2', msgBot2Action, 
+        self._as = actionlib.ActionServer('/action_bot4', msgBot4Action, 
                                           self.on_goal, self.on_cancel, 
                                           auto_start=False)
         '''
@@ -54,13 +54,10 @@ class Rev():
         # To Communicate with bots
         self.pub = rospy.Publisher("bot4/control_signal", Int16MultiArray, 
                                    queue_size=1)
-        # self.pub = rospy.Publisher("bot4/control_signal", Int16MultiArray, 
-        #                            queue_size=1)
 
         # Defining ROS Publisher
         # To Visualize Path
-        self.viz = rospy.Publisher("/data_visualize", String, latch=True,
-                                   queue_size=4)
+        self.viz = rospy.Publisher("/data_visualize", String, queue_size=1)
         self.str = String()
         self.msg = Int16MultiArray()
 

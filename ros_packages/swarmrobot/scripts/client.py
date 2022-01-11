@@ -10,6 +10,7 @@ This node will do the following :
 import os
 import math
 import rospy
+import rospkg
 import actionlib
 import threading
 import pandas as pd
@@ -47,6 +48,7 @@ class Client():
         self.location = function.read_location()
         print(self.location)
         self.read_sheet()
+        self.algorithm()
 
     # Function to read Excel Sheet
     def read_sheet(self):
@@ -54,7 +56,10 @@ class Client():
         This Function will read the excel sheet and sort 
         induct stations
         """
-        df = pd.read_excel("sheet/Sample_Data.xlsx", index_col=None, na_values=['NA'], usecols = "A:C")
+        rp = rospkg.RosPack()
+        pkg_path = rp.get_path('swarmrobot')
+        sheet = "{}/sheet/Sample_Data.xlsx".format(pkg_path)
+        df = pd.read_excel(sheet, index_col=None, na_values=['NA'], usecols = "A:C")
         self.df1 = df[df['Induct Station']==1]
         self.df2 = df[df['Induct Station']==2]
 
@@ -112,7 +117,7 @@ class Client():
         # self.on_transition - It is a function pointer to a function,
         # which will be called when there is a change of state in the 
         # Action Client State Machine
-        goal_handle = self._ac2.send_goal(goal, self.on_transition, None)
+        goal_handle = self._ac2.send_goal(goal, self.on_transition_2, None)
 
         return goal_handle
 
@@ -170,12 +175,12 @@ class Client():
         # self.on_transition - It is a function pointer to a function,
         # which will be called when there is a change of state in the 
         # Action Client State Machine
-        goal_handle = self._ac4.send_goal(goal, self.on_transition, None)
+        goal_handle = self._ac4.send_goal(goal, self.on_transition_4, None)
 
         return goal_handle
 
     # Function Algorithm
-    def algorithm(self, image):
+    def algorithm(self):
         """
         This function is responsible to complete the entire task.
         It is also combined with multiple control statements to
@@ -209,10 +214,10 @@ class Client():
             start = (self.location[ind_stn][0], self.location[ind_stn][1])
             goal = self.closest_point(self.location[city], start)
             print(start, goal)
-            self._goal_handles_2[self.goal_no_2] = self.send_goal_2(ind_stn, 
+            self._goal_handles_4[self.goal_no_4] = self.send_goal_4(ind_stn, 
                                                      start[0], start[1], 
                                                      goal[0], goal[1])
-            self.goal_no_2 += 1
+            self.goal_no_4 += 1
 
 
     # Function to identify the closest point

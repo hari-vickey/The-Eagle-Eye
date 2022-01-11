@@ -22,6 +22,7 @@ class Camera1:
         except CvBridgeError as e:
             rospy.logerr(e)
         image = cv_image
+        image = image[0:720, 115:1100]
         cv2.imshow("live", image)
         # cv2.imwrite("img.png", image)
         cv2.waitKey(1)

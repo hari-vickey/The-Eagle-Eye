@@ -39,13 +39,14 @@ class Detect():
         # Creating Variables to store necessary values
         self.location = ['Mumbai', 'Delhi', 'Kolkata', 
                          'Chennai', 'Bengaluru', 'Hyderabad', 
-                         'Pune', 'Ahemdabad', 'Jaipur']
+                         'Pune', 'Ahmedabad', 'Jaipur']
 
         # Global Varibales for Aruco Marker Detections
-        self.destination, self.inductzone = {}, {}
         self.completed, self.graphc = 0, 0
+        self.start, self.goal = (0, 0), (0, 0)
+        self.destination, self.inductzone = {}, {}
         self.aruco1, self.ind1, self.aruco2, self.ind2, self.deg = 0, 0, 0, 0, 0
-        self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
+        self.temp1, self.temp2, self.temp3, self.temp4, self.ls = [], [], [], []                                                    , []
 
         # Publishing Bot Positions
         self.publisher = rospy.Publisher("/bot_position", String, 
@@ -56,7 +57,7 @@ class Detect():
                                           self.callback, queue_size = 1)
 
         # Subscribing to Data Visualizer
-        self.viz_sub = rospy.Subscriber("/data_visualize", String, self.viz_callback)
+        self.viz_sub = rospy.Subscriber("/data_visualize", String, self.viz_callback, queue_size=1)
 
         # Creating msg variable of String Datatype
         self.msg = String()
@@ -71,13 +72,17 @@ class Detect():
             # Convert img msg to an data readable by cv2 library,
             # to process them further
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-            self.image = cv_image
+            cv_image = cv_image[0:720, 115:1100]
 
             # If Aruco markers of inductzone and destination detected
             # Also, if the graph is plotted then bot detection starts
             if self.completed == 1:
                 # Detect Bots using Aruco Markers
-                self.aruco_detect_bot(cv_image)
+                bot = self.aruco_detect_bot(cv_image)
+                img = self.mark_points(cv_image, bot)
+                img = cv2.resize(img, (800, 600))
+                cv2.imshow("usb_cam_stream", img)
+                cv2.waitKey(1)
             elif self.completed == 2:
                 function.write_graph()
                 self.destination.update(self.inductzone)
@@ -155,6 +160,9 @@ class Detect():
             self.msg = json.dumps(bot)
             self.publisher.publish(self.msg)
             print(bot)
+
+            return bot
+
         except Exception as e:
             # print(e)
             pass
@@ -353,26 +361,26 @@ class Detect():
         bot = json.loads(temp)
 
         for i in bot:
-            img = self.mark_points(self.image, bot[i][0], bot[i][1], bot[i][2])
-
-        cv2.imshow("Img", img)
-        cv2.waitKey(1)
+            self.start = bot[i][0]
+            self.goal = bot[i][1]
+            self.ls = bot[i][2]
 
     # Function to Mark Points on the Image
-    def mark_points(self, img, start, goal, ls):
+    def mark_points(self, img, bot):
         """
         Marking Points in the input image
         Also draw the lines of the path estimated
         """
+        for i in bot:
+            img = cv2.circle(img, (bot[i][0], bot[i][1]), 2, (255, 255, 0), 8)    
         # Marking the Start Point and Goal point
-        img = cv2.circle(img, start, 2, (255, 0, 0), 8)
-        img = cv2.circle(img, goal, 2, (0, 0, 255), 8)
-        ls.insert(0, start)
+        img = cv2.circle(img, self.start, 2, (255, 0, 0), 8)
+        img = cv2.circle(img, self.goal, 2, (0, 0, 255), 8)
+        self.ls.insert(0, self.start)
         # Marking the Minimized set of goalpoints
-        for point1, point2 in zip(ls, ls[1:]):
+        for point1, point2 in zip(self.ls, self.ls[1:]):
             cv2.line(img, point1, point2, [0, 255, 0], 2)
 
-        img = cv2.resize(img, (640, 360))
         return img
 
 # Main Function
