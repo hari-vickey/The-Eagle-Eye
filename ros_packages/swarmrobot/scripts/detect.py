@@ -43,10 +43,9 @@ class Detect():
 
         # Global Varibales for Aruco Marker Detections
         self.completed, self.graphc = 0, 0
-        self.start, self.goal = (0, 0), (0, 0)
-        self.destination, self.inductzone = {}, {}
-        self.aruco1, self.ind1, self.aruco2, self.ind2, self.deg = 0, 0, 0, 0, 0
-        self.temp1, self.temp2, self.temp3, self.temp4, self.ls = [], [], [], []                                                    , []
+        self.dict, self.destination, self.inductzone = {}, {}, {}
+        self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
+        self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
 
         # Publishing Bot Positions
         self.publisher = rospy.Publisher("/bot_position", String, 
@@ -361,9 +360,10 @@ class Detect():
         bot = json.loads(temp)
 
         for i in bot:
-            self.start = bot[i][0]
-            self.goal = bot[i][1]
-            self.ls = bot[i][2]
+            if i == "bot2":
+                self.dict[i] = bot[i]
+            if i == "bot4":
+                self.dict[i] = bot[i]
 
     # Function to Mark Points on the Image
     def mark_points(self, img, bot):
@@ -372,14 +372,18 @@ class Detect():
         Also draw the lines of the path estimated
         """
         for i in bot:
-            img = cv2.circle(img, (bot[i][0], bot[i][1]), 2, (255, 255, 0), 8)    
+            img = cv2.circle(img, (bot[i][0], bot[i][1]), 2, (255, 255, 0), 8)
+
         # Marking the Start Point and Goal point
-        img = cv2.circle(img, self.start, 2, (255, 0, 0), 8)
-        img = cv2.circle(img, self.goal, 2, (0, 0, 255), 8)
-        self.ls.insert(0, self.start)
-        # Marking the Minimized set of goalpoints
-        for point1, point2 in zip(self.ls, self.ls[1:]):
-            cv2.line(img, point1, point2, [0, 255, 0], 2)
+        for i in self.dict:
+            # Marking the Start Point and Goal point
+            img = cv2.circle(img, self.dict[i][0], 2, (255, 0, 0), 8)
+            img = cv2.circle(img, self.dict[i][1], 2, (0, 0, 255), 8)
+            ls = self.dict[i][2]
+            ls.insert(0, self.dict[i][0])
+            # Marking the Minimized set of goalpoints
+            for point1, point2 in zip(ls, ls[1:]):
+                cv2.line(img, point1, point2, [0, 255, 0], 2)
 
         return img
 

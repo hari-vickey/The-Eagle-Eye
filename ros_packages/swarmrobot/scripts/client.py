@@ -195,7 +195,7 @@ class Client():
         ##                           ##
         #                             #
         ###############################
-        for i in range(0, 10):
+        for i in range(0, 15):
             ind_stn = int(self.df1.iloc[i][1])
             city = self.df1.iloc[i][2]
             print(ind_stn, city)
@@ -207,7 +207,7 @@ class Client():
                                                      goal[0], goal[1])
             self.goal_no_2 += 1
 
-        for i in range(0, 10):
+        for i in range(0, 15):
             ind_stn = int(self.df2.iloc[i][1])
             city = self.df2.iloc[i][2]
             print(ind_stn, city)

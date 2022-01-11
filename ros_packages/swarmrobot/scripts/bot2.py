@@ -106,10 +106,6 @@ class Bot2():
                 else:
                     if self.check == 0:
                         self.stop_bot(self.pos)
-                
-                value = {'bot2': [self.start, self.goal, self.path]}
-                msg = json.dumps(value)
-                self.viz.publish(msg)
             else:
                 pass
 
@@ -152,7 +148,7 @@ class Bot2():
                     self.done = 0
                     break
 
-        except:
+        except Exception as e:
             print("Exception in On Goal Function")
             print(e)
             goal_handle.set_rejected()
@@ -179,6 +175,9 @@ class Bot2():
             print("Final Path List and Angle List with Goal Point")
             print(self.path, self.angle)
             self.flag = 1
+            value = {'bot2': [start, goal, self.path]}
+            msg = json.dumps(value)
+            self.viz.publish(msg)
 
         except Exception as e:
             print("Exception in Process Goal Function")

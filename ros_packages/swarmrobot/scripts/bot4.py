@@ -106,10 +106,6 @@ class Bot4():
                 else:
                     if self.check == 0:
                         self.stop_bot(self.pos)
-                
-                value = {'bot4': [self.start, self.goal, self.path]}
-                msg = json.dumps(value)
-                self.viz.publish(msg)
             else:
                 pass
 
@@ -146,13 +142,13 @@ class Bot4():
                 if self.flag == 2:
                     rospy.loginfo("Goal Completed")
                     self.flag = 0
-                    result = msgBot2Result()
+                    result = msgBot4Result()
                     result.flag = True
                     goal_handle.set_succeeded(result)
                     self.done = 0
                     break
 
-        except:
+        except Exception as e:
             print("Exception in On Goal Function")
             print(e)
             goal_handle.set_rejected()
@@ -179,6 +175,9 @@ class Bot4():
             print("Final Path List and Angle List with Goal Point")
             print(self.path, self.angle)
             self.flag = 1
+            value = {'bot4': [start, goal, self.path]}
+            msg = json.dumps(value)
+            self.viz.publish(msg)
 
         except Exception as e:
             print("Exception in Process Goal Function")
