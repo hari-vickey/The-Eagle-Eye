@@ -231,7 +231,7 @@ class Ui_MainWindow(object):
         self.flipkart_logo = QLabel(self.centralwidget)
         self.flipkart_logo.setObjectName(u"flipkart_logo")
         self.flipkart_logo.setGeometry(QRect(1680, -50, 220, 220))
-        logo = QPixmap("images/Flipkart_logo.png")
+        logo = QPixmap("{}/images/Flipkart_logo.png".format(str_pkg_path))
         flipkart_pixmap = logo.scaled(220, 220, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.flipkart_logo.setPixmap(flipkart_pixmap)
 
@@ -239,7 +239,7 @@ class Ui_MainWindow(object):
         self.eagleeye_logo = QLabel(self.centralwidget)
         self.eagleeye_logo.setObjectName(u"eagleeye_logo")
         self.eagleeye_logo.setGeometry(QRect(0, -55, 220, 220))
-        eagle = QPixmap("images/eagle_eye.jpg")
+        eagle = QPixmap("{}/images/eagle_eye.jpg".format(str_pkg_path))
         eagleeye_pixmap = eagle.scaled(170, 180, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.eagleeye_logo.setPixmap(eagleeye_pixmap)
 
