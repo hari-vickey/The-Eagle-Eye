@@ -32,14 +32,14 @@ class Ui_MainWindow(object):
     # For adding background wallpaper for the main window 
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, 0, 1920, 1080))
+        self.label.setGeometry(QRect(0, 0, 1920, 1090))
         self.label.setPixmap(QPixmap("images/mainwindow.png"))
 
     # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
         self.textBrowser.setObjectName("textBrowser")
-        self.textBrowser.setStyleSheet("background-color: #9999FF")
+        self.textBrowser.setStyleSheet("background-color: #EECEEC")
 
     # For creating the table
         self.font = QFont("Times", 12)
@@ -213,6 +213,33 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(1350, 550, 200, 90))
 
+    # For displaying "Run time " content
+        self.textEdit = QTextEdit(self.centralwidget)
+        self.textEdit.setObjectName(u"textEdit")
+        self.textEdit.setGeometry(QRect(400, 900, 200, 87))
+
+    # For showing the text "Run time" 
+        self.label_2 = QLabel(self.centralwidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(250, 900, 200, 90))
+
+    # For adding flipkart logo in the titlebar
+        self.flipkart_logo = QLabel(self.centralwidget)
+        self.flipkart_logo.setObjectName(u"flipkart_logo")
+        self.flipkart_logo.setGeometry(QRect(1680, -50, 220, 220))
+        logo = QPixmap("images/Flipkart_logo.png")
+        flipkart_pixmap = logo.scaled(220, 220, Qt.KeepAspectRatio, Qt.FastTransformation)
+        self.flipkart_logo.setPixmap(flipkart_pixmap)
+
+    #For adding eagleeye logo in the titlebar
+        self.eagleeye_logo = QLabel(self.centralwidget)
+        self.eagleeye_logo.setObjectName(u"eagleeye_logo")
+        self.eagleeye_logo.setGeometry(QRect(0, -55, 220, 220))
+        eagle = QPixmap("images/eagle_eye.jpg")
+        eagleeye_pixmap = eagle.scaled(170, 180, Qt.KeepAspectRatio, Qt.FastTransformation)
+        self.eagleeye_logo.setPixmap(eagleeye_pixmap)
+
+
     # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QRect(309, 800, 141, 51))
@@ -234,10 +261,10 @@ class Ui_MainWindow(object):
         self.Processing.setCurrentIndex(2)
         QMetaObject.connectSlotsByName(MainWindow)
 
-    # For searchbar input
-        self.lineEdit_2= QLineEdit(self.centralwidget)
-        self.lineEdit_2.setObjectName(u"line_Edit_2")
-        self.lineEdit_2.setGeometry(990, 190, 331, 51)
+    # # For searchbar input
+    #     self.lineEdit_2= QLineEdit(self.centralwidget)
+    #     self.lineEdit_2.setObjectName(u"line_Edit_2")
+    #     self.lineEdit_2.setGeometry(990, 190, 331, 51)
 
     def retranslateUi(self, MainWindow):
         _translate = QCoreApplication.translate

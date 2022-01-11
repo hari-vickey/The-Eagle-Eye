@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
         self.textBrowser = QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
         self.textBrowser.setObjectName("textBrowser")
-        self.textBrowser.setStyleSheet("background-color: #9999FF")
+        self.textBrowser.setStyleSheet("background-color: #EECEEC")
 
         # For creating the table
         self.font = QFont("Times", 12)
