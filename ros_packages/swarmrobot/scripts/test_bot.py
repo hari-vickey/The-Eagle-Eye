@@ -42,20 +42,19 @@ class Rev():
             receives a Cancel Request.
         '''
         # Defining Variables for this Class
+        self.bot = 'bot4'
+        self.first, self.task = 1, 1
         self.path, self.angle = [], []
         self.init, self.reverse = True, False
         self.goal, self.start = (0, 0), (0, 0)
-
-        self.first, self.task = 1, 1
         self.ang, self.done, self.rotate, self.threadLock = 0, 0, 0, 0
         self.use, self.flag, self.next, self.indsn, self.check = 0, 0, 0, 0, 0
 
         # Defining ROS Publisher
         # To Communicate with bots
-        self.pub = rospy.Publisher("bot2/control_signal", Int16MultiArray, 
+        topic = self.bot + "/control_signal"
+        self.pub = rospy.Publisher(topic, Int16MultiArray, 
                                    queue_size=1)
-        # self.pub = rospy.Publisher("bot4/control_signal", Int16MultiArray, 
-        #                            queue_size=1)
 
         # Defining ROS Publisher
         # To Visualize Path
@@ -102,18 +101,12 @@ class Rev():
                 msg = message_converter.convert_ros_message_to_dictionary(data)
                 temp = msg['data']
                 bot = json.loads(temp)
-                self.pos = bot['bot2']
-                # self.pos = bot['bot4']
+                self.pos = bot[self.bot]
                 if self.threadLock == 0:
                     self.path_execute(self.pos)
                 else:
                     if self.check == 0:
-                        self.stop_bot(self.pos)
-                
-                value = {'bot2': [self.start, self.goal, self.path]}
-                # value = {'bot4': [self.start, self.goal, self.path]}
-                msg = json.dumps(value)
-                self.viz.publish(msg)
+                        self.stop_bot(self.pos)                
             else:
                 pass
 
@@ -184,6 +177,9 @@ class Rev():
             print(self.path)
             print(self.angle)
             self.flag = 1
+            value = {self.bot: [start, goal, self.path]}
+            msg = json.dumps(value)
+            self.viz.publish(msg)
 
         except Exception as e:
             print("Exception in Process Goal Function")

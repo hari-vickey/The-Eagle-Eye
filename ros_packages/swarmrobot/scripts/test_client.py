@@ -33,7 +33,7 @@ class Client():
         # Dictionary to Store all the goal handels
         self._goal_handles = {}
         self.goal_no = 0
-        # Wait for UR5_2 Action Server
+        # Wait for Action Server
         self._ac1.wait_for_server()
         print("Action Server Up")
         print("waiting for Aruco Markers Detection")
@@ -48,30 +48,25 @@ class Client():
         This Function will read the excel sheet and sort 
         induct stations
         """
-        ## Work Needed ##
         # Send Goal to Action Client
-        # Threaded the algorithm function to process real time images
-        # thread = threading.Thread(name="worker", target=self.algorithm, args=(cv_image, ))
-        # thread.start()
-        # self.algorithm(cv_image)
         ind_stn = 2
-        # start = (self.location[ind_stn][0], self.location[ind_stn][1])
-        # goal = self.closest_point(self.location['Delhi'], start)
-        # print(start, goal)
-        # self._goal_handles[0] = self.send_goal_1(ind_stn, start[0], 
-        #                                          start[1], goal[0], 
-        #                                          goal[1])
+        start = (self.location[ind_stn][0], self.location[ind_stn][1])
+        goal = self.closest_point(self.location['Delhi'], start)
+        print(start, goal)
+        self._goal_handles[0] = self.send_goal_1(ind_stn, start[0], 
+                                                 start[1], goal[0], 
+                                                 goal[1])
 
-        for i in self.location:
-            if str(i) == "2" or str(i) == "1":
-                continue
-            start = (self.location[ind_stn][0], self.location[ind_stn][1])
-            goal = self.closest_point(self.location[i], start)
-            print(start, goal)
-            self._goal_handles[self.goal_no] = self.send_goal_1(ind_stn, 
-                                                     start[0], start[1], 
-                                                     goal[0], goal[1])
-            self.goal_no += 1
+        # for i in self.location:
+        #     if str(i) == "2" or str(i) == "1":
+        #         continue
+        #     start = (self.location[ind_stn][0], self.location[ind_stn][1])
+        #     goal = self.closest_point(self.location[i], start)
+        #     print(start, goal)
+        #     self._goal_handles[self.goal_no] = self.send_goal_1(ind_stn, 
+        #                                              start[0], start[1], 
+        #                                              goal[0], goal[1])
+        #     self.goal_no += 1
 
     # Function On_Transition
     def on_transition(self, goal_handle):
@@ -129,25 +124,6 @@ class Client():
         goal_handle = self._ac1.send_goal(goal, self.on_transition, None)
 
         return goal_handle
-
-    # Function Algorithm
-    def algorithm(self, image):
-        """
-        This function is responsible to complete the entire task.
-        It is also combined with multiple control statements to
-        get optimal results
-        """
-        self.send_goal()
-        ###############################
-        #                             #
-        ##                           ##
-        ###                         ###
-        # Lot of Work need to be done #
-        ###                         ###
-        ##                           ##
-        #                             #
-        ###############################
-
 
     # Function to identify the closest point
     def closest_point(self, ls, pos):
