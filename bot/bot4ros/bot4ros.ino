@@ -7,7 +7,8 @@
 // Declaring the Header Files required for the Program
 #include <ESP8266WiFi.h>
 #include <MPU6050_tockn.h>
-#include <MobaTools.h>
+//#include <MobaTools.h>
+#include <Servo.h>
 #include <Wire.h>
 
 // Including ROS Libraries for Subscribing to the ROS Topics
@@ -16,7 +17,8 @@
 
 // Creating Object for Servo and MPU Sensor
 MPU6050 mpu6050(Wire);
-MoToServo servo;
+//MoToServo servo;
+Servo servo;
 
 // Declaring wifi credentials
 const char* ssid = "hari";
