@@ -55,11 +55,11 @@ class Ui_MainWindow(object):
         # For adding table widget for excel data
         self.table = QTableWidget(self.centralwidget)
         self.table.setObjectName(u"table")
-        self.table.setGeometry(QRect(920, 500, 400, 521))
+        self.table.setGeometry(QRect(920, 450, 400, 521))
 
         self.table2 = QTableWidget(self.centralwidget)
         self.table2.setObjectName(u"table")
-        self.table2.setGeometry(QRect(1440, 500, 400, 521))
+        self.table2.setGeometry(QRect(1440, 450, 400, 521))
 
         # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
