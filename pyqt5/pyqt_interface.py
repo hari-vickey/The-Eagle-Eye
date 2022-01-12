@@ -38,11 +38,11 @@ class Ui_MainWindow(object):
     # For adding table widget for excel data
         self.table = QTableWidget(self.centralwidget)
         self.table.setObjectName(u"table")
-        self.table.setGeometry(QRect(920, 500, 400, 521))
+        self.table.setGeometry(QRect(920, 450, 400, 521))
 
         self.table2 = QTableWidget(self.centralwidget)
         self.table2.setObjectName(u"table")
-        self.table2.setGeometry(QRect(1440, 500, 400, 521))
+        self.table2.setGeometry(QRect(1440, 450, 400, 521))
 
     # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
@@ -58,7 +58,7 @@ class Ui_MainWindow(object):
         self.Processing = QTabWidget(self.centralwidget)
         self.Processing.setObjectName(u"Processing")
         self.Processing.setEnabled(True)
-        self.Processing.setGeometry(QRect(920, 200, 921, 250))
+        self.Processing.setGeometry(QRect(920, 150, 921, 250))
         # self.Processing.setMaximumSize(QSize(921, 16777215))
         self.Processing.setFont(self.font)
         self.Processing.setAutoFillBackground(True)
@@ -244,21 +244,21 @@ class Ui_MainWindow(object):
     # For displaying "Run time " content
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName(u"textEdit")
-        self.textEdit.setGeometry(QRect(400, 900, 200, 87))
+        self.textEdit.setGeometry(QRect(400, 870, 200, 87))
 
     # For showing the text "Run time" 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(250, 900, 200, 90))
+        self.label_2.setGeometry(QRect(250, 870, 200, 90))
 
     # For showing the name of the excel data
         self.data1 = QLabel(self.centralwidget)
         self.data1.setObjectName(u"data1")
-        self.data1.setGeometry(QRect(1000, 430, 210, 90))
+        self.data1.setGeometry(QRect(1000, 380, 210, 90))
 
         self.data2 = QLabel(self.centralwidget)
         self.data2.setObjectName(u"data2")
-        self.data2.setGeometry(QRect(1530, 430, 210, 90))
+        self.data2.setGeometry(QRect(1530, 380, 210, 90))
     
     # For adding flipkart logo in the titlebar
         self.flipkart_logo = QLabel(self.centralwidget)
