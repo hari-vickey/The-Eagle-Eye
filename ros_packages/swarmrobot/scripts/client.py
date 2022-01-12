@@ -213,7 +213,7 @@ class Client():
             self.goal_no_2 += 1
 
         for i in range(0, 15):
-            pkgid_2 = self.df1.iloc[i][0]
+            pkgid_2 = self.df2.iloc[i][0]
             ind_stn = int(self.df2.iloc[i][1])
             city = self.df2.iloc[i][2]
             print(ind_stn, city)

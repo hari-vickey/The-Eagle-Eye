@@ -128,6 +128,8 @@ class Bot4():
             self.goal = (goal.goal_x, goal.goal_y)
             print(self.goal)
             self.indsn = goal.induct_station
+            city = goal.city
+            pkg_id = goal.pkg_id
 
             # Accept the Goal
             goal_handle.set_accepted()
@@ -135,7 +137,8 @@ class Bot4():
             # Processing the Goal
             goal_id = goal_handle.get_goal_id()
             rospy.loginfo("Processing goal : " + str(goal_id.id))
-            self.process_goal(self.start, self.goal)
+            self.process_goal(self.start, self.goal, self.indsn, 
+                              city, pkg_id)
 
             # Check whether the Goal is Processed
             while True:
@@ -154,7 +157,7 @@ class Bot4():
             goal_handle.set_rejected()
 
     # Function to process
-    def process_goal(self, start, goal):
+    def process_goal(self, start, goal, indsn, city, pkgid):
         """
         This Function to plan a path and execute them to move 
         the bot
@@ -162,8 +165,7 @@ class Bot4():
         try:
             # graph = function.read_graph()
             # points, turns = function.path_plan(graph, start, goal)
-            points, turns = function.path_plan_custom(start, goal, 
-                                                      self.indsn, 
+            points, turns = function.path_plan_custom(start, goal, indsn, 
                                                       self.reverse)
             if self.reverse == True:
                 for i in range(len(turns)):
@@ -179,7 +181,7 @@ class Bot4():
             if self.reverse == True:
                 shipment = "Yes"
             self.flag = 1
-            value = {'bot4': [start, goal, self.path, indsn, city, pkgid, dispatch, shipment]}
+            value = {'bot4': [start, goal, self.path, str(indsn), city, pkgid, dispatch, shipment]}
             msg = json.dumps(value)
             self.viz.publish(msg)
 

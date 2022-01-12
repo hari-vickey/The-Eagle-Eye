@@ -18,6 +18,7 @@ import math
 import json
 import rospy
 import rospkg
+import datetime
 import threading
 import numpy as np
 from PyQt5.QtGui import *
@@ -99,76 +100,11 @@ class Ui_MainWindow(object):
         item = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(6, item)
         
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(0, 0, item)
-        item = QTableWidgetItem()
-        item.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsDragEnabled|Qt.ItemIsDropEnabled|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled|Qt.ItemIsTristate)
-        self.tableWidget_2.setItem(0, 1, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(0, 3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(1, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(1, 3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(3, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(3, 3, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(4, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setItem(4, 3, item)
-        
-        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(200)
-        self.tableWidget_2.verticalHeader().setDefaultSectionSize(80)
+        self.tableWidget_2.verticalHeader().setDefaultSectionSize(90)
         self.tableWidget_2.verticalHeader().setHighlightSections(True)
-        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(160)
+        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(128)
         self.tableWidget_2.horizontalHeader().setMinimumSectionSize(120)
         self.Processing.addTab(self.tab, "")
-
-        # For the tab "Yet to be dispatch"
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName("tab_2")
-        self.tableWidget_4 = QTableWidget(self.tab_2)
-        self.tableWidget_4.setGeometry(QRect(0, 0, 911, 221))
-        self.tableWidget_4.setObjectName("tableWidget_4")
-        
-        self.tableWidget_4.setColumnCount(3)
-        self.tableWidget_4.setRowCount(4)
-        
-        item = QTableWidgetItem()
-        self.tableWidget_4.setVerticalHeaderItem(0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_4.setVerticalHeaderItem(1, item)
-        item = QTableWidgetItem()
-        item.setBackground(QColor(255, 85, 127))
-        self.tableWidget_4.setVerticalHeaderItem(2, item)
-        item = QTableWidgetItem()
-        self.tableWidget_4.setVerticalHeaderItem(3, item)
-        
-        item = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(1, item)
-        item = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(2, item)
-        
-        item = QTableWidgetItem()
-        self.tableWidget_4.setItem(0, 0, item)
-        item = QTableWidgetItem()
-        brush = QBrush(QColor(255, 170, 0))
-        brush.setStyle(Qt.NoBrush)
-        item.setForeground(brush)
-        self.tableWidget_4.setItem(1, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_4.setItem(2, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_4.setItem(3, 0, item)
-        
-        self.tableWidget_4.horizontalHeader().setDefaultSectionSize(295)
-        self.tableWidget_4.verticalHeader().setDefaultSectionSize(45)
-        self.tableWidget_4.verticalHeader().setHighlightSections(True)
-        self.Processing.addTab(self.tab_2, "")
 
         # For the tab "Delivered"
         self.tab_5 = QWidget()
@@ -178,7 +114,7 @@ class Ui_MainWindow(object):
         self.tableWidget_3.setObjectName("tableWidget_3")
         
         self.tableWidget_3.setColumnCount(5)
-        self.tableWidget_3.setRowCount(5)
+        self.tableWidget_3.setRowCount(10)
         
         item = QTableWidgetItem()
         self.tableWidget_3.setVerticalHeaderItem(0, item)
@@ -223,7 +159,7 @@ class Ui_MainWindow(object):
         item = QTableWidgetItem()
         self.tableWidget_3.setItem(4, 0, item)
         
-        self.tableWidget_3.horizontalHeader().setDefaultSectionSize(178)
+        self.tableWidget_3.horizontalHeader().setDefaultSectionSize(175)
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(120)
         self.Processing.addTab(self.tab_5,"")
 
@@ -325,27 +261,6 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab), _translate("MainWindow", "Processing"))
 
-        # For the Tab "Yet to Dispatch" in the table
-        item = self.tableWidget_4.verticalHeaderItem(0)
-        item.setText(_translate("MainWindow", "1"))
-        item = self.tableWidget_4.verticalHeaderItem(1)
-        item.setText(_translate("MainWindow", "2"))
-        item = self.tableWidget_4.verticalHeaderItem(2)
-        item.setText(_translate("MainWindow", "3"))
-        item = self.tableWidget_4.verticalHeaderItem(3)
-        item.setText(_translate("MainWindow", "4"))
-        
-        item = self.tableWidget_4.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Package ID"))
-        item = self.tableWidget_4.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Induct Station"))
-        item = self.tableWidget_4.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "City"))
-        
-        __sortingEnabled = self.tableWidget_4.isSortingEnabled()
-        self.tableWidget_4.setSortingEnabled(False)
-        self.tableWidget_4.setSortingEnabled(__sortingEnabled)
-        self.Processing.setTabText(self.Processing.indexOf(self.tab_2), _translate("MainWindow", "Yet to Dispatch"))
 
         # For the Tab "Delivered" in the table
         item = self.tableWidget_3.verticalHeaderItem(0)
@@ -372,13 +287,13 @@ class Ui_MainWindow(object):
         item = self.tableWidget_3.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Package ID"))
         item = self.tableWidget_3.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "City"))
-        item = self.tableWidget_3.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Induct Station"))
+        item = self.tableWidget_3.horizontalHeaderItem(2)
+        item.setText(_translate("MainWindow", "City"))
         item = self.tableWidget_3.horizontalHeaderItem(3)
         item.setText(_translate("MainWindow", "Bot ID"))
         item = self.tableWidget_3.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "Time"))
+        item.setText(_translate("MainWindow", "Time Taken(s)"))
         
         __sortingEnabled = self.tableWidget_3.isSortingEnabled()
         self.tableWidget_3.setSortingEnabled(False) 
@@ -465,11 +380,14 @@ class Detect():
                          'Chennai', 'Bengaluru', 'Hyderabad', 
                          'Pune', 'Ahmedabad', 'Jaipur']
 
+        # Reading Current System Time
+        time = datetime.datetime.now()
         # Global Varibales for Aruco Marker Detections
-        self.completed, self.graphc = 0, 0
+        self.time_2, self.time_4 = time, time
+        self.graphc, self.completed, self.index = 0, 0, 0
         self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
         self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
-        self.bot, self.dict, self.destination, self.inductzone = {}, {}, {}, {}
+        self.dict, self.destination, self.inductzone = {}, {}, {}
 
         # Publishing Bot Positions
         self.publisher = rospy.Publisher("/bot_position", String, 
@@ -583,12 +501,17 @@ class Detect():
                 point = (x1, y1, int(deg))
                 cpts.append(point)
 
-            self.bot = dict(zip(bot_name, cpts))
-            self.msg = json.dumps(self.bot)
+            bot = dict(zip(bot_name, cpts))
+            self.msg = json.dumps(bot)
             self.publisher.publish(self.msg)
-            print(self.bot)
-
-            return self.bot
+            print(bot)
+            for i in bot:
+                loc = "(" + str(bot[i][0]) + ", " + str(bot[i][1]) + ")"
+                if i == "bot2":
+                    self.ui.tableWidget_2.setItem(0, 6, QTableWidgetItem(loc))
+                if i == "bot4":
+                    self.ui.tableWidget_2.setItem(1, 6, QTableWidgetItem(loc))
+            return bot
 
         except Exception as e:
             # print(e)
@@ -785,29 +708,50 @@ class Detect():
         """
         msg = message_converter.convert_ros_message_to_dictionary(data)
         temp = msg['data']
-        pos = json.loads(temp)
+        bot = json.loads(temp)
 
-        for i in pos:
+        for i in bot:
             if i == "bot2":
-                self.dict[i] = pos[i]
+                self.dict[i] = bot[i]
                 self.ui.tableWidget_2.setItem(0, 0, QTableWidgetItem(bot[i][5]))
                 self.ui.tableWidget_2.setItem(0, 1, QTableWidgetItem(bot[i][3]))
-                self.ui.tableWidget_2.setItem(0, 2, QTableWidgetItem(bot[i][4])) 
-                self.ui.tableWidget_2.setItem(0, 3, QTableWidgetItem(bot[i]["2"]))
+                self.ui.tableWidget_2.setItem(0, 2, QTableWidgetItem(bot[i][4]))
+                self.ui.tableWidget_2.setItem(0, 3, QTableWidgetItem("2"))
                 self.ui.tableWidget_2.setItem(0, 4, QTableWidgetItem(bot[i][6]))
                 self.ui.tableWidget_2.setItem(0, 5, QTableWidgetItem(bot[i][7]))
-                loc = "(" + str(self.bot[i][0]) + ", " + str(self.bot[i][1]) + ")"
-                self.ui.tableWidget_2.setItem(0, 6, QTableWidgetItem(loc))
+                if bot[i][7] == "No":
+                    self.time_2 = datetime.datetime.now()
+                elif bot[i][7] == "Yes":
+                    self.index += 1
+                    t2 = datetime.datetime.now()
+                    temp2 = t2 - self.time_2
+                    time2 = str(temp2.seconds)
+                    self.ui.tableWidget_3.setItem(self.index, 0, QTableWidgetItem(bot[i][5]))
+                    self.ui.tableWidget_3.setItem(self.index, 1, QTableWidgetItem(bot[i][3]))
+                    self.ui.tableWidget_3.setItem(self.index, 2, QTableWidgetItem(bot[i][4]))
+                    self.ui.tableWidget_3.setItem(self.index, 3, QTableWidgetItem("2"))
+                    self.ui.tableWidget_3.setItem(self.index, 4, QTableWidgetItem(time2))
+
             if i == "bot4":
                 self.dict[i] = bot[i]
                 self.ui.tableWidget_2.setItem(1, 0, QTableWidgetItem(bot[i][5]))
                 self.ui.tableWidget_2.setItem(1, 1, QTableWidgetItem(bot[i][3]))
-                self.ui.tableWidget_2.setItem(1, 2, QTableWidgetItem(bot[i][4])) 
-                self.ui.tableWidget_2.setItem(1, 3, QTableWidgetItem(bot[i]["4"]))
+                self.ui.tableWidget_2.setItem(1, 2, QTableWidgetItem(bot[i][4]))
+                self.ui.tableWidget_2.setItem(1, 3, QTableWidgetItem("4"))
                 self.ui.tableWidget_2.setItem(1, 4, QTableWidgetItem(bot[i][6]))
                 self.ui.tableWidget_2.setItem(1, 5, QTableWidgetItem(bot[i][7]))
-                loc = "(" + str(self.bot[i][0]) + ", " + str(self.bot[i][1]) + ")"
-                self.ui.tableWidget_2.setItem(1, 6, QTableWidgetItem(loc))
+                if bot[i][7] == "No":
+                    self.time_4 = datetime.datetime.now()
+                elif bot[i][7] == "Yes":
+                    self.index += 1
+                    t4 = datetime.datetime.now()
+                    temp4 = t4 - self.time_4
+                    time4 = str(temp4.seconds)
+                    self.ui.tableWidget_3.setItem(self.index, 0, QTableWidgetItem(bot[i][5]))
+                    self.ui.tableWidget_3.setItem(self.index, 1, QTableWidgetItem(bot[i][3]))
+                    self.ui.tableWidget_3.setItem(self.index, 2, QTableWidgetItem(bot[i][4]))
+                    self.ui.tableWidget_3.setItem(self.index, 3, QTableWidgetItem("4"))
+                    self.ui.tableWidget_3.setItem(self.index, 4, QTableWidgetItem(time4))
 
     # Function to Mark Points on the Image
     def mark_points(self, img, bot):
