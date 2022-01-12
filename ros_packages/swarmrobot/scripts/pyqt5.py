@@ -42,6 +42,7 @@ class Ui_MainWindow(object):
 
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        
         # For adding background wallpaper for the main window 
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
@@ -49,6 +50,15 @@ class Ui_MainWindow(object):
         rp = rospkg.RosPack()
         str_pkg_path = rp.get_path('swarmrobot')
         self.label.setPixmap(QPixmap("{}/images/mainwindow.png".format(str_pkg_path)))
+
+        # For adding table widget for excel data
+        self.table = QTableWidget(self.centralwidget)
+        self.table.setObjectName(u"table")
+        self.table.setGeometry(QRect(920, 500, 400, 521))
+
+        self.table2 = QTableWidget(self.centralwidget)
+        self.table2.setObjectName(u"table")
+        self.table2.setGeometry(QRect(1440, 500, 400, 521))
 
         # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
@@ -184,7 +194,16 @@ class Ui_MainWindow(object):
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(250, 900, 200, 90))
+   
+    # For showing the name of the excel data
+        self.data1 = QLabel(self.centralwidget)
+        self.data1.setObjectName(u"data1")
+        self.data1.setGeometry(QRect(1000, 430, 210, 90))
 
+        self.data2 = QLabel(self.centralwidget)
+        self.data2.setObjectName(u"data2")
+        self.data2.setGeometry(QRect(1530, 430, 210, 90))
+   
     # For adding flipkart logo in the titlebar
         self.flipkart_logo = QLabel(self.centralwidget)
         self.flipkart_logo.setObjectName(u"flipkart_logo")
@@ -307,6 +326,9 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(QFont('Times', 15))
         self.pushButton.clicked.connect(self.StartFeed)
 
+        # For loading excel in the table 
+        self.pushButton.clicked.connect(lambda _, xlxs_path1=excel, xlxs_path2 = excel2, sheet_name=worksheet: self.loading_Excel_Data(xlxs_path1, xlxs_path2, sheet_name))
+
         # For writing text in the stop push button and enabling the video 
         self.pushButton_2.setText(_translate("MainWindow", "STOP"))
         self.pushButton_2.setFont(QFont('Times', 15))
@@ -317,12 +339,62 @@ class Ui_MainWindow(object):
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Run time", None))
         self.label_2.setFont(QFont('Times', 20))
 
+        # For giving the excel sheet table widget name
+        self.data1.setText(QCoreApplication.translate("MainWindow", u"Sample_Data1.xlxs", None))
+        self.data1.setFont(QFont('Times', 15))
+
+        self.data2.setText(QCoreApplication.translate("MainWindow", u"Sample_Data2.xlxs", None))
+        self.data2.setFont(QFont('Times', 15))
+
+        # for timer 
         self.timer1 = QTimer()
         # self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
         self.start = time.time()
         self.s = 0
 
         self.label.setText("")
+
+    def loading_Excel_Data(self, excel1, excel2, worksheet):
+        df1 = pd.read_excel(excel1, worksheet)
+        df2 = pd.read_excel(excel2, worksheet)
+        if df1.size == 0:
+            return
+
+        df1.fillna('', inplace=True)
+        self.table.setRowCount(df1.shape[0])
+        self.table.setColumnCount(df1.shape[1])
+        self.table.setHorizontalHeaderLabels(df1.columns)
+
+        # returns pandas array object
+        for row in df1.iterrows():
+            values = row[1]
+            for col_index, value in enumerate(values):
+                if isinstance(value, (float, int)):
+                    value = '{0:0,.0f}'.format(value)
+                tableItem = QTableWidgetItem(str(value))
+                self.table.setItem(row[0], col_index, tableItem)
+
+        self.table.setColumnWidth(2, 300)
+
+        if df2.size == 0:
+            return
+
+        df2.fillna('', inplace=True)
+        self.table2.setRowCount(df2.shape[0])
+        self.table2.setColumnCount(df2.shape[1])
+        self.table2.setHorizontalHeaderLabels(df2.columns)
+
+        # returns pandas array object
+        for row in df2.iterrows():
+            values = row[1]
+            for col_index, value in enumerate(values):
+                if isinstance(value, (float, int)):
+                    value = '{0:0,.0f}'.format(value)
+                tableItem = QTableWidgetItem(str(value))
+                self.table2.setItem(row[0], col_index, tableItem)
+
+        self.table2.setColumnWidth(2, 300)
+
   
     def ImageUpdateSlot(self, image):
         """ Function for updating the image in the frame """
@@ -365,6 +437,10 @@ class Detect():
     # Constructor
     # Initializing the variables of this class
     def __init__(self):
+
+        excel = '{}/sheet/Book1.xlsx'
+        excel2 = "{}/sheet/Book2.xlsx"
+        worksheet = 'Sheet1'
 
         # Creating Objects for PyQt5 Application
         app = QApplication(sys.argv)

@@ -9,6 +9,7 @@ import cv2
 import sys
 import time
 import threading
+import pandas as pd 
 from PIL import Image
 from numpy import asarray
 from PyQt5.QtGui import *
@@ -20,6 +21,7 @@ from PyQt5.QtCore import QTimer,QDateTime
 # sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
 
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
 
         MainWindow.setObjectName("MainWindow")
@@ -35,6 +37,15 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QRect(0, 0, 1920, 1090))
         self.label.setPixmap(QPixmap("images/mainwindow.png"))
 
+    # For adding table widget for excel data
+        self.table = QTableWidget(self.centralwidget)
+        self.table.setObjectName(u"table")
+        self.table.setGeometry(QRect(920, 500, 400, 521))
+
+        self.table2 = QTableWidget(self.centralwidget)
+        self.table2.setObjectName(u"table")
+        self.table2.setGeometry(QRect(1440, 500, 400, 521))
+
     # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
@@ -49,7 +60,7 @@ class Ui_MainWindow(object):
         self.Processing = QTabWidget(self.centralwidget)
         self.Processing.setObjectName(u"Processing")
         self.Processing.setEnabled(True)
-        self.Processing.setGeometry(QRect(920, 260, 921, 250))
+        self.Processing.setGeometry(QRect(920, 200, 921, 250))
         # self.Processing.setMaximumSize(QSize(921, 16777215))
         self.Processing.setFont(self.font)
         self.Processing.setAutoFillBackground(True)
@@ -231,10 +242,6 @@ class Ui_MainWindow(object):
         self.frame.setLineWidth(5)
         self.frame.setObjectName("frame")
         
-    # For showing the text "Run time" 
-        self.label_2 = QLabel(self.centralwidget)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(1350, 550, 200, 90))
 
     # For displaying "Run time " content
         self.textEdit = QTextEdit(self.centralwidget)
@@ -246,6 +253,15 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(250, 900, 200, 90))
 
+    # For showing the name of the excel data
+        self.data1 = QLabel(self.centralwidget)
+        self.data1.setObjectName(u"data1")
+        self.data1.setGeometry(QRect(1000, 430, 210, 90))
+
+        self.data2 = QLabel(self.centralwidget)
+        self.data2.setObjectName(u"data2")
+        self.data2.setGeometry(QRect(1530, 430, 210, 90))
+    
     # For adding flipkart logo in the titlebar
         self.flipkart_logo = QLabel(self.centralwidget)
         self.flipkart_logo.setObjectName(u"flipkart_logo")
@@ -262,7 +278,6 @@ class Ui_MainWindow(object):
         eagleeye_pixmap = eagle.scaled(170, 180, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.eagleeye_logo.setPixmap(eagleeye_pixmap)
 
-
     # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QRect(309, 800, 141, 51))
@@ -275,6 +290,13 @@ class Ui_MainWindow(object):
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.setStyleSheet("border:2px; background-color: red; border-radius : 20px")
 
+    # Pushbutton for loading excel sheet 
+    ##########################################################
+        # self.load = QPushButton(self.centralwidget)
+        # self.load.setGeometry(QRect(1700,500, 141, 51))
+        # self.load.setObjectName("load")
+    ###########################################################
+        
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -284,10 +306,6 @@ class Ui_MainWindow(object):
         self.Processing.setCurrentIndex(2)
         QMetaObject.connectSlotsByName(MainWindow)
 
-    # # For searchbar input
-    #     self.lineEdit_2= QLineEdit(self.centralwidget)
-    #     self.lineEdit_2.setObjectName(u"line_Edit_2")
-    #     self.lineEdit_2.setGeometry(990, 190, 331, 51)
 
     def retranslateUi(self, MainWindow):
         _translate = QCoreApplication.translate
@@ -330,10 +348,6 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setSortingEnabled(False)
         self.tableWidget_2.setSortingEnabled(__sortingEnabled)
         self.Processing.setTabText(self.Processing.indexOf(self.tab), _translate("MainWindow", "Processing"))
-
-    # # For entering the values in the table
-    #     for i in range(1,5):
-    #             self.tableWidget_2.setItem(i,0, QTableWidgetItem("Package"+str(i))) 
 
     # For the Tab "Yet to Dispatch" in the table
         item = self.tableWidget_4.verticalHeaderItem(0)
@@ -380,7 +394,6 @@ class Ui_MainWindow(object):
         item = self.tableWidget_3.verticalHeaderItem(9)
         item.setText(_translate("MainWindow", "10"))
 
-             
         item = self.tableWidget_3.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Package ID"))
         item = self.tableWidget_3.horizontalHeaderItem(1)
@@ -405,23 +418,76 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(QFont('Times', 15))
         self.pushButton.clicked.connect(self.StartFeed)
 
+    # For loading excel in the table 
+        self.pushButton.clicked.connect(lambda _, xlxs_path1=excel, xlxs_path2 = excel2, sheet_name=worksheet: self.loading_Excel_Data(xlxs_path1, xlxs_path2, sheet_name))
+    
     # For writing text in the stop push button and enabling the video 
         self.pushButton_2.setText(_translate("MainWindow", "STOP"))
         self.pushButton_2.setFont(QFont('Times', 15))
         self.pushButton_2.clicked.connect(self.StopFeed)
-        # self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
 
     # For writing "Run time" text in label_2 
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Run time", None))
         self.label_2.setFont(QFont('Times', 20))
 
+    # For giving the excel sheet table widget name
+        self.data1.setText(QCoreApplication.translate("MainWindow", u"Sample_Data1.xlxs", None))
+        self.data1.setFont(QFont('Times', 15))
+
+        self.data2.setText(QCoreApplication.translate("MainWindow", u"Sample_Data2.xlxs", None))
+        self.data2.setFont(QFont('Times', 15))
+
+    # for timer 
         self.timer1 = QTimer()
         self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
         self.start = time.time()
         self.s = 0
 
         self.label.setText("")
-  
+
+
+    def loading_Excel_Data(self, excel1, excel2, worksheet):
+        df1 = pd.read_excel(excel1, worksheet)
+        df2 = pd.read_excel(excel2, worksheet)
+        if df1.size == 0:
+            return
+
+        df1.fillna('', inplace=True)
+        self.table.setRowCount(df1.shape[0])
+        self.table.setColumnCount(df1.shape[1])
+        self.table.setHorizontalHeaderLabels(df1.columns)
+
+        # returns pandas array object
+        for row in df1.iterrows():
+            values = row[1]
+            for col_index, value in enumerate(values):
+                if isinstance(value, (float, int)):
+                    value = '{0:0,.0f}'.format(value)
+                tableItem = QTableWidgetItem(str(value))
+                self.table.setItem(row[0], col_index, tableItem)
+
+        self.table.setColumnWidth(2, 300)
+
+        if df2.size == 0:
+            return
+
+        df2.fillna('', inplace=True)
+        self.table2.setRowCount(df2.shape[0])
+        self.table2.setColumnCount(df2.shape[1])
+        self.table2.setHorizontalHeaderLabels(df2.columns)
+
+        # returns pandas array object
+        for row in df2.iterrows():
+            values = row[1]
+            for col_index, value in enumerate(values):
+                if isinstance(value, (float, int)):
+                    value = '{0:0,.0f}'.format(value)
+                tableItem = QTableWidgetItem(str(value))
+                self.table2.setItem(row[0], col_index, tableItem)
+
+        self.table2.setColumnWidth(2, 300)
+
+
     def ImageUpdateSlot(self, Image1):
         """ Function for updating the image in the frame """
         self.frame.setPixmap(QPixmap.fromImage(Image1))
@@ -481,6 +547,11 @@ class Worker1(QThread):
         self.quit()
 
 if __name__ == "__main__":
+
+    excel = 'D:/git learning/The-Eagle-Eye/pyqt5/Book1.xlsx'
+    excel2 = "D:/git learning/The-Eagle-Eye/pyqt5/Book2.xlsx"
+    worksheet = 'Sheet1'
+
     app = QApplication(sys.argv) 
     MainWindow = QMainWindow()
     # MainWindow.setStyleSheet("QMainWindow{background-image: url ('22.png')}")
