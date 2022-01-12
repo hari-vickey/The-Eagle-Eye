@@ -18,8 +18,6 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QTimer,QDateTime
 
-# sys.path.insert(0, "D:/git learning/The-Eagle-Eye/test_programs")
-
 class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
@@ -548,8 +546,8 @@ class Worker1(QThread):
 
 if __name__ == "__main__":
 
-    excel = 'D:/git learning/The-Eagle-Eye/pyqt5/Book1.xlsx'
-    excel2 = "D:/git learning/The-Eagle-Eye/pyqt5/Book2.xlsx"
+    excel = "Book1.xlsx"
+    excel2 = "Book2.xlsx"
     worksheet = 'Sheet1'
 
     app = QApplication(sys.argv) 

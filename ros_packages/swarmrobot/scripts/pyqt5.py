@@ -21,6 +21,7 @@ import rospkg
 import datetime
 import threading
 import numpy as np
+import pandas as pd
 from PyQt5.QtGui import *
 import cv2.aruco as aruco
 from PyQt5.QtCore import *
@@ -46,7 +47,7 @@ class Ui_MainWindow(object):
         # For adding background wallpaper for the main window 
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, 0, 1920, 1080))
+        self.label.setGeometry(QRect(0, 100, 1920, 1080))
         rp = rospkg.RosPack()
         str_pkg_path = rp.get_path('swarmrobot')
         self.label.setPixmap(QPixmap("{}/images/mainwindow.png".format(str_pkg_path)))
@@ -158,17 +159,6 @@ class Ui_MainWindow(object):
         item = QTableWidgetItem()
         self.tableWidget_3.setVerticalHeaderItem(9, item)
         
-        item = QTableWidgetItem()
-        self.tableWidget_3.setItem(0, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_3.setItem(1, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_3.setItem(2, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_3.setItem(3, 0, item)
-        item = QTableWidgetItem()
-        self.tableWidget_3.setItem(4, 0, item)
-        
         self.tableWidget_3.horizontalHeader().setDefaultSectionSize(175)
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(120)
         self.Processing.addTab(self.tab_5,"")
@@ -185,26 +175,26 @@ class Ui_MainWindow(object):
         self.frame.setLineWidth(5)
         self.frame.setObjectName("frame")
         
-    # For displaying "Run time " content
+        # For displaying "Run time " content
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setGeometry(QRect(400, 900, 200, 87))
 
-    # For showing the text "Run time" 
+        # For showing the text "Run time" 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(250, 900, 200, 90))
    
-    # For showing the name of the excel data
+        # For showing the name of the excel data
         self.data1 = QLabel(self.centralwidget)
         self.data1.setObjectName(u"data1")
-        self.data1.setGeometry(QRect(1000, 430, 210, 90))
+        self.data1.setGeometry(QRect(1000, 480, 210, 90))
 
         self.data2 = QLabel(self.centralwidget)
         self.data2.setObjectName(u"data2")
-        self.data2.setGeometry(QRect(1530, 430, 210, 90))
+        self.data2.setGeometry(QRect(1530, 480, 210, 90))
    
-    # For adding flipkart logo in the titlebar
+        # For adding flipkart logo in the titlebar
         self.flipkart_logo = QLabel(self.centralwidget)
         self.flipkart_logo.setObjectName(u"flipkart_logo")
         self.flipkart_logo.setGeometry(QRect(1680, -50, 220, 220))
@@ -212,7 +202,7 @@ class Ui_MainWindow(object):
         flipkart_pixmap = logo.scaled(220, 220, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.flipkart_logo.setPixmap(flipkart_pixmap)
 
-    #For adding eagleeye logo in the titlebar
+        #For adding eagleeye logo in the titlebar
         self.eagleeye_logo = QLabel(self.centralwidget)
         self.eagleeye_logo.setObjectName(u"eagleeye_logo")
         self.eagleeye_logo.setGeometry(QRect(0, -55, 220, 220))
@@ -326,7 +316,12 @@ class Ui_MainWindow(object):
         self.pushButton.setFont(QFont('Times', 15))
         self.pushButton.clicked.connect(self.StartFeed)
 
-        # For loading excel in the table 
+        # For loading excel in the table
+        rp = rospkg.RosPack()
+        str_pkg_path = rp.get_path('swarmrobot')
+        excel = "{}/sheet/Book1.xlsx".format(str_pkg_path)
+        excel2 = "{}/sheet/Book2.xlsx".format(str_pkg_path)
+        worksheet = 'Sheet1'
         self.pushButton.clicked.connect(lambda _, xlxs_path1=excel, xlxs_path2 = excel2, sheet_name=worksheet: self.loading_Excel_Data(xlxs_path1, xlxs_path2, sheet_name))
 
         # For writing text in the stop push button and enabling the video 
@@ -423,7 +418,7 @@ class Ui_MainWindow(object):
                 self.s = self.s + 1
                 self.start = self.start + 60
             fi_s = str(self.s)
-        # showing text
+            # showing text
             self.textEdit.setText(QCoreApplication.translate("MainWindow", fi_s + ":" + fin, None))
             self.textEdit.setFont(QFont('Times', 20))
 
@@ -437,10 +432,6 @@ class Detect():
     # Constructor
     # Initializing the variables of this class
     def __init__(self):
-
-        excel = '{}/sheet/Book1.xlsx'
-        excel2 = "{}/sheet/Book2.xlsx"
-        worksheet = 'Sheet1'
 
         # Creating Objects for PyQt5 Application
         app = QApplication(sys.argv)
