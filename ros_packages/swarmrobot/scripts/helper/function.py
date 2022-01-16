@@ -152,9 +152,9 @@ def path_plan_custom(start, end, indid, reverse):
     start[1] in range(end[1]-10, end[1]+10):
         print("Path Planning M1")
         way_point = [(end[0], end[1])]
-        ang = [2]
+        ang = [1]
         if indid == 2:
-            ang = [-2]
+            ang = [-1]
 
     # If the goal is within the adjacent squares
     # then the path can be obtained is diagnal
@@ -169,13 +169,13 @@ def path_plan_custom(start, end, indid, reverse):
     elif start[0] != end[0] or start[1] != end[1]:
         print("Path Planning M3")
         if reverse == False:
-            way_point = [(end[0], start[1])]
+            way_point = [(end[0]+10, start[1])]
             if indid == 1:
-                ang = [0, 90]
+                ang = [1, 90]
             else:
-                ang = [0, -89]
+                ang = [-1, -89]
         else:
-            way_point = [(start[0], end[1])]
+            way_point = [(start[0]-10, end[1])]
             if indid == 1:
                 ang = [-90, 0]
             else:
@@ -351,14 +351,14 @@ def rotate_direction(ang):
 def choose_side(start, goal, ind):
     if ind == 1:
         if start[1]-20 < goal[1]:
-            angle = -45
+            angle = -50
         else:
-            angle = 45
+            angle = 50
     elif ind == 2:
         if start[1]+20 > goal[1]:
-            angle = 45
+            angle = 50
         else:
-            angle = -45
+            angle = -50
 
     return angle
 

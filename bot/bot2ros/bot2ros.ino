@@ -113,8 +113,8 @@ int movement(int direction, float angle=0) {
             digitalWrite(in2, LOW);
             digitalWrite(in3, LOW);
             digitalWrite(in4, HIGH);
-            analogWrite(ena, l1);
-            analogWrite(enb, r1);
+            analogWrite(ena, l2);
+            analogWrite(enb, r2);
             Serial.println("Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
@@ -131,8 +131,8 @@ int movement(int direction, float angle=0) {
             digitalWrite(in2, HIGH);
             digitalWrite(in3, HIGH);
             digitalWrite(in4, LOW);
-            analogWrite(ena, l1);
-            analogWrite(enb, r1);
+            analogWrite(ena, l2);
+            analogWrite(enb, r2);
             Serial.println("Anti Clock-Wise Rotation");
         }
         analogWrite(ena, 0);
@@ -178,7 +178,7 @@ int movement(int direction, float angle=0) {
         analogWrite(ena, l1);
         analogWrite(enb, r1);
         Serial.println("Clock-Wise Rotation");
-        delay(10);
+        delay(8);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
@@ -192,7 +192,7 @@ int movement(int direction, float angle=0) {
         analogWrite(ena, l1);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
-        delay(10);
+        delay(8);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");

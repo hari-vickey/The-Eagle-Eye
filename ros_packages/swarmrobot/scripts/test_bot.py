@@ -230,7 +230,8 @@ class Rev():
                         except:
                             self.done = 1
                     if self.ang >= 45:
-                        self.rotate_bot(cur[2], self.ang, 1)
+                        # self.rotate_bot(cur[2], self.ang, 1)
+                        pass
                     self.check, self.rotate = 0, 1
                 elif self.rotate == 1:
                     self.rotate_bot(cur[2], self.ang)

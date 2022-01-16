@@ -47,8 +47,8 @@ int enb = D8;
 int sm = D6;
 
 // Declare Speed Control Values
-int l1 = 230;
-int r1 = 180;
+int l1 = 220;
+int r1 = 160;
 int l2 = 125;
 int r2 = 125;
 
@@ -177,7 +177,7 @@ int movement(int direction, float angle=0, int pos=0) {
         analogWrite(ena, l1);
         analogWrite(enb, r2);
         Serial.println("Clock-Wise Rotation");
-        delay(5);
+        delay(10);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");
@@ -192,7 +192,7 @@ int movement(int direction, float angle=0, int pos=0) {
         analogWrite(ena, l2);
         analogWrite(enb, r1);
         Serial.println("Anti Clock-Wise Rotation");
-        delay(5);
+        delay(10);
         analogWrite(ena, 0);
         analogWrite(enb, 0);
         Serial.println("Stop");

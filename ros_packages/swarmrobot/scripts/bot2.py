@@ -43,12 +43,12 @@ class Bot2():
         '''
         # Defining Variables for this Class
         self.path, self.angle = [], []
+        self.city, self.pkgid = "", ""
         self.init, self.reverse = True, False
         self.goal, self.start = (0, 0), (0, 0)
-
-        self.first, self.task = 1, 1
-        self.ang, self.done, self.rotate, self.threadLock = 0, 0, 0, 0
-        self.use, self.flag, self.next, self.indsn, self.check = 0, 0, 0, 0, 0
+        self.first, self.task, self.drop_ang = 1, 1, 1
+        self.use, self.flag, self.rotate, self.indsn = 0, 0, 0, 0
+        self.ang, self.done, self.next, self.threadLock = 0, 0, 0, 0
 
         # Defining ROS Publisher
         # To Communicate with bots
@@ -80,7 +80,7 @@ class Bot2():
             print("Inside InductZone")
             print("Package Obtained")
             self.publish_command(1)
-            rospy.sleep(1)
+            rospy.sleep(0.5)
             for i in range(0, 5):
                 self.publish_command(0)
 
@@ -104,14 +104,14 @@ class Bot2():
                 if self.threadLock == 0:
                     self.path_execute(self.pos)
                 else:
-                    if self.check == 0:
-                        self.stop_bot(self.pos)
+                    pass
             else:
                 pass
 
         except Exception as e:
-            print("Exception in Position Callback Function")
-            print(e)
+            # print("Exception in Position Callback Function")
+            # print(e)
+            pass
 
     # This function will be called when Action Server receives a Goal
     def on_goal(self, goal_handle):       
@@ -128,8 +128,9 @@ class Bot2():
             self.goal = (goal.goal_x, goal.goal_y)
             print(self.goal)
             self.indsn = goal.induct_station
-            city = goal.city
-            pkg_id = goal.pkg_id
+            self.city = goal.city
+            self.pkgid = goal.pkg_id
+            self.drop_ang = goal.drop
 
             # Accept the Goal
             goal_handle.set_accepted()
@@ -138,7 +139,7 @@ class Bot2():
             goal_id = goal_handle.get_goal_id()
             rospy.loginfo("Processing goal : " + str(goal_id.id))
             self.process_goal(self.start, self.goal, self.indsn, 
-                              city, pkg_id)
+                              self.city, self.pkgid)
 
             # Check whether the Goal is Processed
             while True:
@@ -146,7 +147,7 @@ class Bot2():
                     rospy.loginfo("Goal Completed")
                     self.flag = 0
                     result = msgBot2Result()
-                    result.flag = True
+                    result.flag_success = True
                     goal_handle.set_succeeded(result)
                     self.done = 0
                     break
@@ -170,14 +171,13 @@ class Bot2():
             if self.reverse == True:
                 for i in range(len(turns)):
                     turns[i] = -turns[i]
-                points[-1] = (points[-1][0]+30, points[-1][1])
 
             self.angle = turns
             self.path = points
             print("Final Path List and Angle List with Goal Point")
             print(self.path, self.angle)
             dispatch = "Yes"
-            shipment = "Yes"
+            shipment = "No"
             if self.reverse == True:
                 shipment = "Yes"
             self.flag = 1
@@ -186,8 +186,9 @@ class Bot2():
             self.viz.publish(msg)
 
         except Exception as e:
-            print("Exception in Process Goal Function")
-            print(e)
+            # print("Exception in Process Goal Function")
+            # print(e)
+            pass
 
     # Function to Monitor Bot
     def path_execute(self, cur):
@@ -226,11 +227,11 @@ class Bot2():
                                     self.ang = dyn
                             else:
                                 self.ang = ang
-                            print(self.ang)
                         except:
                             self.done = 1
                     if self.ang >= 45:
-                        self.rotate_bot(cur[2], self.ang, 1)
+                        # self.rotate_bot(cur[2], self.ang, 1)
+                        pass
                     self.check, self.rotate = 0, 1
                 elif self.rotate == 1:
                     self.rotate_bot(cur[2], self.ang)
@@ -250,7 +251,8 @@ class Bot2():
                     print("Reverse Path is tracking")
                     self.done, self.next, self.rotate, self.task = 0, 0, 0, 1
                     self.reverse = True
-                    self.process_goal(self.goal, self.start)
+                    self.process_goal(self.goal, self.start, self.indsn, 
+                                      self.city, self.pkgid)
 
             # If self.done is 2 and if the bot is tracing the reverse path
             # then align the bot to the horizontal axis and get into the 
@@ -281,12 +283,25 @@ class Bot2():
         """
         # If the bot is within the range of goal,
         # then stop the bot else move forward
-        if pos[1] in range(goal[1]-15, goal[1]+15) \
-        and pos[0] in range(goal[0]-15, goal[0]+15):
-                print("Reached the Point " + str(goal))
-                direct = 0
-                self.rotate, self.done = 0, 0
-                self.next += 1
+        stop = 0
+        if pos[1] in range(goal[1]-30, goal[1]+30) \
+        and pos[0] in range(goal[0]-30, goal[0]+30):
+            stop = 1
+        elif pos[0] <= goal[0]+15 and pos[1] <= goal[1]+30 and self.reverse == False:
+            if self.city == "Kolkata" or self.city == "Delhi":
+                if pos[1] >= goal[1]-35 and pos[0] in range(goal[0]-35, goal[0]+20) \
+                and self.reverse == False:
+                    stop = 1
+            else: 
+                stop = 1
+        elif pos[0] >= goal[0]-35 and pos[1] in range(goal[1]-35, goal[1]+30) \
+        and self.reverse == True:
+            stop = 1
+        if stop == 1:
+            print("Reached the Point " + str(goal))
+            direct = 0
+            self.rotate, self.done = 0, 0
+            self.next += 1
         elif pos[2] in range(ang-2, ang+2):
             # print("Forward")
             if self.reverse == True:
@@ -294,21 +309,8 @@ class Bot2():
             else:
                 direct = 1  
         else:
-            # ang = function.dynamic_angle(pos, goal, self.indsn)
             direct = function.publish_offset(pos[2], self.ang, self.reverse)
         self.publish_command(direct)
-
-    # Function to Stop Bot
-    def stop_bot(self, cur):
-        """
-        This Function will be used in for threading to stop
-        the bot more appropriately
-        """
-        # Stop the bot, if the following conditions are met
-        if cur[1] in range(self.goal[1]-15, self.goal[1]+15) \
-        and cur[0] in range(self.goal[0]-15, self.goal[0]+15):
-                self.publish_command(0)
-                self.check = 1
 
     # Function to Rotate Bot
     def rotate_bot(self, current, angle, once=0, offset=0):
@@ -320,6 +322,7 @@ class Bot2():
             temp = angle - offset
             direct = function.rotate_direction(temp)
             turn = abs(angle - offset)
+            turn = turn
             print("Rotating Bot using Gyro - Direction : " + \
                 str(direct) + " Angle : "+ str(angle))
         elif once == 0:
@@ -353,8 +356,7 @@ class Bot2():
         horizontal axis of the camera
         """
         if self.first == 1:
-            angle = function.choose_side(self.start, self.goal, self.indsn)
-            self.rotate_bot(self.pos[2], angle, 0)
+            self.rotate_bot(self.pos[2], self.drop_ang, 0)
             self.use = 1
         elif self.first == 0:
             print("Turned Bot 45 deg to chute")
@@ -370,14 +372,15 @@ class Bot2():
         0 - 0 degree
         """
         print("Actuating Servo")
-
+        self.publish_command(0, 0, 0)
         # Actuate Servo to 180 degree
         print("Actuate Servo to 180 Degree")
         self.publish_command(0, 0, 1)
         # Sleep For 2 Seconds
         # So, that the package falls from the bot
         rospy.sleep(2)
-
+        # self.publish_command(1)
+        # rospy.sleep(0.1)
         # Actuate the Servo to Normal Position
         print("Actuate Servo to 0 Degree")
         self.publish_command(0)

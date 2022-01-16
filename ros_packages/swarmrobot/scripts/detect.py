@@ -112,8 +112,12 @@ class Detect():
                 self.aruco_detect_destination(cv_image)
 
         except Exception as e:
-            print("Exception in Image Subscription Callback")
-            print(e)
+            # print("Exception in Image Subscription Callback")
+            # print(e)
+            img = cv2.resize(cv_image, (800, 600))
+            cv2.imshow("usb_cam_stream", img)
+            cv2.waitKey(1)
+            pass
 
     # Function to detect aruco markers Bot
     def aruco_detect_bot(self, frame):
@@ -358,7 +362,7 @@ class Detect():
         msg = message_converter.convert_ros_message_to_dictionary(data)
         temp = msg['data']
         bot = json.loads(temp)
-        print(bot[i])
+        print(bot)
         for i in bot:
             if i == "bot2":
                 self.dict[i] = bot[i]

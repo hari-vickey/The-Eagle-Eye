@@ -49,8 +49,8 @@ class Client():
         induct stations
         """
         # Send Goal to Action Client
-        ind_stn = 2
-        city = "Delhi"
+        ind_stn = 1
+        city = "Ahmedabad"
         start = (self.location[ind_stn][0], self.location[ind_stn][1])
         goal = self.closest_point(self.location[city], start)
         print(start, goal)

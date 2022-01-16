@@ -1,5 +1,6 @@
 # goal
 int8 induct_station
+int16 drop
 int32 induct_x
 int32 induct_y
 int32 goal_x

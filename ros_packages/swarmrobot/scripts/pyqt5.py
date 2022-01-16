@@ -43,14 +43,15 @@ class Ui_MainWindow(object):
 
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        
+
+        self.flag = False
+        rp = rospkg.RosPack()
+        self.str_pkg_path = rp.get_path('swarmrobot')
         # For adding background wallpaper for the main window 
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, 100, 1920, 1080))
-        rp = rospkg.RosPack()
-        str_pkg_path = rp.get_path('swarmrobot')
-        self.label.setPixmap(QPixmap("{}/images/mainwindow.png".format(str_pkg_path)))
+        self.label.setGeometry(QRect(0, 110, 1920, 1200))
+        self.label.setPixmap(QPixmap("{}/images/mainwindow.png".format(self.str_pkg_path)))
 
         # For adding table widget for excel data
         self.table = QTableWidget(self.centralwidget)
@@ -63,7 +64,7 @@ class Ui_MainWindow(object):
 
         # For creating the Titlebar in the interface
         self.textBrowser = QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QRect(0, 0, 1920, 111))
+        self.textBrowser.setGeometry(QRect(0, 0, 1920, 110))
         self.textBrowser.setObjectName("textBrowser")
         self.textBrowser.setStyleSheet("background-color: #EECEEC")
 
@@ -88,15 +89,14 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setGeometry(QRect(0, 0, 911, 221))
         self.tableWidget_2.setObjectName("tableWidget_2")
         
-        self.tableWidget_2.setColumnCount(7)
+        self.tableWidget_2.setColumnCount(6)
         self.tableWidget_2.setRowCount(2)
-        
+
         item = QTableWidgetItem()
         self.tableWidget_2.setVerticalHeaderItem(0, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setVerticalHeaderItem(1, item)
         item = QTableWidgetItem()
-        
         self.tableWidget_2.setHorizontalHeaderItem(0, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(1, item)
@@ -108,13 +108,10 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setHorizontalHeaderItem(4, item)
         item = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(5, item)
-        item = QTableWidgetItem()
-        self.tableWidget_2.setHorizontalHeaderItem(6, item)
-        
         self.tableWidget_2.verticalHeader().setDefaultSectionSize(90)
         self.tableWidget_2.verticalHeader().setHighlightSections(True)
-        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(128)
-        self.tableWidget_2.horizontalHeader().setMinimumSectionSize(120)
+        self.tableWidget_2.horizontalHeader().setDefaultSectionSize(149)
+        self.tableWidget_2.horizontalHeader().setMinimumSectionSize(138)
         self.Processing.addTab(self.tab, "")
 
         # For the tab "Delivered"
@@ -166,15 +163,15 @@ class Ui_MainWindow(object):
         # For Creating frame for video streaming 
         self.frame = QLabel(self.centralwidget)
         self.frame.setGeometry(QRect(80, 160, 800, 600))
-        pixmap = QPixmap("{}/images/eagle_eye.jpg".format(str_pkg_path))
+        pixmap = QPixmap("{}/images/eagle_eye.jpg".format(self.str_pkg_path))
         P = pixmap.scaled(800, 600, Qt.KeepAspectRatio)
         self.frame.setPixmap(P)
         self.frame.setAutoFillBackground(True)
         self.frame.setFrameShape(QFrame.Box)
         self.frame.setFrameShadow(QFrame.Raised)
-        self.frame.setLineWidth(5)
+        self.frame.setLineWidth(2)
         self.frame.setObjectName("frame")
-        
+
         # For displaying "Run time " content
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName(u"textEdit")
@@ -198,7 +195,7 @@ class Ui_MainWindow(object):
         self.flipkart_logo = QLabel(self.centralwidget)
         self.flipkart_logo.setObjectName(u"flipkart_logo")
         self.flipkart_logo.setGeometry(QRect(1680, -50, 220, 220))
-        logo = QPixmap("{}/images/Flipkart_logo.png".format(str_pkg_path))
+        logo = QPixmap("{}/images/Flipkart_logo.png".format(self.str_pkg_path))
         flipkart_pixmap = logo.scaled(220, 220, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.flipkart_logo.setPixmap(flipkart_pixmap)
 
@@ -206,19 +203,19 @@ class Ui_MainWindow(object):
         self.eagleeye_logo = QLabel(self.centralwidget)
         self.eagleeye_logo.setObjectName(u"eagleeye_logo")
         self.eagleeye_logo.setGeometry(QRect(0, -55, 220, 220))
-        eagle = QPixmap("{}/images/eagle_eye.jpg".format(str_pkg_path))
+        eagle = QPixmap("{}/images/eagle_eye.jpg".format(self.str_pkg_path))
         eagleeye_pixmap = eagle.scaled(170, 180, Qt.KeepAspectRatio, Qt.FastTransformation)
         self.eagleeye_logo.setPixmap(eagleeye_pixmap)
 
         # For Creating Start PushButton 
         self.pushButton = QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QRect(309, 800, 141, 51))
+        self.pushButton.setGeometry(QRect(310, 800, 141, 51))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.setStyleSheet("border:2px; background-color: #00FF00; border-radius : 20px")
 
         # For Creating Stop PushButton 
         self.pushButton_2 = QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QRect(510, 800,141,51))
+        self.pushButton_2.setGeometry(QRect(510, 800,141, 51))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.setStyleSheet("border:2px; background-color: red; border-radius : 20px")
 
@@ -228,7 +225,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.Processing.setCurrentIndex(2)
+        # self.Processing.setCurrentIndex(2)
         QMetaObject.connectSlotsByName(MainWindow)
 
 
@@ -262,8 +259,6 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Dispatch"))
         item = self.tableWidget_2.horizontalHeaderItem(5)
         item.setText(_translate("MainWindow", "Shipment"))
-        item = self.tableWidget_2.horizontalHeaderItem(6)
-        item.setText(_translate("MainWindow", "Location"))
         
         __sortingEnabled = self.tableWidget_2.isSortingEnabled()
         self.tableWidget_2.setSortingEnabled(False)
@@ -310,17 +305,15 @@ class Ui_MainWindow(object):
         self.Processing.setTabText(self.Processing.indexOf(self.tab_5), _translate("MainWindow", "Delivered"))
         
         # For writing text in the start push button and enabling the video 
-        self.flag = True
+        # self.flag = True
         # self.Worker1 = Worker1()
         self.pushButton.setText(_translate("MainWindow", "START"))
         self.pushButton.setFont(QFont('Times', 15))
         self.pushButton.clicked.connect(self.StartFeed)
 
         # For loading excel in the table
-        rp = rospkg.RosPack()
-        str_pkg_path = rp.get_path('swarmrobot')
-        excel = "{}/sheet/Book1.xlsx".format(str_pkg_path)
-        excel2 = "{}/sheet/Book2.xlsx".format(str_pkg_path)
+        excel = "{}/sheet/Book1.xlsx".format(self.str_pkg_path)
+        excel2 = "{}/sheet/Book2.xlsx".format(self.str_pkg_path)
         worksheet = 'Sheet1'
         self.pushButton.clicked.connect(lambda _, xlxs_path1=excel, xlxs_path2 = excel2, sheet_name=worksheet: self.loading_Excel_Data(xlxs_path1, xlxs_path2, sheet_name))
 
@@ -343,10 +336,8 @@ class Ui_MainWindow(object):
 
         # for timer 
         self.timer1 = QTimer()
-        # self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
         self.start = time.time()
         self.s = 0
-
         self.label.setText("")
 
     def loading_Excel_Data(self, excel1, excel2, worksheet):
@@ -394,10 +385,10 @@ class Ui_MainWindow(object):
     def ImageUpdateSlot(self, image):
         """ Function for updating the image in the frame """
         self.frame.setPixmap(QPixmap.fromImage(image))
-     
+
     def StartFeed(self):
         """ Function use to start the video and timer """
-        self.flag == True
+        self.flag = True
         # os.system("rosrun swarmrobot client.py")
         self.timer1.timeout.connect(self.showTime)
         self.timer1.start(1000)
@@ -405,8 +396,13 @@ class Ui_MainWindow(object):
     def StopFeed(self):
         """ Function use to stop the video and timer """
         self.flag = False
-        exit()
-        
+        image = ("{}/images/black.jpg".format(self.str_pkg_path))
+        Imagelogo = cv2.imread(image)
+        ConvertToQtFormat = QImage(Imagelogo.data, Imagelogo.shape[1], Imagelogo.shape[0], QImage.Format_RGB888)
+        Pic = ConvertToQtFormat.scaled(1200, 600, Qt.KeepAspectRatio)
+        self.ImageUpdateSlot(Pic)
+        rospy.sleep(1)
+        exit()        
  
     def showTime(self):
         """ method called by timer """
@@ -450,8 +446,9 @@ class Detect():
         # Reading Current System Time
         time = datetime.datetime.now()
         # Global Varibales for Aruco Marker Detections
+        self.deg2, self.deg4 = 0, 0
         self.time_2, self.time_4 = time, time
-        self.graphc, self.completed, self.index = 0, 0, 0
+        self.index, self.graphc, self.completed = 0, 0, 0
         self.aruco1, self.ind1, self.aruco2, self.ind2 = 0, 0, 0, 0
         self.temp1, self.temp2, self.temp3, self.temp4 = [], [], [], []
         self.dict, self.destination, self.inductzone = {}, {}, {}
@@ -484,17 +481,19 @@ class Detect():
             # Convert img msg to an data readable by cv2 library,
             # to process them further
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-            cv_image = cv_image[0:720, 115:1100]
+            cv_image = cv_image[0:720, 115:1120]
 
             # If Aruco markers of inductzone and destination detected
             # Also, if the graph is plotted then bot detection starts
-            if self.completed == 1:
+            if self.completed == 1 and self.ui.flag == True:
                 # Detect Bots using Aruco Markers
                 bot = self.aruco_detect_bot(cv_image)
                 img = self.mark_points(cv_image, bot)
                 img = cv2.resize(img, (800, 600))
-                frame = self.qt_convert(img)
-                self.ui.ImageUpdateSlot(frame)
+                thread = threading.Thread(name="worker", target=self.qt_convert, args=(img, ) )
+                thread.start()
+                # frame = self.qt_convert(img)
+                self.ui.ImageUpdateSlot(self.frame)
 
             elif self.completed == 2:
                 function.write_graph()
@@ -526,7 +525,8 @@ class Detect():
                 self.aruco_detect_destination(cv_image)
 
         except Exception as e:
-            pass
+            print(e)
+            # pass
 
     # Function to detect aruco markers Bot
     def aruco_detect_bot(self, frame):
@@ -559,12 +559,12 @@ class Detect():
 
             for i in bot:
                 try:
-                    deg = self.bot_angle(bot[i][2], bot[i][0], bot[i][1], bot[i][3])
+                    deg = self.bot_angle(bot[i][2], bot[i][0], bot[i][1], bot[i][3], i)
                 except ZeroDivisionError:
                     deg = 0
 
-                x1 = int((bot[i][1][0]+bot[i][2][0])/2)
-                y1 = int((bot[i][1][1]+bot[i][2][1])/2)
+                x1 = int((bot[i][1][0]+bot[i][0][0])/2)
+                y1 = int((bot[i][1][1]+bot[i][0][1])/2)
                 point = (x1, y1, int(deg))
                 cpts.append(point)
 
@@ -572,20 +572,15 @@ class Detect():
             self.msg = json.dumps(bot)
             self.publisher.publish(self.msg)
             print(bot)
-            for i in bot:
-                loc = "(" + str(bot[i][0]) + ", " + str(bot[i][1]) + ")"
-                if i == "bot2":
-                    self.ui.tableWidget_2.setItem(0, 6, QTableWidgetItem(loc))
-                if i == "bot4":
-                    self.ui.tableWidget_2.setItem(1, 6, QTableWidgetItem(loc))
+
             return bot
 
         except Exception as e:
-            # print(e)
-            pass
+            print(e)
+            # pass
 
     # Function to Angle of the Bot
-    def bot_angle(self, pt2, pt0, pt1, pt3):
+    def bot_angle(self, pt2, pt0, pt1, pt3, i):
         """
         This function is to calculate the angle of the bot
         using the third and four point of the aruco marker
@@ -594,6 +589,12 @@ class Detect():
         y = abs(pt3[1] - pt0[1])
         p = abs(pt0[0] - pt1[0])
         q = abs(pt0[1] - pt1[1])
+
+        if i == "bot2":
+            d = self.deg2
+        else:
+            d = self.deg4
+
         if pt0[1] < pt3[1] and pt0[0] > pt3[0] and pt0[0] > pt1[0]:
             rad = math.atan(x/y)
             d = rad *(180/(math.pi))
@@ -616,13 +617,18 @@ class Detect():
         elif pt0[0] < pt3[0] and pt0[0] < pt1[0] and pt0[1] > pt3[1] and pt0[1] > pt1[1]:
             rad = math.atan(q/p)
             d = rad *(180/(math.pi))
-            d = -(d + 130)      
+            d = -(d + 130)
         elif pt0[1] == pt3[1]:
             d = 90
         elif pt0[0] == pt3[0] and pt0[1] == pt1[1]:
             d = 180
         elif pt0[0] == pt1[0]:
-            d = 90     
+            d = 90
+
+        if i == "bot2":
+            self.deg2 = d
+        else:
+            self.deg4 = d
 
         return d
 
@@ -665,7 +671,8 @@ class Detect():
                 self.aruco1 = 1
 
         except Exception as e:
-            pass
+            print(e)
+            # pass
 
     # Function to Extract Induct Points
     def extract_induct_point(self, ids, bbox):
@@ -718,7 +725,8 @@ class Detect():
                 self.destination = self.extract_goal_point(self.temp3, self.temp4)
                 self.aruco2, self.completed = 1, 2
 
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     # Function to Extract Goal Points
@@ -776,7 +784,16 @@ class Detect():
         msg = message_converter.convert_ros_message_to_dictionary(data)
         temp = msg['data']
         bot = json.loads(temp)
+        thread = threading.Thread(name="worker", target=self.UpdateTable, args=(bot, ))
+        thread.start()
 
+    # Function to Update Table
+    def UpdateTable(self, bot):
+        """
+        This Function is update table simultaneously
+        """
+        if self.index == 10:
+            self.index = 0
         for i in bot:
             if i == "bot2":
                 self.dict[i] = bot[i]
@@ -789,7 +806,6 @@ class Detect():
                 if bot[i][7] == "No":
                     self.time_2 = datetime.datetime.now()
                 elif bot[i][7] == "Yes":
-                    self.index += 1
                     t2 = datetime.datetime.now()
                     temp2 = t2 - self.time_2
                     time2 = str(temp2.seconds)
@@ -798,6 +814,7 @@ class Detect():
                     self.ui.tableWidget_3.setItem(self.index, 2, QTableWidgetItem(bot[i][4]))
                     self.ui.tableWidget_3.setItem(self.index, 3, QTableWidgetItem("2"))
                     self.ui.tableWidget_3.setItem(self.index, 4, QTableWidgetItem(time2))
+                    self.index += 1
 
             if i == "bot4":
                 self.dict[i] = bot[i]
@@ -810,7 +827,6 @@ class Detect():
                 if bot[i][7] == "No":
                     self.time_4 = datetime.datetime.now()
                 elif bot[i][7] == "Yes":
-                    self.index += 1
                     t4 = datetime.datetime.now()
                     temp4 = t4 - self.time_4
                     time4 = str(temp4.seconds)
@@ -819,6 +835,7 @@ class Detect():
                     self.ui.tableWidget_3.setItem(self.index, 2, QTableWidgetItem(bot[i][4]))
                     self.ui.tableWidget_3.setItem(self.index, 3, QTableWidgetItem("4"))
                     self.ui.tableWidget_3.setItem(self.index, 4, QTableWidgetItem(time4))
+                    self.index += 1
 
     # Function to Mark Points on the Image
     def mark_points(self, img, bot):
@@ -849,8 +866,8 @@ class Detect():
         """
         image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         frame = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
-        frame = frame.scaled(790, 590, Qt.KeepAspectRatio)
-        return frame
+        self.frame = frame.scaled(790, 590, Qt.KeepAspectRatio)
+        # return self.frame
 
 # Main Function
 def main(args):

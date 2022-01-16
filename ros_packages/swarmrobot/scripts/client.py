@@ -37,6 +37,8 @@ class Client():
         # Dictionary to Store all the goal handels
         self.goal_no_2, self.goal_no_4 = 0, 0
         self._goal_handles_2, self._goal_handles_4 = {}, {}
+        self.city = ""
+        self.count = 0
 
         # Wait for Bots's Action Server
         self._ac2.wait_for_server()
@@ -44,7 +46,7 @@ class Client():
         print("Action Server Up")
 
         print("waiting for Aruco Markers Detection")
-        # rospy.sleep(3)
+        rospy.sleep(10)
         self.location = function.read_location()
         print(self.location)
         self.read_sheet()
@@ -62,6 +64,53 @@ class Client():
         df = pd.read_excel(sheet, index_col=None, na_values=['NA'], usecols = "A:C")
         self.df1 = df[df['Induct Station']==1]
         self.df2 = df[df['Induct Station']==2]
+
+    # Function Send Goal for Bot2
+    def send_goal_2(self, *args):
+        """
+        This function is used to send Goals to Action Server
+        """
+        # Create a Goal Message object
+        goal = msgBot2Goal()
+        goal.induct_station = args[0]
+        goal.induct_x = args[1]
+        goal.induct_y = args[2]
+        goal.goal_x = args[3]
+        goal.goal_y = args[4]
+        goal.city = args[5]
+        goal.pkg_id = args[6]
+        goal.drop = args[7]
+        rospy.loginfo("Goal Sent")
+        # self.on_transition - It is a function pointer to a function,
+        # which will be called when there is a change of state in the 
+        # Action Client State Machine
+        goal_handle = self._ac2.send_goal(goal, self.on_transition_2, None)
+
+        return goal_handle
+
+
+    # Function Send Goal for Bot4
+    def send_goal_4(self, *args):
+        """
+        This function is used to send Goals to Action Server
+        """
+        # Create a Goal Message object
+        goal = msgBot4Goal()
+        goal.induct_station = args[0]
+        goal.induct_x = args[1]
+        goal.induct_y = args[2]
+        goal.goal_x = args[3]
+        goal.goal_y = args[4]
+        goal.city = args[5]
+        goal.pkg_id = args[6]
+        goal.drop = args[7]
+        rospy.loginfo("Goal Sent")
+        # self.on_transition - It is a function pointer to a function,
+        # which will be called when there is a change of state in the 
+        # Action Client State Machine
+        goal_handle = self._ac4.send_goal(goal, self.on_transition_4, None)
+
+        return goal_handle
 
     # Function On_Transition_2
     def on_transition_2(self, goal_handle):
@@ -92,36 +141,12 @@ class Client():
             rospy.loginfo(str(ind) + ": Goal is DONE")
             rospy.loginfo(goal_handle.get_terminal_state())
             result = goal_handle.get_result()
-            rospy.loginfo(result.flag)
-            if result.flag == True:
+            rospy.loginfo(result.flag_success)
+            if result.flag_success == True:
                 rospy.loginfo("Goal successfully completed. " + \
-                 + "Client Goal Handle #: " + str(ind))
+                 "Client Goal Handle #: " + str(ind))
             else:
                 rospy.loginfo("Goal failed. Client Goal Handle #: " + str(ind))
-
-    # Function Send Goal for Bot2
-    def send_goal_2(self, *args):
-        """
-        This function is used to send Goals to Action Server
-        """
-        # Create a Goal Message object
-        goal = msgBot2Goal()
-        goal.induct_station = args[0]
-        goal.induct_x = args[1]
-        goal.induct_y = args[2]
-        goal.goal_x = args[3]
-        goal.goal_y = args[4]
-        goal.city = args[5]
-        goal.pkg_id = args[6]
-        rospy.loginfo("Goal Sent")
-        print("Induct Station - " + str(args[0]))
-        print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")
-        # self.on_transition - It is a function pointer to a function,
-        # which will be called when there is a change of state in the 
-        # Action Client State Machine
-        goal_handle = self._ac2.send_goal(goal, self.on_transition_2, None)
-
-        return goal_handle
 
     # Function On_Transition_4
     def on_transition_4(self, goal_handle):
@@ -152,36 +177,12 @@ class Client():
             rospy.loginfo(str(ind) + ": Goal is DONE")
             rospy.loginfo(goal_handle.get_terminal_state())
             result = goal_handle.get_result()
-            rospy.loginfo(result.flag)
-            if result.flag == True:
+            rospy.loginfo(result.flag_success)
+            if result.flag_success == True:
                 rospy.loginfo("Goal successfully completed. " + \
-                 + "Client Goal Handle #: " + str(ind))
+                "Client Goal Handle #: " + str(ind))
             else:
                 rospy.loginfo("Goal failed. Client Goal Handle #: " + str(ind))
-
-    # Function Send Goal for Bot4
-    def send_goal_4(self, *args):
-        """
-        This function is used to send Goals to Action Server
-        """
-        # Create a Goal Message object
-        goal = msgBot4Goal()
-        goal.induct_station = args[0]
-        goal.induct_x = args[1]
-        goal.induct_y = args[2]
-        goal.goal_x = args[3]
-        goal.goal_y = args[4]
-        goal.city = args[5]
-        goal.pkg_id = args[6]
-        rospy.loginfo("Goal Sent")
-        print("Induct Station - " + str(args[0]))
-        print("Goal Point - " + "(" + str(args[3]) +", " + str(args[4]) + ")")
-        # self.on_transition - It is a function pointer to a function,
-        # which will be called when there is a change of state in the 
-        # Action Client State Machine
-        goal_handle = self._ac4.send_goal(goal, self.on_transition_4, None)
-
-        return goal_handle
 
     # Function Algorithm
     def algorithm(self):
@@ -190,41 +191,54 @@ class Client():
         It is also combined with multiple control statements to
         get optimal results
         """
-        ###############################
-        #                             #
-        ##                           ##
-        ###                         ###
-        # Lot of Work need to be done #
-        ###                         ###
-        ##                           ##
-        #                             #
-        ###############################
-        for i in range(0, 15):
+        for i in range(0, 25):
             pkgid_1 = self.df1.iloc[i][0]
-            ind_stn = int(self.df1.iloc[i][1])
-            city = self.df1.iloc[i][2]
-            print(ind_stn, city)
-            start = (self.location[ind_stn][0], self.location[ind_stn][1])
-            goal = self.closest_point(self.location[city], start)
-            print(start, goal)
-            self._goal_handles_2[self.goal_no_2] = self.send_goal_2(ind_stn, 
-                                                     start[0], start[1], 
-                                                     goal[0], goal[1], city, pkgid_1)
-            self.goal_no_2 += 1
+            ind_stn_1 = int(self.df1.iloc[i][1])
+            city_1 = self.df1.iloc[i][2]
+            start_1 = (self.location[ind_stn_1][0], self.location[ind_stn_1][1])
+            goal_1 = self.closest_point(self.location[city_1], start_1)
 
-        for i in range(0, 15):
             pkgid_2 = self.df2.iloc[i][0]
-            ind_stn = int(self.df2.iloc[i][1])
-            city = self.df2.iloc[i][2]
-            print(ind_stn, city)
-            start = (self.location[ind_stn][0], self.location[ind_stn][1])
-            goal = self.closest_point(self.location[city], start)
-            print(start, goal)
-            self._goal_handles_4[self.goal_no_4] = self.send_goal_4(ind_stn, 
-                                                     start[0], start[1], 
-                                                     goal[0], goal[1], city, pkgid_2)
-            self.goal_no_4 += 1
+            ind_stn_2 = int(self.df2.iloc[i][1])
+            city_2 = self.df2.iloc[i][2]
+            start_2 = (self.location[ind_stn_2][0], self.location[ind_stn_2][1])
+            goal_2 = self.closest_point(self.location[city_2], start_2)
+            if city_1 == "Mumbai" or city_1 == "Delhi" or city_1 == "Kolkata":
+                drop_1 = -45
+            else:
+                drop_1 = 45
+            if city_2 == "Pune" or city_2 == "Ahmedabad" or city_2 == "Jaipur":
+                drop_2 = 45
+            else:
+                drop_2 = -45
 
+            if city_1 == city_2:
+                self.city = city_1
+                if self.city == city_1 and self.count == 1:
+                    goal_2 = (goal_2[0]-180, goal_2[1])
+                    drop_2 = -135
+                elif city_1 == "Ahmedabad" or city_1 == "Jaipur":
+                    goal_1 = (goal_1[0] - 180, goal_1[1])
+                    drop_1 = 135
+                elif city_2 == "Delhi" or city_2 == "Kolkata":
+                    goal_2 = (goal_2[0] - 180, goal_2[1])
+                    drop_2 = -135
+                self.count = 1
+                    
+            print("Bot 4 has assigned With the City " + city_1 + " from the induct station 1 to the goal point " + str(goal_1))
+            self._goal_handles_4[self.goal_no_4] = self.send_goal_4(ind_stn_1, start_1[0], 
+                                                                    start_1[1], goal_1[0], 
+                                                                    goal_1[1], city_1, pkgid_1,
+                                                                    drop_1)
+
+            print("Bot 2 has assigned With the City " + city_2 + " from the induct station 2 to the goal point " + str(goal_2))
+            self._goal_handles_2[self.goal_no_2] = self.send_goal_2(ind_stn_2, start_2[0], 
+                                                                    start_2[1], goal_2[0], 
+                                                                    goal_2[1], city_2, pkgid_2,
+                                                                    drop_2)
+
+            self.goal_no_2 += 1
+            self.goal_no_4 += 1
 
     # Function to identify the closest point
     def closest_point(self, ls, pos):
