@@ -20,20 +20,17 @@ source ~/ros_workspace/devel/setup.bash
 
 This is the ultimate ROS Package which will be acting as the central monitoring system for the problem statement. This package contains various files for controlling the bot in bot simulation and real time applications. Also, this package is capable of interfacing all other packages to do the job.
 
-Communication flowchart will be added soon.
-
 The commands used to test the files is mentioned below in separate terminals or terminator
 
 ```bash
-# Launch Camera Node
-roslaunch usb_cam usb_cam.launch
-# Launch Socket Server for Bots
-roslaunch swarmrobot esp.launch
-# Run the Aruco Detect Marker
-rosrun swarmrobot detect.py
+# Launch Camera Node and Socket Server for Bots
+roslaunch swarmrobot task.launch
+# Run the Aruco Detect Marker and Launch the pyqt5 Application
+rosrun swarmrobot pyqt5.py
 # Run Client Node
 rosrun swarmrobot client.py
 # Run Bot'n' Node 'n' ~ 1<=n<=4
+# Note : Only Two Bots [2, 4] are used for Stage 2
 rosrun swarmrobot bot'n'.py
 ```
 
