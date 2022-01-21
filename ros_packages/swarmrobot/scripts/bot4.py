@@ -111,8 +111,6 @@ class Bot4():
                 pass
 
         except Exception as e:
-            # print("Exception in Position Callback Function")
-            # print(e)
             pass
 
     # This function will be called when Action Server receives a Goal
@@ -231,8 +229,7 @@ class Bot4():
                         except:
                             self.done = 1
                     if self.ang >= 45:
-                        # self.rotate_bot(cur[2], self.ang, 1)
-                        pass
+                        self.rotate_bot(cur[2], self.ang, 1)
                     self.check, self.rotate = 0, 1
                 elif self.rotate == 1:
                     self.rotate_bot(cur[2], self.ang)
@@ -370,8 +367,6 @@ class Bot4():
 
         # Actuate Servo to 180 degree
         print("Actuate Servo to 180 Degree")
-        # self.publish_command(1)
-        # rospy.sleep(0.1)
         self.publish_command(0, 0, 1)
         # Sleep For 2 Seconds
         # So, that the package falls from the bot

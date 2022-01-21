@@ -109,8 +109,6 @@ class Bot2():
                 pass
 
         except Exception as e:
-            # print("Exception in Position Callback Function")
-            # print(e)
             pass
 
     # This function will be called when Action Server receives a Goal
@@ -186,8 +184,6 @@ class Bot2():
             self.viz.publish(msg)
 
         except Exception as e:
-            # print("Exception in Process Goal Function")
-            # print(e)
             pass
 
     # Function to Monitor Bot
@@ -230,8 +226,7 @@ class Bot2():
                         except:
                             self.done = 1
                     if self.ang >= 45:
-                        # self.rotate_bot(cur[2], self.ang, 1)
-                        pass
+                        self.rotate_bot(cur[2], self.ang, 1)
                     self.check, self.rotate = 0, 1
                 elif self.rotate == 1:
                     self.rotate_bot(cur[2], self.ang)
@@ -303,7 +298,6 @@ class Bot2():
             self.rotate, self.done = 0, 0
             self.next += 1
         elif pos[2] in range(ang-2, ang+2):
-            # print("Forward")
             if self.reverse == True:
                 direct = 4
             else:
@@ -379,8 +373,6 @@ class Bot2():
         # Sleep For 2 Seconds
         # So, that the package falls from the bot
         rospy.sleep(2)
-        # self.publish_command(1)
-        # rospy.sleep(0.1)
         # Actuate the Servo to Normal Position
         print("Actuate Servo to 0 Degree")
         self.publish_command(0)

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-
-import rospy
-import cv2
 import sys
+import cv2
+import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -13,8 +12,6 @@ class Camera1:
     def __init__(self):
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/image_raw", Image, self.callback)
-        self.video_writer = None
-        self.file_name = 'data.avi'
 
     def callback(self,data):
         try:

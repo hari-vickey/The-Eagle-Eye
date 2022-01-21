@@ -225,13 +225,15 @@ class Client():
                     drop_2 = -135
                 self.count = 1
                     
-            print("Bot 4 has assigned With the City " + city_1 + " from the induct station 1 to the goal point " + str(goal_1))
+            print("Bot 4 has assigned With the City " + city_1 + \
+                " from the induct station 1 to the goal point " + str(goal_1))
             self._goal_handles_4[self.goal_no_4] = self.send_goal_4(ind_stn_1, start_1[0], 
                                                                     start_1[1], goal_1[0], 
                                                                     goal_1[1], city_1, pkgid_1,
                                                                     drop_1)
 
-            print("Bot 2 has assigned With the City " + city_2 + " from the induct station 2 to the goal point " + str(goal_2))
+            print("Bot 2 has assigned With the City " + city_2 + \
+                " from the induct station 2 to the goal point " + str(goal_2))
             self._goal_handles_2[self.goal_no_2] = self.send_goal_2(ind_stn_2, start_2[0], 
                                                                     start_2[1], goal_2[0], 
                                                                     goal_2[1], city_2, pkgid_2,
@@ -252,20 +254,6 @@ class Client():
         i = d.index(min_res)
 
         return ls[i]
-
-    # Function to validate point
-    def validate_point(self, coord, points):
-        """
-        This function will validate the point with obstacles of
-        its presence and returns the result as 1 or 0
-        """
-        try:
-            points.index(coord)
-            flag = 0
-        except ValueError:
-            flag = 1
-
-        return flag
 
     # Destructor of the Class
     def __del__(self):

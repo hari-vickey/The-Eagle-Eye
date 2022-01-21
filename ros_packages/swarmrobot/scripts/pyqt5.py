@@ -525,8 +525,7 @@ class Detect():
                 self.aruco_detect_destination(cv_image)
 
         except Exception as e:
-            print(e)
-            # pass
+            pass
 
     # Function to detect aruco markers Bot
     def aruco_detect_bot(self, frame):
