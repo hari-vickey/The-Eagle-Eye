@@ -11,6 +11,6 @@ Behind the scenes in the e-commerce industry lies a sophisticated system of auto
 
 ## The Eagle Eye
 
-Our Team Comprises of team members from various engineering domains to formulate the solution for the given problem statement. This repository has all the codes that are being added, developed, validated are added. So, that the team can share their work easily and update themselves.
+Our Team Comprises of team members from various engineering domains to formulate the solution for the given problem statement. This repository has all the codes that are being developed, deployed, and validated. So, that the team can share their work easily and update themselves.
 
 We have tried our best to get to the Finals of the competition but we have ended up in completing all the stages(1 & 2) of the competition.
